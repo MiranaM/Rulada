@@ -144,6 +144,7 @@ namespace PianoRoll.Control
                 
 
             }
+            scrollViewer.ScrollToVerticalOffset(540);
         }
 
         private NoteControl MakeNote(int noteNumber, long startTime, int duration, string lyric)
@@ -256,8 +257,15 @@ namespace PianoRoll.Control
         {
             Point currentMousePosition = e.GetPosition(RootCanvas);
 
+            int noteNumber;
+            long startTime;
+            int duration;
+            string Lyric;
+
+            noteNumber = (int)currentMousePosition.Y;
             
-            
+
+
         }
     }
 }

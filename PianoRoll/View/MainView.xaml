@@ -13,25 +13,12 @@
     WindowState="Maximized"
     mc:Ignorable="d">
     <Grid>
-        <ScrollViewer
-            Name="scrollViewer"
-            Margin="5,25,5,140"
-            Background="AliceBlue"
-            BorderThickness="1"
-            HorizontalScrollBarVisibility="Visible">
-            <ScrollViewer.Foreground>
-                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-                    <GradientStop Offset="0" Color="#FF323042" />
-                    <GradientStop Offset="1" Color="#FF767489" />
-                </LinearGradientBrush>
-            </ScrollViewer.Foreground>
-            <control:PianoRollControl
-                x:Name="PianoRollControl"
-                Width="882"
-                Height="354"
-                Background="#FFEBEDEE" />
-        </ScrollViewer>
 
+        <control:PianoRollControl
+            x:Name="PianoRollControl"
+            Width="882"
+            Height="354"
+            Background="#FFEBEDEE" />
         <Button
             Width="87"
             Height="25"

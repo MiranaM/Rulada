@@ -8,30 +8,44 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="11*" />
-            <ColumnDefinition Width="189*" />
-        </Grid.ColumnDefinitions>
+    <ScrollViewer
+        Name="scrollViewer"
+        Margin="5,25,5,140"
+        Background="AliceBlue"
+        BorderThickness="1"
+        HorizontalScrollBarVisibility="Visible">
+        <ScrollViewer.Foreground>
+            <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                <GradientStop Offset="0" Color="#FF323042" />
+                <GradientStop Offset="1" Color="#FF767489" />
+            </LinearGradientBrush>
+        </ScrollViewer.Foreground>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="11*" />
+                <ColumnDefinition Width="189*" />
+            </Grid.ColumnDefinitions>
 
-        <Canvas Grid.Column="0" />
+            <Canvas Grid.Column="0" />
 
-        <Canvas
-            x:Name="RootCanvas"
-            Grid.Column="1"
-            Background="White"
-            MouseLeftButtonUp="RootCanvas_MouseLeftButtonUp">
-            <Canvas x:Name="NoteBackgroundCanvas">
-                <Canvas.RenderTransform>
-                    <ScaleTransform
-                        x:Name="NoteBackgroundRenderScaleTransform"
-                        ScaleX="1"
-                        ScaleY="1" />
-                </Canvas.RenderTransform>
+            <Canvas
+                x:Name="RootCanvas"
+                Grid.Column="1"
+                Background="White"
+                MouseLeftButtonUp="RootCanvas_MouseLeftButtonUp">
+                <Canvas x:Name="NoteBackgroundCanvas">
+                    <Canvas.RenderTransform>
+                        <ScaleTransform
+                            x:Name="NoteBackgroundRenderScaleTransform"
+                            ScaleX="1"
+                            ScaleY="1" />
+                    </Canvas.RenderTransform>
+                </Canvas>
+                <Canvas x:Name="GridCanvas" />
+                <Canvas x:Name="NoteCanvas" />
             </Canvas>
-            <Canvas x:Name="GridCanvas" />
-            <Canvas x:Name="NoteCanvas" />
-        </Canvas>
-    </Grid>
+        </Grid>
+    </ScrollViewer>
+
 
 </UserControl>
