@@ -28,6 +28,7 @@ namespace PianoRoll.Control
         double yScale = 15;
         private long lastPosition = 9598;
         private int DeltaTicksPerQuarterNote = 480;
+        public int MaxDivider = 4;
 
         SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
         SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
@@ -144,7 +145,7 @@ namespace PianoRoll.Control
                 
 
             }
-            scrollViewer.ScrollToVerticalOffset(540);
+            //scrollViewer.ScrollToVerticalOffset(540);
         }
 
         private NoteControl MakeNote(int noteNumber, long startTime, int duration, string lyric)
@@ -256,11 +257,14 @@ namespace PianoRoll.Control
         private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Point currentMousePosition = e.GetPosition(RootCanvas);
+            Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
 
             long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
-            int noteNumber = Convert.ToInt32((currentMousePosition.Y + scrollViewer.VerticalOffset) / (128 * yScale));
+            int MinLength = DeltaTicksPerQuarterNote / MaxDivider;
+            startTime = (long) Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
+            int noteNumber = (int) (127 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
 
-            int duration = (int)(DeltaTicksPerQuarterNote * xScale);
+            int duration = (int)(DeltaTicksPerQuarterNote);
             string Lyric = "a";
 
             UNote uNote = new UNote();
@@ -270,6 +274,7 @@ namespace PianoRoll.Control
             uNote.Length = duration;
             uNote.AbsoluteTime = startTime;
             Ust.NotesList.Add(uNote);
+            USinger.NoteOtoRefresh();
             DrawUst();
         }
     }
