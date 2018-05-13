@@ -126,9 +126,18 @@ namespace PianoRoll.Control
             {
                 NoteControl noteControl = MakeNote(note.NoteNum, lastPosition, note.Length, note.Lyric);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
-                if (noteControl.Text != "R")
+                if (noteControl.Text != "")
                 {
                     noteControl.SetText(note.Lyric);
+                    if (note.HasOto)
+                    {
+                        noteControl.ToolTip = note.Oto.File;
+                    }
+                    else
+                    {
+                        noteControl.Background = new SolidColorBrush(System.Windows.Media.Colors.DarkOrange);
+                        noteControl.ToolTip = "can't found source file";
+                    }
                     NoteCanvas.Children.Add(noteControl);
                 }
 

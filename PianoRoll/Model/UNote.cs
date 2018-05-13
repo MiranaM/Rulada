@@ -52,7 +52,14 @@ namespace PianoRoll.Model
         public long AbsoluteTime;
         public int Volume = 80;
         public UOto Oto { get; set; }
-        public int RequiredLength;
+        public int RequiredLength
+        {
+            get
+            {
+                return this.Length;
+            }
+        }
+        public bool HasOto = false;
 
         private List<string> GotParameters = new List<string> { };
 
@@ -263,75 +270,6 @@ namespace PianoRoll.Model
                 GotParameters.Remove(parameter);
             }
             AliasParameters = new Dictionary<string, dynamic> { };
-        }
-
-        public void SendToResampler(string resampler, string cache, double Tempo, object PitchData)
-        {
-            string ops = string.Format
-            (
-                "{0} {1:D} {2} {3} {4:D} {5} {6} {7:D} {8:D} {9} {10}",
-                NoteNum,
-                Velocity,
-                Flags,
-                Oto.Offset,
-                RequiredLength,
-                Oto.Consonant,
-                Oto.Cutoff,
-                Volume,
-                0,
-                Tempo,
-                Pitch.BuildPitchData(this)
-            );
-            string request = $"\"{resampler}\" \"{Oto.File}\" \"{cache}\" {ops}";
-            if (!Directory.Exists("temp")) Directory.CreateDirectory("temp");
-            var dir = Path.Combine("temp", "resampler.bat");
-            File.WriteAllText(dir, request);
-
-            System.Diagnostics.Process proc = new System.Diagnostics.Process();
-            proc.StartInfo.FileName = @"temp/resampler.bat";
-            proc.StartInfo.WorkingDirectory = @"temp";
-            proc.Start();
-        }
-
-        public void SendToWavtool(string tool, string output, string cache)
-        {
-            string ops = string.Format
-            (
-                "{0} {1}@{2}{3} {4} {5}",
-                this["STP"],
-                Length,
-                Oto.Preutter < 0 ? "-" : "+",
-                Math.Abs(Oto.Preutter),
-                Envelope.p1,
-                Envelope.p2
-            );
-            string opsNote;
-            if (Lyric == "") opsNote = "";
-            else
-            {
-                opsNote = string.Format
-                (
-                    "{0} {1} {2} {3} {4} {5} {6} {7}",
-                    Envelope.p3,
-                    Envelope.v1,
-                    Envelope.v2,
-                    Envelope.v3,
-                    Oto.Overlap,
-                    Envelope.p4,
-                    Envelope.p5,
-                    Envelope.v5
-                );
-            }
-            string request = $"\"{tool}\" \"{output}\" \"{cache}\" {ops} {opsNote}";
-            if (!Directory.Exists("temp")) Directory.CreateDirectory("temp");
-            var dir = Path.Combine("temp", "tool.bat");
-            File.WriteAllText(dir, request);
-
-            System.Diagnostics.Process proc = new System.Diagnostics.Process();
-            proc.StartInfo.FileName = @"temp/tool.bat";
-            proc.StartInfo.WorkingDirectory = @"temp";
-            proc.Start();
-
         }
     }
 }

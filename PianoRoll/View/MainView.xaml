@@ -62,6 +62,11 @@
                 <MenuItem Click="MenuItemExit_Click" Header="_Exit" />
                 <MenuItem Click="MenuItemSave_Click" Header="_Save" />
             </MenuItem>
+            <MenuItem Click="MenuItemSinger_Click" Header="_Singer" />
+            <MenuItem Header="_Render">
+                <MenuItem Click="MenuItemPlay_Click" Header="_Play" />
+                <MenuItem Click="MenuItemStop_Click" Header="_Stop" />
+            </MenuItem>
         </Menu>
     </Grid>
 </Window>

@@ -8,17 +8,29 @@
     d:DesignHeight="450"
     d:DesignWidth="800"
     mc:Ignorable="d">
-    <Canvas x:Name="RootCanvas" Background="White">
-        <Canvas x:Name="NoteBackgroundCanvas">
-            <Canvas.RenderTransform>
-                <ScaleTransform
-                    x:Name="NoteBackgroundRenderScaleTransform"
-                    ScaleX="1"
-                    ScaleY="1" />
-            </Canvas.RenderTransform>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="11*" />
+            <ColumnDefinition Width="189*" />
+        </Grid.ColumnDefinitions>
+
+        <Canvas Grid.Column="0" />
+
+        <Canvas
+            x:Name="RootCanvas"
+            Grid.Column="1"
+            Background="White">
+            <Canvas x:Name="NoteBackgroundCanvas">
+                <Canvas.RenderTransform>
+                    <ScaleTransform
+                        x:Name="NoteBackgroundRenderScaleTransform"
+                        ScaleX="1"
+                        ScaleY="1" />
+                </Canvas.RenderTransform>
+            </Canvas>
+            <Canvas x:Name="GridCanvas" />
+            <Canvas x:Name="NoteCanvas" />
         </Canvas>
-        <Canvas x:Name="GridCanvas" />
-        <Canvas x:Name="NoteCanvas" />
-    </Canvas>
+    </Grid>
 
 </UserControl>

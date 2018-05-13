@@ -23,6 +23,7 @@ namespace PianoRoll.View
     /// </summary>
     public partial class MainWindow : Window
     {
+
         public MainWindow()
         {
             InitializeComponent();
@@ -54,6 +55,21 @@ namespace PianoRoll.View
             Exit();
         }
 
+        private void MenuItemSinger_Click(object sender, RoutedEventArgs e)
+        {
+            ShowSingerDialog();
+        }
+
+        private void MenuItemPlay_Click(object sender, RoutedEventArgs e)
+        {
+            Render.Play();
+        }
+
+        private void MenuItemStop_Click(object sender, RoutedEventArgs e)
+        {
+            Render.Stop();
+        }
+
         private void LoadMidi()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -74,7 +90,8 @@ namespace PianoRoll.View
             openFileDialog.FilterIndex = 1;
             if (openFileDialog.ShowDialog().Value)
             {
-                Ust ust = new Ust(openFileDialog.FileName);
+                Ust.Load(openFileDialog.FileName);
+                USinger.Load(Ust.uSettings["VoiceDir"]);
                 this.PianoRollControl.UNotes = Ust.NotesList;
                 scrollViewer.ScrollToVerticalOffset(540);
             }
@@ -89,6 +106,12 @@ namespace PianoRoll.View
         private void Exit()
         {
 
+        }
+
+        private void ShowSingerDialog()
+        {
+            SingerDialog dialog = new SingerDialog();
+            dialog.Show();
         }
     }
 }

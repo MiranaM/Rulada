@@ -42,34 +42,34 @@ namespace PianoRoll.Model
 
         static public string Dir;
 
-        public Ust(string dir)
+        public static void Load(string dir)
         {
             Dir = dir;
             Open();
             SetDefaultNoteSettings();
         }
 
-        private void Open()
+        private static void Open()
         {
             Ini ini = new Ini(Dir);
             Read(ini.data, ini.Sections.ToArray());
         }
 
-        static public void Save()
+        public static void Save()
         {
             Text = ToStrings();
             File.WriteAllText(Dir, Text);
             Console.WriteLine("Successfully saved UST.");
         }
 
-        static public void Save(string dir)
+        public static void Save(string dir)
         {
             Text = ToStrings();
             File.WriteAllText(dir, Text);
             Console.WriteLine("Successfully saved debug UST.");
         }
 
-        private void Read(dynamic data, string[] sections)
+        private static void Read(dynamic data, string[] sections)
         {
             string stage = "Init";
             stage = "Version";
@@ -86,6 +86,7 @@ namespace PianoRoll.Model
                     uSettings[setting] = data["[#SETTING]"][setting];
                 }
             }
+            Settings.Tempo = double.Parse(data["[#SETTING]"]["Tempo"]);
 
             // Sections - Version, Settings;
             stage = "Notes count";

@@ -9,22 +9,52 @@ using System.Text.RegularExpressions;
 namespace PianoRoll.Model
 {
 
-    class USinger
+    public class USinger
     {
-        public string Name { get; set; }
-        public string UPath { get; set; }
-        public string Readme { get; set; }
-        public List<string> Paths { get; set; }
-        public List<UOto> Otos { get; set; }
+        public static string Name { get; set; }
+        public static string Author { get; set; }
+        public static string Image { get; set; }
+        public static string Sample { get; set; }
+        public static string UPath { get; set; }
+        public static string Readme { get; set; }
+        public static List<string> Paths { get; set; }
+        public static List<UOto> Otos { get; set; }
+        
+        public USinger() { }
 
-        public USinger(string dir)
+        public static void Load(string dir)
         {
-            Paths = Directory.EnumerateDirectories(dir).ToList();
+            UPath = dir.Replace("%VOICE%", Settings.VoiceDir);
+            // Обработать отсутствие банка
+            Paths = Directory.EnumerateDirectories(UPath).ToList();
             Paths.Add("");
+            CharLoad();
             OtoLoad();
+            NoteOtoRefresh();
         }
 
-        private void OtoLoad()
+        private static void CharLoad()
+        {
+            string charfile = Path.Combine(UPath, "character.txt");
+            if (File.Exists(charfile))
+            {
+                string[] charlines = File.ReadAllLines(charfile);
+                foreach (string line in charlines)
+                {
+                    if (line.StartsWith("author=")) Author = line.Substring("author=".Length);
+                    if (line.StartsWith("image=")) Image = line.Substring("image=".Length);
+                    if (line.StartsWith("name=")) Name = line.Substring("name=".Length);
+                    if (line.StartsWith("sample=")) Sample = line.Substring("sample=".Length);
+                }
+            }
+        }
+
+        private static void PrefixMapLoad()
+        {
+
+        }
+
+        private static void OtoLoad()
         {
             Otos = new List<UOto> { };
             foreach (string path in Paths)
@@ -35,16 +65,18 @@ namespace PianoRoll.Model
                     string[] lines = File.ReadAllLines(filename);
                     foreach (string line in lines)
                     {
-                        var arr = Regex.Split(line, "([*])=(*),(*),(*),(*),(*),(*)");
+                        string pattern = "(.*)=(.*),(.*),(.*),(.*),(.*),(.*)";
+                        var arr = Regex.Split(line, pattern);
+                        double temp;
                         UOto oto = new UOto()
                         {
-                            File = arr[0],
-                            Alias = arr[1],
-                            Offset = double.Parse(arr[2]),
-                            Consonant = double.Parse(arr[3]),
-                            Cutoff = double.Parse(arr[4]),
-                            Preutter = double.Parse(arr[5]),
-                            Overlap = double.Parse(arr[6])
+                            File = arr[1],
+                            Alias = arr[2],
+                            Offset = double.TryParse(arr[3], out temp) ? temp : 0,
+                            Consonant = double.TryParse(arr[4], out temp) ? temp : 0,
+                            Cutoff = double.TryParse(arr[5], out temp) ? temp : 0,
+                            Preutter = double.TryParse(arr[6], out temp) ? temp : 0,
+                            Overlap = double.TryParse(arr[7], out temp) ? temp : 0,
                         };
                         Otos.Add(oto);
                     }
@@ -56,7 +88,19 @@ namespace PianoRoll.Model
             }
         }
 
-        public UOto FindOto(string lyric)
+        public static void NoteOtoRefresh()
+        {
+            foreach (UNote note in Ust.NotesList)
+            {
+                note.Oto = FindOto(note.Lyric);
+                if (note.Oto.Alias != "")
+                {
+                    note.HasOto = true;
+                }
+            }
+        }
+
+        public static UOto FindOto(string lyric)
         {
             foreach (UOto uOto in Otos)
             {
@@ -68,7 +112,7 @@ namespace PianoRoll.Model
             return new UOto()
             {
                 File = $"{lyric}.wav",
-                Alias = lyric,
+                Alias = "",
                 Offset = 0,
                 Consonant = 0,
                 Cutoff = 0,
