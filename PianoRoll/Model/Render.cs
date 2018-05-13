@@ -16,19 +16,15 @@ namespace PianoRoll.Model
         public static void Play()
         {
             File.WriteAllText(Settings.Bat, "");
-            if (Directory.Exists(Settings.CacheFolder)) Directory.Delete(Settings.CacheFolder);
-            Directory.CreateDirectory(Settings.CacheFolder);
-            //foreach (UNote note in Ust.NotesList)
-            //{
-            //    string tempfilename = $"{note.UNumber.Substring(1, 4)}.wav";
-            //    if (note.HasOto) SendToResampler(note, tempfilename);
-            //    SendToWavtool(note);
-            //}
-            UNote note = Ust.NotesList[5];
-            string tempfilename = $"{note.UNumber.Substring(2,4)}.wav";
-            if (note.HasOto) SendToResampler(note, tempfilename);
-            SendToWavtool(note);
-            File.AppendAllText(Settings.Bat, "PAUSE");
+            //if (Directory.Exists(Settings.CacheFolder)) Directory.Delete(Settings.CacheFolder);
+            //Directory.CreateDirectory(Settings.CacheFolder);
+            foreach (UNote note in Ust.NotesList)
+            {
+                string tempfilename = Path.Combine(Settings.CacheFolder, $"{note.UNumber.Substring(2, 4)}.wav");
+                if (note.HasOto) SendToResampler(note, tempfilename);
+                SendToWavtool(note, tempfilename);
+            }
+            // File.AppendAllText(Settings.Bat, "PAUSE");
 
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             proc.StartInfo.FileName = Settings.Bat;
@@ -60,13 +56,13 @@ namespace PianoRoll.Model
                 "{0} {1:D} {2} {3} {4:D} {5} {6} {7:D} {8:D} {9} {10}",
                 note.NoteNum,
                 note.Velocity,
-                note.Flags,
+                "g-5", //note.Flags,
                 note.Oto.Offset,
                 note.RequiredLength,
                 note.Oto.Consonant,
                 note.Oto.Cutoff,
                 note.Volume,
-                0,
+                0, // modulation
                 Settings.Tempo,
                 Pitch.BuildPitchData(note)
             );
@@ -74,7 +70,7 @@ namespace PianoRoll.Model
             File.AppendAllText(Settings.Bat, request);
         }
 
-        public static void SendToWavtool(UNote note)
+        public static void SendToWavtool(UNote note, string tempfilename)
         {
             string ops = string.Format
             (
@@ -103,7 +99,7 @@ namespace PianoRoll.Model
                     note.Envelope.v5
                 );
             }
-            string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{Settings.CacheFolder}\" {ops} {opsNote} \r\n";
+            string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{tempfilename}\" {ops} {opsNote} \r\n";
             File.AppendAllText(Settings.Bat, request);
 
         }
