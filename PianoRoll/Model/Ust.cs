@@ -15,11 +15,16 @@ namespace PianoRoll.Model
     {
         static public string[] USettingsList =
         {
-            "Project",
+            "ProjectName",
             "Tempo",
+            "Tracks",
             "VoiceDir",
             "CacheDir",
-            "Mode2"
+            "OutFile",
+            "Tool1",
+            "Tool2",
+            "Mode2",
+            "Flags"
         };
         static public string LOG_Dir = @"log.txt";
         static public string Text;
@@ -69,15 +74,18 @@ namespace PianoRoll.Model
             string stage = "Init";
             stage = "Version";
             // Reading string
-            //uVersion = data["[#VERSION]"];
+            // uVersion = data["[#VERSION]"];
             // Reading settings
             stage = "Setting";
-            //data["[#SETTING]"].Keys.CopyTo(USettingsList, 0);
-            //foreach (string setting in USettingsList)
-            //{
-            //    stage = $"Setting: {setting}";
-            //    uSettings[setting] = data["[#SETTING]"][setting];
-            //}
+            data["[#SETTING]"].Keys.CopyTo(USettingsList, 0);
+            foreach (string setting in USettingsList)
+            {
+                stage = $"Setting: {setting}";
+                if (data["[#SETTING]"].ContainsKey(setting))
+                {
+                    uSettings[setting] = data["[#SETTING]"][setting];
+                }
+            }
 
             // Sections - Version, Settings;
             stage = "Notes count";
@@ -85,10 +93,11 @@ namespace PianoRoll.Model
             if (data.ContainsKey("[#PREV]")) NotesCount--;
             if (data.ContainsKey("[#NEXT]")) NotesCount--;
 
+            long absoluteTime = 0;
             // Reading prev
             stage = "Prev";
             hasPrev = data.ContainsKey("[#PREV]");
-            if (hasPrev) uPrev = NoteRead(data, "PREV", out string number);
+            if (hasPrev) uPrev = NoteRead(data, "PREV", ref absoluteTime, out string number);
 
             // Reading notes
             stage = "Notes";
@@ -103,7 +112,7 @@ namespace PianoRoll.Model
             for (int i = 0; i < NotesCount; i++)
             {
                 stage = $"Note: {i}";
-                UNote note = NoteRead(data, (i + firstNote).ToString(), out string number);
+                UNote note = NoteRead(data, (i + firstNote).ToString(), ref absoluteTime, out string number);
                 uNotes[number] = note;
                 Numbers[i] = number;
                 NotesList[i] = note;
@@ -112,7 +121,7 @@ namespace PianoRoll.Model
             // Reading next
             stage = "Next";
             hasNext = data.ContainsKey("[#NEXT]");
-            if (hasNext) uNext = NoteRead(data, "NEXT", out string number);
+            if (hasNext) uNext = NoteRead(data, "NEXT", ref absoluteTime, out string number);
             Console.WriteLine("Read UST successfully");
         }
 
@@ -127,12 +136,12 @@ namespace PianoRoll.Model
             // We will apply this to "r" note which we won't consider Rest
             uDefaultNote.Intensity = 100;
             uDefaultNote.Modulation = 0;
-            uDefaultNote.Envelope = "0,21,35,0,100,100,0,%,0";
+            uDefaultNote.Set("Envelope", "0,21,35,0,100,100,0,%,0");
             uDefaultNote.PBS = "-40";
             uDefaultNote.PBW = "80";
         }
 
-        private static UNote NoteRead(dynamic data, string which, out string number)
+        private static UNote NoteRead(dynamic data, string which, ref long absoluteTime, out string number)
         {
             // May be #PREV, #0000 .... #NNNN, #NEXT
             if (int.TryParse(which, out int tempInt))
@@ -154,6 +163,9 @@ namespace PianoRoll.Model
                 note.Set(parameter, value);
                 i++;
             }
+            note.UNumber = number;
+            note.AbsoluteTime = absoluteTime;
+            absoluteTime += (long) note.Length;
 
             return note;
         }

@@ -1,12 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using PianoRoll.Model;
 
 namespace PianoRoll.Model
 {
+    public struct UEnvelope
+    {
+        public int p1;
+        public int p2;
+        public int p3;
+        public int p4;
+        public int p5;
+        public int v1;
+        public int v2;
+        public int v3;
+        public int v4;
+        public int v5;
+    }
 
     public class UNote
     {
@@ -32,9 +45,14 @@ namespace PianoRoll.Model
         public int Intensity;
         public int Modulation;
         public string Flags;
-        public string Envelope;
+        public UEnvelope Envelope;
         public string PBW;
         public string PBS;
+        public string UNumber;
+        public long AbsoluteTime;
+        public int Volume = 80;
+        public UOto Oto { get; set; }
+        public int RequiredLength;
 
         private List<string> GotParameters = new List<string> { };
 
@@ -61,12 +79,29 @@ namespace PianoRoll.Model
                     {
                         this[parameter] = "r";
                     }
+                    else if (value == "R")
+                    {
+                        this[parameter] = "";
+                    }
                     else this[parameter] = value;
+                    break;
+                case "Envelope":
+                    string[] ops = value.Split(',');
+                    this.Envelope.p1 = int.Parse(ops[0]);
+                    this.Envelope.p2 = int.Parse(ops[1]);
+                    this.Envelope.p3 = int.Parse(ops[2]);
+                    this.Envelope.v1 = int.Parse(ops[3]);
+                    this.Envelope.v2 = int.Parse(ops[4]);
+                    this.Envelope.v3 = int.Parse(ops[5]);
+                    this.Envelope.v4 = int.Parse(ops[6]);
+                    // 7 -- %
+                    this.Envelope.p4 = int.Parse(ops[8]);
+                    this.Envelope.p5 = ops.Length > 9 ? int.Parse(ops[9]) : 0;
+                    this.Envelope.v5 = ops.Length > 9 ? int.Parse(ops[10]) : 100;
                     break;
                 case "Flags":
                 case "PBW":
                 case "PBS":
-                case "Envelope":
                     this[parameter] = value;
                     break;
                 default:
@@ -228,6 +263,75 @@ namespace PianoRoll.Model
                 GotParameters.Remove(parameter);
             }
             AliasParameters = new Dictionary<string, dynamic> { };
+        }
+
+        public void SendToResampler(string resampler, string cache, double Tempo, object PitchData)
+        {
+            string ops = string.Format
+            (
+                "{0} {1:D} {2} {3} {4:D} {5} {6} {7:D} {8:D} {9} {10}",
+                NoteNum,
+                Velocity,
+                Flags,
+                Oto.Offset,
+                RequiredLength,
+                Oto.Consonant,
+                Oto.Cutoff,
+                Volume,
+                0,
+                Tempo,
+                Pitch.BuildPitchData(this)
+            );
+            string request = $"\"{resampler}\" \"{Oto.File}\" \"{cache}\" {ops}";
+            if (!Directory.Exists("temp")) Directory.CreateDirectory("temp");
+            var dir = Path.Combine("temp", "resampler.bat");
+            File.WriteAllText(dir, request);
+
+            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+            proc.StartInfo.FileName = @"temp/resampler.bat";
+            proc.StartInfo.WorkingDirectory = @"temp";
+            proc.Start();
+        }
+
+        public void SendToWavtool(string tool, string output, string cache)
+        {
+            string ops = string.Format
+            (
+                "{0} {1}@{2}{3} {4} {5}",
+                this["STP"],
+                Length,
+                Oto.Preutter < 0 ? "-" : "+",
+                Math.Abs(Oto.Preutter),
+                Envelope.p1,
+                Envelope.p2
+            );
+            string opsNote;
+            if (Lyric == "") opsNote = "";
+            else
+            {
+                opsNote = string.Format
+                (
+                    "{0} {1} {2} {3} {4} {5} {6} {7}",
+                    Envelope.p3,
+                    Envelope.v1,
+                    Envelope.v2,
+                    Envelope.v3,
+                    Oto.Overlap,
+                    Envelope.p4,
+                    Envelope.p5,
+                    Envelope.v5
+                );
+            }
+            string request = $"\"{tool}\" \"{output}\" \"{cache}\" {ops} {opsNote}";
+            if (!Directory.Exists("temp")) Directory.CreateDirectory("temp");
+            var dir = Path.Combine("temp", "tool.bat");
+            File.WriteAllText(dir, request);
+
+            System.Diagnostics.Process proc = new System.Diagnostics.Process();
+            proc.StartInfo.FileName = @"temp/tool.bat";
+            proc.StartInfo.WorkingDirectory = @"temp";
+            proc.Start();
+
         }
     }
 }
