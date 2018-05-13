@@ -80,8 +80,8 @@ namespace PianoRoll.Control
         public void Resize()
         {
             xScale = (80.0 / DeltaTicksPerQuarterNote);
-            this.Width = lastPosition * xScale;
-            this.Height = 128 * yScale;
+            PianoRollGrid.Width = lastPosition * xScale;
+            PianoRollGrid.Height = 128 * yScale;
         }
 
         public void DrawInit()
@@ -211,7 +211,7 @@ namespace PianoRoll.Control
                 {
                     Rectangle rect = new Rectangle();
                     rect.Height = yScale;
-                    rect.Width = this.Width;
+                    rect.Width = PianoRollGrid.Width;
                     rect.Fill = blackNoteChannelBrush;
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     NoteBackgroundCanvas.Children.Add(rect);
@@ -221,7 +221,7 @@ namespace PianoRoll.Control
             {
                 Line line = new Line();
                 line.X1 = 0;
-                line.X2 = this.Width;
+                line.X2 = PianoRollGrid.Width;
                 line.Y1 = GetNoteYPosition(note);
                 line.Y2 = GetNoteYPosition(note);
                 line.Stroke = noteSeparatorBrush;

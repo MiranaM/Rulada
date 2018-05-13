@@ -16,8 +16,7 @@
 
         <control:PianoRollControl
             x:Name="PianoRollControl"
-            Width="882"
-            Height="354"
+            Margin="0,20,0,100"
             Background="#FFEBEDEE" />
         <Button
             Width="87"

@@ -16,18 +16,22 @@ namespace PianoRoll.Model
         public static void Play()
         {
             File.WriteAllText(Settings.Bat, "");
-            foreach (UNote note in Ust.NotesList)
-            {
-                string tempfilename = $"{Ust.NoteNumber2Number(note.UNumber)}.wav";
-                if (note.HasOto) SendToResampler(note, tempfilename);
-                SendToWavtool(note);
-            }
+            if (Directory.Exists(Settings.CacheFolder)) Directory.Delete(Settings.CacheFolder);
+            Directory.CreateDirectory(Settings.CacheFolder);
+            //foreach (UNote note in Ust.NotesList)
+            //{
+            //    string tempfilename = $"{note.UNumber.Substring(1, 4)}.wav";
+            //    if (note.HasOto) SendToResampler(note, tempfilename);
+            //    SendToWavtool(note);
+            //}
+            UNote note = Ust.NotesList[5];
+            string tempfilename = $"{note.UNumber.Substring(2,4)}.wav";
+            if (note.HasOto) SendToResampler(note, tempfilename);
+            SendToWavtool(note);
             File.AppendAllText(Settings.Bat, "PAUSE");
 
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             proc.StartInfo.FileName = Settings.Bat;
-            proc.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-            proc.StartInfo.StandardErrorEncoding = Encoding.UTF8;
             proc.StartInfo.WorkingDirectory = Settings.CacheFolder;
             proc.Exited += new EventHandler(PlayRendered);
             proc.Start();
