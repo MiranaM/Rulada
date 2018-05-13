@@ -128,7 +128,7 @@ namespace PianoRoll.Control
                 if (noteControl.Text != "")
                 {
                     noteControl.note = note;
-                    noteControl.ChangedLyric += DrawUst;
+                    noteControl.onUstChanged += DrawUst;
                     noteControl.SetText(note.Lyric);
                     if (note.HasOto)
                     {
@@ -257,15 +257,20 @@ namespace PianoRoll.Control
         {
             Point currentMousePosition = e.GetPosition(RootCanvas);
 
-            int noteNumber;
-            long startTime;
-            int duration;
-            string Lyric;
+            long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
+            int noteNumber = Convert.ToInt32((currentMousePosition.Y + scrollViewer.VerticalOffset) / (128 * yScale));
 
-            noteNumber = (int)currentMousePosition.Y;
-            
+            int duration = (int)(DeltaTicksPerQuarterNote * xScale);
+            string Lyric = "a";
 
-
+            UNote uNote = new UNote();
+            uNote.SetDefaultNoteSettings();
+            uNote.NoteNum = noteNumber;
+            uNote.Lyric = Lyric;
+            uNote.Length = duration;
+            uNote.AbsoluteTime = startTime;
+            Ust.NotesList.Add(uNote);
+            DrawUst();
         }
     }
 }

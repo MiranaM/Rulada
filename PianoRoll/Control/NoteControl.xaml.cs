@@ -23,7 +23,7 @@ namespace PianoRoll.Control
     {
         public delegate void RedrawUst();
 
-        public event RedrawUst ChangedLyric;
+        public event RedrawUst onUstChanged;
 
         public string Text { get; set; }
 
@@ -63,14 +63,14 @@ namespace PianoRoll.Control
             {                
                 SetText(this.EditLyric.Text);
                 this.EditLyric.Visibility = Visibility.Hidden;
-                ChangedLyric();
+                onUstChanged();
             }
         }
 
         private void Lyric_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
             Ust.NotesList.Remove(note);
-            ChangedLyric();
+            onUstChanged();
         }
     }
 }

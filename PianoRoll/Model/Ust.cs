@@ -30,7 +30,7 @@ namespace PianoRoll.Model
         static public string Text;
         static public Dictionary<string, string> uSettings = new Dictionary<string, string> { };
         static public UNote uDefaultNote = new UNote();
-        static public Dictionary<string,UNote> uNotes;
+        static public Dictionary<string, UNote> uNotes;
         static public string[] Numbers;
         static public UNote uPrev;
         static public UNote uNext;
@@ -107,7 +107,7 @@ namespace PianoRoll.Model
             stage = "Searching first note number";
             int firstNote = -1;
             if (hasPrev) firstNote = NoteNumber2Number(sections[4]);
-            else firstNote = NoteNumber2Number(sections[3]);            
+            else firstNote = NoteNumber2Number(sections[3]);
 
             for (int i = 0; i < NotesCount; i++)
             {
@@ -165,7 +165,7 @@ namespace PianoRoll.Model
             }
             note.UNumber = number;
             note.AbsoluteTime = absoluteTime;
-            absoluteTime += (long) note.Length;
+            absoluteTime += (long)note.Length;
 
             return note;
         }
@@ -243,7 +243,7 @@ namespace PianoRoll.Model
             // Merge all notes to 1
 
             UNote NewNote = uNotes[Numbers[0]].Copy();
-            string NewNumber = $"[#{Numbers.First().Substring(2,4)}-{Numbers.Last().Substring(2, 4)}]";
+            string NewNumber = $"[#{Numbers.First().Substring(2, 4)}-{Numbers.Last().Substring(2, 4)}]";
             List<string> lyrics = new List<string> { };
             List<int> length = new List<int> { };
 
@@ -277,7 +277,7 @@ namespace PianoRoll.Model
 
         public static void InsertNote(string number, string lyric, Insert insert = Insert.Before)
         {
-            string newNumber = UpgradeNumber(number, 0, 10, insert:insert);
+            string newNumber = UpgradeNumber(number, 0, 10, insert: insert);
             List<string> listNumbers = Numbers.ToList();
             int newIndex = listNumbers.IndexOf(number);
             listNumbers.Insert(newIndex + 1, newNumber);
@@ -372,12 +372,12 @@ namespace PianoRoll.Model
 
         public static string Number2NoteNumber(int i)
         {
-            return $"[#{i.ToString().PadLeft(4,'0')}]";
+            return $"[#{i.ToString().PadLeft(4, '0')}]";
         }
 
         public static int NoteNumber2Number(string number)
         {
-            return int.Parse(number.Substring(2,4));
+            return int.Parse(number.Substring(2, 4));
         }
 
         public static bool IsSecondaryNumber(string number)
