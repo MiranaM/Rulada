@@ -31,6 +31,31 @@ namespace PianoRoll.View
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            LoadMidi();
+        }
+
+        private void ButtonUst_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUST();
+        }
+
+        private void MenuItemOpenUst_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUST();
+        }
+
+        private void MenuItemSave_Click(object sender, RoutedEventArgs e)
+        {
+            Save();
+        }
+
+        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
+        {
+            Exit();
+        }
+
+        private void LoadMidi()
+        {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "MIDI Files (*.mid)|*.mid|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
@@ -41,8 +66,9 @@ namespace PianoRoll.View
             }
         }
 
-        private void ButtonUst_Click(object sender, RoutedEventArgs e)
+        private void LoadUST()
         {
+
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "UST Files (*.ust)|*.ust|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
@@ -50,7 +76,19 @@ namespace PianoRoll.View
             {
                 Ust ust = new Ust(openFileDialog.FileName);
                 this.PianoRollControl.UNotes = Ust.NotesList;
+                scrollViewer.ScrollToVerticalOffset(540);
             }
+
+        }
+
+        private void Save()
+        {
+
+        }
+
+        private void Exit()
+        {
+
         }
     }
 }

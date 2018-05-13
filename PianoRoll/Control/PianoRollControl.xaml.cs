@@ -53,6 +53,7 @@ namespace PianoRoll.Control
                 DeltaTicksPerQuarterNote = value.DeltaTicksPerQuarterNote;
                 midiEvents = value;
                 DrawMidi();
+                Resize();
                 CreateBackgroundCanvas();
                 DrawGrid();
             }
@@ -70,6 +71,7 @@ namespace PianoRoll.Control
                 // a quarter note is 20 units wide
                 uNotes = value;
                 DrawUst();
+                Resize();
                 CreateBackgroundCanvas();
                 DrawGrid();
             }
@@ -77,6 +79,7 @@ namespace PianoRoll.Control
 
         public void Resize()
         {
+            xScale = (80.0 / DeltaTicksPerQuarterNote);
             this.Width = lastPosition * xScale;
             this.Height = 128 * yScale;
         }
@@ -91,7 +94,6 @@ namespace PianoRoll.Control
 
         public void DrawMidi()
         {
-            xScale = (20.0 / DeltaTicksPerQuarterNote);
             NoteCanvas.Children.Clear();
             lastPosition = 0;
 
@@ -112,13 +114,11 @@ namespace PianoRoll.Control
                     }
                 }
             }
-            Resize();
         }
 
 
         public void DrawUst()
         {
-            xScale = (80.0 / DeltaTicksPerQuarterNote);
             NoteCanvas.Children.Clear();
             lastPosition = 0;
 
@@ -133,7 +133,6 @@ namespace PianoRoll.Control
                 }
 
             }
-            Resize();
         }
 
 

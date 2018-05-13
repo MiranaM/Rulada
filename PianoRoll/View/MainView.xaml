@@ -6,17 +6,25 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:PianoRoll"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    Title="MainWindow"
+    Title="Roulade"
     Width="900"
     Height="550"
+    WindowStartupLocation="CenterScreen"
+    WindowState="Maximized"
     mc:Ignorable="d">
     <Grid>
         <ScrollViewer
-            Name="scrollViewer1"
-            Margin="0,0,0,40"
+            Name="scrollViewer"
+            Margin="5,25,5,140"
             Background="AliceBlue"
-            HorizontalScrollBarVisibility="Auto"
-            VerticalScrollBarVisibility="Auto">
+            BorderThickness="1"
+            HorizontalScrollBarVisibility="Visible">
+            <ScrollViewer.Foreground>
+                <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                    <GradientStop Offset="0" Color="#FF323042" />
+                    <GradientStop Offset="1" Color="#FF767489" />
+                </LinearGradientBrush>
+            </ScrollViewer.Foreground>
             <control:PianoRollControl
                 x:Name="PianoRollControl"
                 Width="Auto"
@@ -31,7 +39,8 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Bottom"
             Click="Button_Click"
-            Content="Load Midi" />
+            Content="Load Midi"
+            Visibility="Hidden" />
         <Button
             Width="87"
             Height="25"
@@ -39,6 +48,20 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Bottom"
             Click="ButtonUst_Click"
-            Content="Load Ust" />
+            Content="Load Ust"
+            Visibility="Hidden" />
+        <Menu
+            Width="Auto"
+            Height="20"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Background="#FFA9D1F4"
+            DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Click="MenuItemOpenUst_Click" Header="_Open UST" />
+                <MenuItem Click="MenuItemExit_Click" Header="_Exit" />
+                <MenuItem Click="MenuItemSave_Click" Header="_Save" />
+            </MenuItem>
+        </Menu>
     </Grid>
 </Window>
