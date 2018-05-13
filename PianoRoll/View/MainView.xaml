@@ -1,0 +1,44 @@
+﻿<Window
+    x:Class="PianoRoll.View.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:control="clr-namespace:PianoRoll.Control"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PianoRoll"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="MainWindow"
+    Width="900"
+    Height="550"
+    mc:Ignorable="d">
+    <Grid>
+        <ScrollViewer
+            Name="scrollViewer1"
+            Margin="0,0,0,40"
+            Background="AliceBlue"
+            HorizontalScrollBarVisibility="Auto"
+            VerticalScrollBarVisibility="Auto">
+            <control:PianoRollControl
+                x:Name="PianoRollControl"
+                Width="Auto"
+                Height="Auto"
+                Background="#FFEBEDEE" />
+        </ScrollViewer>
+
+        <Button
+            Width="87"
+            Height="25"
+            Margin="10,0,0,10"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Click="Button_Click"
+            Content="Load Midi" />
+        <Button
+            Width="87"
+            Height="25"
+            Margin="102,0,0,10"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Bottom"
+            Click="ButtonUst_Click"
+            Content="Load Ust" />
+    </Grid>
+</Window>
