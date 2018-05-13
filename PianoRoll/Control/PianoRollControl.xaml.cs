@@ -23,7 +23,7 @@ namespace PianoRoll.Control
     {
 
         MidiEventCollection midiEvents;
-        private UNote[] uNotes;
+        private List<UNote> uNotes;
         double xScale = 1.0 / 10;
         double yScale = 15;
         private long lastPosition = 9598;
@@ -59,7 +59,7 @@ namespace PianoRoll.Control
             }
         }
 
-        public UNote[] UNotes
+        public List<UNote> UNotes
         {
             get
             {
@@ -116,7 +116,6 @@ namespace PianoRoll.Control
             }
         }
 
-
         public void DrawUst()
         {
             NoteCanvas.Children.Clear();
@@ -124,10 +123,12 @@ namespace PianoRoll.Control
 
             foreach (UNote note in uNotes)
             {
-                NoteControl noteControl = MakeNote(note.NoteNum, lastPosition, note.Length, note.Lyric);
+                NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
                 if (noteControl.Text != "")
                 {
+                    noteControl.note = note;
+                    noteControl.ChangedLyric += DrawUst;
                     noteControl.SetText(note.Lyric);
                     if (note.HasOto)
                     {
@@ -137,13 +138,13 @@ namespace PianoRoll.Control
                     {
                         noteControl.Background = new SolidColorBrush(System.Windows.Media.Colors.DarkOrange);
                         noteControl.ToolTip = "can't found source file";
-                    }
+                    }                    
                     NoteCanvas.Children.Add(noteControl);
                 }
+                
 
             }
         }
-
 
         private NoteControl MakeNote(int noteNumber, long startTime, int duration, string lyric)
         {
@@ -249,6 +250,14 @@ namespace PianoRoll.Control
                 GridCanvas.Children.Add(line);
                 beat++;
             }
+        }
+
+        private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Point currentMousePosition = e.GetPosition(RootCanvas);
+
+            
+            
         }
     }
 }

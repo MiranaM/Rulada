@@ -34,7 +34,7 @@ namespace PianoRoll.Model
         static public string[] Numbers;
         static public UNote uPrev;
         static public UNote uNext;
-        static public UNote[] NotesList;
+        static public List<UNote> NotesList = new List<UNote>();
         static public bool hasPrev = false;
         static public bool hasNext = false;
         static public string uVersion;
@@ -107,8 +107,7 @@ namespace PianoRoll.Model
             stage = "Searching first note number";
             int firstNote = -1;
             if (hasPrev) firstNote = NoteNumber2Number(sections[4]);
-            else firstNote = NoteNumber2Number(sections[3]);
-            NotesList = new UNote[NotesCount];
+            else firstNote = NoteNumber2Number(sections[3]);            
 
             for (int i = 0; i < NotesCount; i++)
             {
@@ -116,7 +115,7 @@ namespace PianoRoll.Model
                 UNote note = NoteRead(data, (i + firstNote).ToString(), ref absoluteTime, out string number);
                 uNotes[number] = note;
                 Numbers[i] = number;
-                NotesList[i] = note;
+                NotesList.Add(note);
             }
 
             // Reading next

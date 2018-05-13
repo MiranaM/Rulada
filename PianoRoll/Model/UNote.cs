@@ -23,6 +23,7 @@ namespace PianoRoll.Model
 
     public class UNote
     {
+
         static public string[] Parameters =
         {
             "Length",
@@ -36,6 +37,7 @@ namespace PianoRoll.Model
             "PBW",
             "PBS"
         };
+
         private Dictionary<string, dynamic> OtherParameters = new Dictionary<string, dynamic> { };
         private Dictionary<string, dynamic> AliasParameters = new Dictionary<string, dynamic> { };
         public int Length;

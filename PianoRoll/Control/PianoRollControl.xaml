@@ -19,7 +19,8 @@
         <Canvas
             x:Name="RootCanvas"
             Grid.Column="1"
-            Background="White">
+            Background="White"
+            MouseLeftButtonUp="RootCanvas_MouseLeftButtonUp">
             <Canvas x:Name="NoteBackgroundCanvas">
                 <Canvas.RenderTransform>
                     <ScaleTransform

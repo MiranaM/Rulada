@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PianoRoll.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,12 +21,21 @@ namespace PianoRoll.Control
     /// </summary>
     public partial class NoteControl : UserControl
     {
+        public delegate void RedrawUst();
+
+        public event RedrawUst ChangedLyric;
+
         public string Text { get; set; }
 
+        //public ref UNoteRef;
+        
         public NoteControl()
         {
             InitializeComponent();
         }
+
+        public UNote note;
+
 
         //зафиксить текст _l
         public void SetText (string _l)
@@ -33,6 +43,13 @@ namespace PianoRoll.Control
             Text = _l;
             this.Lyric.Content = Text;
             this.EditLyric.Text = Text;
+            note.Lyric = Text;
+            note.Oto = USinger.FindOto(Text);            
+        }
+
+        private void DrawUstAgain(object sender)
+        {
+
         }
 
         private void Lyric_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -46,7 +63,14 @@ namespace PianoRoll.Control
             {                
                 SetText(this.EditLyric.Text);
                 this.EditLyric.Visibility = Visibility.Hidden;
+                ChangedLyric();
             }
+        }
+
+        private void Lyric_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Ust.NotesList.Remove(note);
+            ChangedLyric();
         }
     }
 }

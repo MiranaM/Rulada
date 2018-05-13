@@ -27,8 +27,8 @@
             </ScrollViewer.Foreground>
             <control:PianoRollControl
                 x:Name="PianoRollControl"
-                Width="Auto"
-                Height="Auto"
+                Width="882"
+                Height="354"
                 Background="#FFEBEDEE" />
         </ScrollViewer>
 
