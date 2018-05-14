@@ -10,7 +10,7 @@
     mc:Ignorable="d">
     <ScrollViewer
         Name="scrollViewer"
-        Margin="5"
+        Margin="0"
         BorderThickness="1"
         HorizontalScrollBarVisibility="Visible">
         <ScrollViewer.Foreground>
@@ -21,8 +21,8 @@
         </ScrollViewer.Foreground>
         <Grid Name="PianoRollGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="43" />
-                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="40" />
+                <ColumnDefinition Width="1000*" />
             </Grid.ColumnDefinitions>
 
             <Canvas
@@ -34,8 +34,8 @@
             <Canvas
                 x:Name="RootCanvas"
                 Grid.Column="1"
-                Margin="0,0,0,0"
-                Background="White"
+                Margin="0"
+                Background="#FFEEEEEE"
                 MouseLeftButtonUp="RootCanvas_MouseLeftButtonUp">
                 <Canvas x:Name="NoteBackgroundCanvas">
                     <Canvas.RenderTransform>
@@ -45,9 +45,9 @@
                             ScaleY="1" />
                     </Canvas.RenderTransform>
                 </Canvas>
-                <Canvas x:Name="GridCanvas" />
-                <Canvas x:Name="NoteCanvas" />
-                <Canvas x:Name="PitchCanvas" />
+                <Canvas x:Name="GridCanvas" Margin="0" />
+                <Canvas x:Name="NoteCanvas" Margin="0" />
+                <Canvas x:Name="PitchCanvas" Margin="0" />
             </Canvas>
         </Grid>
     </ScrollViewer>
