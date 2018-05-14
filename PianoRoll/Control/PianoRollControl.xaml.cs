@@ -25,10 +25,11 @@ namespace PianoRoll.Control
         private List<UNote> uNotes;
         double xScale = 1.0 / 10;
         double yScale = 15;
-        private long lastPosition = 9598;
+        private long lastPosition;
         public int MaxDivider = 4;
         public bool doSnap = true;
         public int octaves = 7;
+        private int minBars = 4;
 
         SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
         SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
@@ -59,14 +60,13 @@ namespace PianoRoll.Control
         public void Resize()
         {
             xScale = (80.0 / Settings.Resolution);
-            PianoRollGrid.Width = lastPosition * xScale;
-            PianoRollGrid.Height = octaves * 12 * yScale;
-            RootCanvas.Width = PianoRollGrid.Width;
-            RootCanvas.Height = PianoRollGrid.Height;
+            RootCanvas.Width = lastPosition * xScale;
+            RootCanvas.Height = octaves * 12 * yScale;
         }
 
         public void DrawInit()
         {
+            lastPosition = Settings.Resolution * Settings.BeatPerBar * minBars;
             Resize();
             DrawGrid();
             CreatePiano();
@@ -192,7 +192,7 @@ namespace PianoRoll.Control
                 {
                     Rectangle rect = new Rectangle();
                     rect.Height = yScale;
-                    rect.Width = PianoRollGrid.Width;
+                    rect.Width = RootCanvas.Width;
                     rect.Fill = blackNoteChannelBrush;
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     NoteBackgroundCanvas.Children.Add(rect);
@@ -202,7 +202,7 @@ namespace PianoRoll.Control
             {
                 Line line = new Line();
                 line.X1 = 0;
-                line.X2 = PianoRollGrid.Width;
+                line.X2 = RootCanvas.Width;
                 line.Y1 = GetNoteYPosition(note);
                 line.Y2 = GetNoteYPosition(note);
                 line.Stroke = noteSeparatorBrush;
