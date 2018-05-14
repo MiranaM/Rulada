@@ -65,6 +65,7 @@ namespace PianoRoll.Control
         {
             Resize();
             DrawGrid();
+            CreatePiano();
             CreateBackgroundCanvas();
         }
 
@@ -200,5 +201,37 @@ namespace PianoRoll.Control
             USinger.NoteOtoRefresh();
             DrawUst();
         }
+
+        private void CreatePiano()
+        {
+            
+            for (int note = 0; note < 127; note++)
+            {
+                if ((note % 12 == 1) // C#
+                 || (note % 12 == 3) // E#
+                 || (note % 12 == 6) // F#
+                 || (note % 12 == 8) // G#
+                 || (note % 12 == 10)) // A#
+                {
+                    Rectangle rect = new Rectangle();
+                    rect.Height = yScale;
+                    rect.Width = Piano.Width;
+                    rect.Fill = blackNoteChannelBrush;
+                    rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
+                    Piano.Children.Add(rect);
+                }
+            }
+            for (int note = 0; note < 128; note++)
+            {
+                Line line = new Line();
+                line.X1 = 0;
+                line.X2 = Piano.Width;
+                line.Y1 = GetNoteYPosition(note);
+                line.Y2 = GetNoteYPosition(note);
+                line.Stroke = noteSeparatorBrush;
+                Piano.Children.Add(line);
+            }
+        }
+
     }
 }

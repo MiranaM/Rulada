@@ -11,7 +11,6 @@
     <ScrollViewer
         Name="scrollViewer"
         Margin="5"
-        Background="AliceBlue"
         BorderThickness="1"
         HorizontalScrollBarVisibility="Visible">
         <ScrollViewer.Foreground>
@@ -22,15 +21,20 @@
         </ScrollViewer.Foreground>
         <Grid Name="PianoRollGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="11*" />
-                <ColumnDefinition Width="189*" />
+                <ColumnDefinition Width="43" />
+                <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <Canvas Grid.Column="0" />
+            <Canvas
+                x:Name="Piano"
+                Grid.Column="0"
+                Width="43"
+                Background="#FFEEEEEE" />
 
             <Canvas
                 x:Name="RootCanvas"
                 Grid.Column="1"
+                Margin="0,0,0,0"
                 Background="White"
                 MouseLeftButtonUp="RootCanvas_MouseLeftButtonUp">
                 <Canvas x:Name="NoteBackgroundCanvas">
