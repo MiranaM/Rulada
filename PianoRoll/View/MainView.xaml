@@ -12,20 +12,26 @@
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
     mc:Ignorable="d">
-    <Grid>
+    <Grid Background="#FFECECEC">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="464*" />
+            <RowDefinition Height="60" />
+        </Grid.RowDefinitions>
 
         <control:PianoRollControl
             x:Name="PianoRollControl"
-            Margin="0,20,0,100"
-            Background="#FFEBEDEE"
+            Grid.Row="2"
+            Margin="5"
+            Background="#FF001122"
             MouseMove="PianoRollControl_MouseMove" />
         <Menu
-            Width="Auto"
+            Width="131"
             Height="20"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Background="#FFA9D1F4"
-            DockPanel.Dock="Top">
+            Background="#00A9D1F4">
             <MenuItem Header="_File">
                 <MenuItem Click="MenuItemOpenUst_Click" Header="_Open UST" />
                 <MenuItem Click="MenuItemExit_Click" Header="_Exit" />
@@ -39,11 +45,25 @@
         </Menu>
         <Label
             x:Name="CursorTrack"
+            Grid.RowSpan="2"
             Width="109"
             Height="35"
             Margin="130,-5,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Content="sdsd" />
+            Content="sdsd"
+            Visibility="Hidden" />
+        <ToolBarPanel Grid.Row="1" Background="#FF001122">
+            <Border
+                Width="120"
+                Height="30"
+                Margin="5"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center">
+                <Label Content="AAAAAAAAA" Foreground="#FFFFFF" />
+
+            </Border>
+        </ToolBarPanel>
+
     </Grid>
 </Window>
