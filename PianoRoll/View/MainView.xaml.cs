@@ -30,16 +30,6 @@ namespace PianoRoll.View
         }
 
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            LoadMidi();
-        }
-
-        private void ButtonUst_Click(object sender, RoutedEventArgs e)
-        {
-            LoadUST();
-        }
-
         private void MenuItemOpenUst_Click(object sender, RoutedEventArgs e)
         {
             LoadUST();
@@ -70,17 +60,6 @@ namespace PianoRoll.View
             Render.Stop();
         }
 
-        private void LoadMidi()
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "MIDI Files (*.mid)|*.mid|All Files (*.*)|*.*";
-            openFileDialog.FilterIndex = 1;
-            if (openFileDialog.ShowDialog().Value)
-            {
-                MidiFile midiFile = new MidiFile(openFileDialog.FileName);
-                this.PianoRollControl.MidiEvents = midiFile.Events;
-            }
-        }
 
         private void LoadUST()
         {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.IO;
+using PianoRoll.Util;
 
 namespace PianoRoll.Model
 {
@@ -137,8 +138,6 @@ namespace PianoRoll.Model
             uDefaultNote.Intensity = 100;
             uDefaultNote.Modulation = 0;
             uDefaultNote.Set("Envelope", "0,21,35,0,100,100,0,%,0");
-            uDefaultNote.PBS = "-40";
-            uDefaultNote.PBW = "80";
         }
 
         private static UNote NoteRead(dynamic data, string which, ref long absoluteTime, out string number)
@@ -154,6 +153,7 @@ namespace PianoRoll.Model
             }
 
             UNote note = new UNote();
+            note.Vibrato = new VibratoExpression(note);
             note.SetDefaultNoteSettings();
             int i = 0;
             Console.WriteLine($"Setting values for note {number}");
@@ -166,8 +166,10 @@ namespace PianoRoll.Model
             }
             note.UNumber = number;
             note.AbsoluteTime = absoluteTime;
+            note.RequiredLength = Math.Ceiling((double) note.Length / 50 + 1) * 50;
             absoluteTime += (long)note.Length;
-
+            if (data.ContainsKey("VBR")) note.Vibrato = UPitch.VibratoFromUst(data[number]["VBR"], note);
+            UPitch.PitchFromUst(data[number], ref note);
             return note;
         }
 
@@ -436,6 +438,36 @@ namespace PianoRoll.Model
                     break;
             }
             return $"{note}{octave}";
+        }
+
+        public static List<UNote> GetSortedNotes()
+        {
+            return NotesList.OrderBy(n => n.AbsoluteTime).ToList();
+        }
+
+        public static UNote GetPrevNote(UNote note)
+        {
+            List<UNote> notes = GetSortedNotes();
+            int i = notes.IndexOf(note);
+            return NotesList[i - 1];
+        }
+
+        public static UNote GetNextNote(UNote note)
+        {
+            List<UNote> notes = GetSortedNotes();
+            int i = notes.IndexOf(note);
+            return NotesList[i + 1];
+        }
+
+
+        public static long MillisecondToTick(double ms)
+        {
+            return MusicMath.MillisecondToTick(ms, Settings.Tempo, Settings.BeatUnit, Settings.Resolution);
+        }
+
+        public static double TickToMillisecond(long tick)
+        {
+            return MusicMath.TickToMillisecond(tick, Settings.Tempo, Settings.BeatUnit, Settings.Resolution);
         }
     }
 }

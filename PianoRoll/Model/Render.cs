@@ -63,13 +63,13 @@ namespace PianoRoll.Model
                 note.Velocity,
                 "g-5", //note.Flags,
                 note.Oto.Offset,
-                note.RequiredLength,
+                (int)note.RequiredLength,
                 note.Oto.Consonant,
                 note.Oto.Cutoff,
                 note.Volume,
                 0, // modulation
                 note.NoteNum,
-                "+c#24#+f+p+3/J/c/s/5//AA#17#" //Pitch.BuildPitchData(note)
+                UPitch.BuildPitchData(note) // "+c#24#+f+p+3/J/c/s/5//AA#17#"
             );
             string request = $"\"{Settings.Resampler}\" \"{Path.Combine(USinger.UPath,note.Oto.File)}\" \"{tempfilename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);

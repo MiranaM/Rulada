@@ -17,5 +17,8 @@ namespace PianoRoll
         public static string Output = Path.Combine(Path.GetTempPath(), @"Rulada\output.wav");
         //public static string Output = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\output.wav");
         public static double Tempo = 120.0;
+        public static int Resolution = 480;
+        public static int BeatPerBar = 4;
+        public static int BeatUnit = 4;
     }
 }

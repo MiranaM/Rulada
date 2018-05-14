@@ -28,7 +28,8 @@
             Content="dsadas"
             FontSize="12"
             Foreground="#FFC6F2FF"
-            MouseDoubleClick="Lyric_MouseDoubleClick" MouseRightButtonDown="Lyric_MouseRightButtonDown" />
+            MouseDoubleClick="Lyric_MouseDoubleClick"
+            MouseRightButtonDown="Lyric_MouseRightButtonDown" />
         <TextBox
             x:Name="EditLyric"
             Width="60"

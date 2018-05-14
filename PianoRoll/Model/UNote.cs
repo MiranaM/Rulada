@@ -9,16 +9,16 @@ namespace PianoRoll.Model
 {
     public struct UEnvelope
     {
-        public int p1;
-        public int p2;
-        public int p3;
-        public int p4;
-        public int p5;
-        public int v1;
-        public int v2;
-        public int v3;
-        public int v4;
-        public int v5;
+        public double p1;
+        public double p2;
+        public double p3;
+        public double p4;
+        public double p5;
+        public double v1;
+        public double v2;
+        public double v3;
+        public double v4;
+        public double v5;
     }
 
     public class UNote
@@ -33,9 +33,7 @@ namespace PianoRoll.Model
             "Intensity",
             "Modulation",
             "Flags",
-            "Envelope",
-            "PBW",
-            "PBS"
+            "Envelope"
         };
 
         private Dictionary<string, dynamic> OtherParameters = new Dictionary<string, dynamic> { };
@@ -48,19 +46,13 @@ namespace PianoRoll.Model
         public int Modulation;
         public string Flags;
         public UEnvelope Envelope;
-        public string PBW;
-        public string PBS;
+        public PitchBendExpression PitchBend;
+        public VibratoExpression Vibrato;
         public string UNumber;
         public long AbsoluteTime;
         public int Volume = 80;
         public UOto Oto { get; set; }
-        public int RequiredLength
-        {
-            get
-            {
-                return this.Length;
-            }
-        }
+        public double RequiredLength { get; set; }
         public bool HasOto = false;
 
         private List<string> GotParameters = new List<string> { };
@@ -96,21 +88,26 @@ namespace PianoRoll.Model
                     break;
                 case "Envelope":
                     string[] ops = value.Split(',');
-                    this.Envelope.p1 = int.Parse(ops[0]);
-                    this.Envelope.p2 = int.Parse(ops[1]);
-                    this.Envelope.p3 = int.Parse(ops[2]);
-                    this.Envelope.v1 = int.Parse(ops[3]);
-                    this.Envelope.v2 = int.Parse(ops[4]);
-                    this.Envelope.v3 = int.Parse(ops[5]);
-                    this.Envelope.v4 = int.Parse(ops[6]);
+                    this.Envelope.p1 = double.Parse(ops[0]);
+                    this.Envelope.p2 = double.Parse(ops[1]);
+                    this.Envelope.p3 = double.Parse(ops[2]);
+                    this.Envelope.v1 = double.Parse(ops[3]);
+                    this.Envelope.v2 = double.Parse(ops[4]);
+                    this.Envelope.v3 = double.Parse(ops[5]);
+                    this.Envelope.v4 = double.Parse(ops[6]);
                     // 7 -- %
-                    this.Envelope.p4 = int.Parse(ops[8]);
-                    this.Envelope.p5 = ops.Length > 9 ? int.Parse(ops[9]) : 0;
-                    this.Envelope.v5 = ops.Length > 9 ? int.Parse(ops[10]) : 100;
+                    this.Envelope.p4 = double.Parse(ops[8]);
+                    this.Envelope.p5 = ops.Length > 9 ? double.Parse(ops[9]) : 0;
+                    this.Envelope.v5 = ops.Length > 9 ? double.Parse(ops[10]) : 100;
+                    break;
+                case "VBR":
+                    break;
+                case "PBS":
+                case "PBW":
+                case "PBY":
+                case "PBM":
                     break;
                 case "Flags":
-                case "PBW":
-                case "PBS":
                     this[parameter] = value;
                     break;
                 default:
@@ -261,8 +258,7 @@ namespace PianoRoll.Model
             Intensity = Ust.uDefaultNote.Intensity;
             Modulation = Ust.uDefaultNote.Modulation;
             Envelope = Ust.uDefaultNote.Envelope;
-            this["PBS"] = Ust.uDefaultNote.PBS;
-            this["PBW"] = Ust.uDefaultNote.PBW;
+            PitchBend = Ust.uDefaultNote.PitchBend;
         }
 
         public void ResetAlias()

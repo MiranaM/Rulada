@@ -74,6 +74,8 @@
     </ApplicationDefinition>
     <Compile Include="Model\Render.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Util\Base64.cs" />
+    <Compile Include="Util\MusicMath.cs" />
     <Compile Include="View\SingerDialog.xaml.cs">
       <DependentUpon>SingerDialog.xaml</DependentUpon>
     </Compile>
@@ -142,6 +144,8 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Image\avatar.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
