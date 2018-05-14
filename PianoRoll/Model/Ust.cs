@@ -45,8 +45,8 @@ namespace PianoRoll.Model
         public static void Load(string dir)
         {
             Dir = dir;
-            Open();
             SetDefaultNoteSettings();
+            Open();
         }
 
         private static void Open()
@@ -154,6 +154,7 @@ namespace PianoRoll.Model
             }
 
             UNote note = new UNote();
+            note.SetDefaultNoteSettings();
             int i = 0;
             Console.WriteLine($"Setting values for note {number}");
             foreach (string parameter in data[number].Keys)
@@ -389,6 +390,52 @@ namespace PianoRoll.Model
         {
             if (number == "[#NEXT]") uNext.ResetAlias();
             else uNotes[number].ResetAlias();
+        }
+
+        public static string NoteNum2String(int noteNum)
+        {
+            int octave = noteNum / 12 - 1;
+            string note;
+            switch (11 - noteNum % 12)
+            {
+                case 0:
+                    note = "B";
+                    break;
+                case 1:
+                    note = "A#";
+                    break;
+                case 2:
+                    note = "A";
+                    break;
+                case 3:
+                    note = "G#";
+                    break;
+                case 4:
+                    note = "G";
+                    break;
+                case 5:
+                    note = "F#";
+                    break;
+                case 6:
+                    note = "F";
+                    break;
+                case 7:
+                    note = "E";
+                    break;
+                case 8:
+                    note = "D#";
+                    break;
+                case 9:
+                    note = "D";
+                    break;
+                case 10:
+                    note = "C#";
+                    break;
+                default:
+                    note = "C";
+                    break;
+            }
+            return $"{note}{octave}";
         }
     }
 }

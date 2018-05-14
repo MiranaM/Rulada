@@ -229,7 +229,7 @@ namespace PianoRoll.Model
                     this[parameter] = "";
                     break;
                 case "Envelope":
-                    this[parameter] = new string[] { };
+                    this[parameter] = new UEnvelope { };
                     break;
                 default:
                     Set(parameter, "");
@@ -258,9 +258,9 @@ namespace PianoRoll.Model
         public void SetDefaultNoteSettings()
         {
             // We will apply this to "r" note which we won't consider Rest
-            this["Intensity"] = Ust.uDefaultNote.Intensity;
-            this["Modulation"] = Ust.uDefaultNote.Modulation;
-            this["Envelope"] = Ust.uDefaultNote.Envelope;
+            Intensity = Ust.uDefaultNote.Intensity;
+            Modulation = Ust.uDefaultNote.Modulation;
+            Envelope = Ust.uDefaultNote.Envelope;
             this["PBS"] = Ust.uDefaultNote.PBS;
             this["PBW"] = Ust.uDefaultNote.PBW;
         }

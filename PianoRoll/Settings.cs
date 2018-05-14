@@ -14,7 +14,8 @@ namespace PianoRoll
         public static string Resampler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\m4.exe");
         public static string CacheFolder = Path.Combine(Path.GetTempPath(), @"Rulada\Cache\");
         public static string Bat = Path.Combine(Path.GetTempPath(), @"Rulada\render.bat");
-        public static string Output = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\output.wav");
+        public static string Output = Path.Combine(Path.GetTempPath(), @"Rulada\output.wav");
+        //public static string Output = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\output.wav");
         public static double Tempo = 120.0;
     }
 }
