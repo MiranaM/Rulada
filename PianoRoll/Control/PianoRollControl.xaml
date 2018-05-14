@@ -19,7 +19,7 @@
                 <GradientStop Offset="1" Color="#FF767489" />
             </LinearGradientBrush>
         </ScrollViewer.Foreground>
-        <Grid Name="PianoRollGrid">
+        <Grid Name="PianoRollGrid" HorizontalAlignment="Left">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="1000*" />

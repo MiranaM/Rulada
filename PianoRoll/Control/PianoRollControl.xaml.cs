@@ -13,6 +13,7 @@ using NAudio;
 using NAudio.Midi;
 using PianoRoll.Control;
 using PianoRoll.Model;
+using PianoRoll.Util;
 
 namespace PianoRoll.Control
 {
@@ -31,12 +32,12 @@ namespace PianoRoll.Control
         public int octaves = 7;
         private int minBars = 4;
 
-        SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
-        SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
+        //SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
+        //SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
 
-        SolidColorBrush measureSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);
-        SolidColorBrush beatSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
-        SolidColorBrush pitchBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCoral);
+        //SolidColorBrush measureSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);
+        //SolidColorBrush beatSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
+        //SolidColorBrush pitchBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCoral);
 
         public PianoRollControl()
         {
@@ -115,7 +116,7 @@ namespace PianoRoll.Control
 
             Path pitchPath = new Path()
             {
-                Stroke = pitchBrush,
+                Stroke = Themes.pitchBrush,
                 StrokeThickness = 2,
                 Data = Geometry.Parse(pitchSource)
             };
@@ -193,7 +194,7 @@ namespace PianoRoll.Control
                     Rectangle rect = new Rectangle();
                     rect.Height = yScale;
                     rect.Width = RootCanvas.Width;
-                    rect.Fill = blackNoteChannelBrush;
+                    rect.Fill = Themes.blackNoteChannelBrush;
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     NoteBackgroundCanvas.Children.Add(rect);
                 }
@@ -205,7 +206,7 @@ namespace PianoRoll.Control
                 line.X2 = RootCanvas.Width;
                 line.Y1 = GetNoteYPosition(note);
                 line.Y2 = GetNoteYPosition(note);
-                line.Stroke = noteSeparatorBrush;
+                line.Stroke = Themes.noteSeparatorBrush;
                 NoteBackgroundCanvas.Children.Add(line);
             }
         }
@@ -223,11 +224,11 @@ namespace PianoRoll.Control
                 line.Y2 = octaves * 12 * yScale;
                 if (beat % 4 == 0)
                 {
-                    line.Stroke = measureSeparatorBrush;
+                    line.Stroke = Themes.measureSeparatorBrush;
                 }
                 else
                 {
-                    line.Stroke = beatSeparatorBrush;
+                    line.Stroke = Themes.beatSeparatorBrush;
                 }
                 GridCanvas.Children.Add(line);
                 beat++;
@@ -272,13 +273,14 @@ namespace PianoRoll.Control
                     Rectangle rect = new Rectangle();
                     rect.Height = yScale;
                     rect.Width = Piano.Width;
-                    rect.Fill = blackNoteChannelBrush;
+                    rect.Fill = Themes.pianoBlackNote;
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     Piano.Children.Add(rect);
                 }
                 Label label = new Label();
                 string noteName = Ust.NoteNum2String(note);
                 label.Content = noteName;
+                label.Foreground = Themes.pianoNoteNames;
                 label.SetValue(Canvas.TopProperty, GetNoteYPosition(note) - 6);
                 Console.WriteLine(label.Content);
                 Piano.Children.Add(label);
@@ -291,7 +293,7 @@ namespace PianoRoll.Control
                 line.X2 = Piano.Width;
                 line.Y1 = GetNoteYPosition(note);
                 line.Y2 = GetNoteYPosition(note);
-                line.Stroke = noteSeparatorBrush;
+                line.Stroke = Themes.pianoBlackNote;
                 Piano.Children.Add(line);
             }
         }

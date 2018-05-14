@@ -76,6 +76,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Util\Base64.cs" />
     <Compile Include="Util\MusicMath.cs" />
+    <Compile Include="Util\Themes.cs" />
     <Compile Include="View\SingerDialog.xaml.cs">
       <DependentUpon>SingerDialog.xaml</DependentUpon>
     </Compile>
