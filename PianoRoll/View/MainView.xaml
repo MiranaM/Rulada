@@ -14,7 +14,7 @@
     mc:Ignorable="d">
     <Grid Background="#FFECECEC">
         <Grid.RowDefinitions>
-            <RowDefinition Height="20" />
+            <RowDefinition Height="20*" />
             <RowDefinition Height="35" />
             <RowDefinition Height="464*" />
             <RowDefinition Height="60" />

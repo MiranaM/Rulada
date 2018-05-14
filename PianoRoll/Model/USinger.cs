@@ -105,23 +105,29 @@ namespace PianoRoll.Model
 
         public static UOto FindOto(string lyric)
         {
-            foreach (UOto uOto in Otos)
+            if (USinger.isEnabled)
             {
-                if (uOto.Alias == lyric)
+
+                foreach (UOto uOto in Otos)
                 {
-                    return uOto;
+                    if (uOto.Alias == lyric)
+                    {
+                        return uOto;
+                    }
                 }
+                return new UOto()
+                {
+                    File = $"{lyric}.wav",
+                    Alias = "",
+                    Offset = 0,
+                    Consonant = 0,
+                    Cutoff = 0,
+                    Preutter = 0,
+                    Overlap = 0
+                };
+
             }
-            return new UOto()
-            {
-                File = $"{lyric}.wav",
-                Alias = "",
-                Offset = 0,
-                Consonant = 0,
-                Cutoff = 0,
-                Preutter = 0,
-                Overlap = 0
-            };
+            return null;
         }
     }
 }
