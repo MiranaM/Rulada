@@ -19,12 +19,15 @@ namespace PianoRoll.Model
         public static string Readme { get; set; }
         public static List<string> Paths { get; set; }
         public static List<UOto> Otos { get; set; }
+        public static bool isEnabled { get; set; }
         
         public USinger() { }
 
         public static void Load(string dir)
         {
             UPath = dir.Replace("%VOICE%", Settings.VoiceDir);
+            isEnabled = File.Exists(Path.Combine(UPath, "oto.ini"));
+            if (!isEnabled) return;
             // Обработать отсутствие банка
             Paths = Directory.EnumerateDirectories(UPath).ToList();
             Paths.Add("");

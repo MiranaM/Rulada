@@ -31,8 +31,8 @@ namespace PianoRoll.Model
         static public string Text;
         static public Dictionary<string, string> uSettings = new Dictionary<string, string> { };
         static public UNote uDefaultNote = new UNote();
-        static public Dictionary<string, UNote> uNotes;
-        static public string[] Numbers;
+        //static public Dictionary<string, UNote> uNotes;
+        //static public string[] Numbers;
         static public UNote uPrev;
         static public UNote uNext;
         static public List<UNote> NotesList = new List<UNote>();
@@ -47,6 +47,7 @@ namespace PianoRoll.Model
         {
             Dir = dir;
             SetDefaultNoteSettings();
+            NotesList.Clear();
             Open();
         }
 
@@ -103,8 +104,8 @@ namespace PianoRoll.Model
 
             // Reading notes
             stage = "Notes";
-            uNotes = new Dictionary<string, UNote> { };
-            Numbers = new string[NotesCount];
+            //uNotes = new Dictionary<string, UNote> { };
+            //Numbers = new string[NotesCount];
             stage = "Searching first note number";
             int firstNote = -1;
             if (hasPrev) firstNote = NoteNumber2Number(sections[4]);
@@ -114,8 +115,8 @@ namespace PianoRoll.Model
             {
                 stage = $"Note: {i}";
                 UNote note = NoteRead(data, (i + firstNote).ToString(), ref absoluteTime, out string number);
-                uNotes[number] = note;
-                Numbers[i] = number;
+                //uNotes[number] = note;
+                //Numbers[i] = number;
                 NotesList.Add(note);
             }
 
@@ -162,6 +163,7 @@ namespace PianoRoll.Model
                 Console.WriteLine($"\tTrying set parameter  {parameter}");
                 var value = data[number][parameter];
                 note.Set(parameter, value);
+                note.isRest = note.Lyric == "";
                 i++;
             }
             note.UNumber = number;
@@ -192,10 +194,10 @@ namespace PianoRoll.Model
                     vartext.Add(line);
                 }
             }
-            foreach (string number in Numbers)
+            foreach (UNote note in NotesList)
             {
-                vartext.Add(number);
-                foreach (string line in uNotes[number].ToStrings())
+                vartext.Add(note.UNumber);
+                foreach (string line in note.ToStrings())
                 {
                     vartext.Add(line);
                 }
@@ -215,64 +217,63 @@ namespace PianoRoll.Model
             return text;
         }
 
-        public static void Split(string number)
-        {
-            // Bisect all notes 
-            Dictionary<string, UNote> NewNotes = new Dictionary<string, UNote> { };
-            List<string> NewNumbers = new List<string> { };
-            string initNumber = Ust.Numbers[0];
-            int i = 0;
-            string currentNumber;
-            UNote note = uNotes[number];
-            UNote noteN = note.Copy();
-            int initLength = note.Length;
-            note.Length = initLength * 2 / 3;
-            noteN.Length = initLength - note.Length;
-            noteN.SetDefaultNoteSettings();
+        //public static void Split(string number)
+        //{
+        //    // Bisect all notes 
+        //    Dictionary<string, UNote> NewNotes = new Dictionary<string, UNote> { };
+        //    List<string> NewNumbers = new List<string> { };
+        //    string initNumber = Ust.Numbers[0];
+        //    int i = 0;
+        //    string currentNumber;
+        //    UNote note = uNotes[number];
+        //    UNote noteN = note.Copy();
+        //    int initLength = note.Length;
+        //    note.Length = initLength * 2 / 3;
+        //    noteN.Length = initLength - note.Length;
+        //    noteN.SetDefaultNoteSettings();
 
-            currentNumber = UpgradeNumber(initNumber, i);
-            NewNumbers.Add(currentNumber);
-            NewNotes[currentNumber] = note;
+        //    currentNumber = UpgradeNumber(initNumber, i);
+        //    NewNumbers.Add(currentNumber);
+        //    NewNotes[currentNumber] = note;
 
-            currentNumber = UpgradeNumber(initNumber, i, 10);
-            NewNumbers.Add(currentNumber);
-            NewNotes[currentNumber] = noteN;
-            Ust.Numbers = NewNumbers.ToArray();
-            Ust.uNotes = NewNotes;
-        }
+        //    currentNumber = UpgradeNumber(initNumber, i, 10);
+        //    NewNumbers.Add(currentNumber);
+        //    NewNotes[currentNumber] = noteN;
+        //    Ust.Numbers = NewNumbers.ToArray();
+        //    Ust.uNotes = NewNotes;
+        //}
 
-        public static void Merge(List<string> numbers)
-        {
-            // Merge all notes to 1
+        //public static void Merge(List<string> numbers)
+        //{
+        //    // Merge all notes to 1
 
-            UNote NewNote = uNotes[Numbers[0]].Copy();
-            string NewNumber = $"[#{Numbers.First().Substring(2, 4)}-{Numbers.Last().Substring(2, 4)}]";
-            List<string> lyrics = new List<string> { };
-            List<int> length = new List<int> { };
+        //    UNote NewNote = uNotes[Numbers[0]].Copy();
+        //    string NewNumber = $"[#{Numbers.First().Substring(2, 4)}-{Numbers.Last().Substring(2, 4)}]";
+        //    List<string> lyrics = new List<string> { };
+        //    List<int> length = new List<int> { };
 
-            foreach (string number in numbers)
-            {
-                UNote note = uNotes[number];
-                lyrics.Add(note.Lyric);
-                length.Add(note.Length);
-                uNotes[number] = new UNote();
-            }
-            string NewLyric = String.Join(" ", lyrics);
-            int NewLength = length.Sum();
-            NewNote.Length = NewLength;
-            NewNote.Lyric = NewLyric;
+        //    foreach (string number in numbers)
+        //    {
+        //        UNote note = uNotes[number];
+        //        lyrics.Add(note.Lyric);
+        //        length.Add(note.Length);
+        //        uNotes[number] = new UNote();
+        //    }
+        //    string NewLyric = String.Join(" ", lyrics);
+        //    int NewLength = length.Sum();
+        //    NewNote.Length = NewLength;
+        //    NewNote.Lyric = NewLyric;
 
-            uNotes[NewNumber] = NewNote;
-            Numbers = new string[] { NewNumber };
+        //    uNotes[NewNumber] = NewNote;
+        //    Numbers = new string[] { NewNumber };
 
-        }
+        //}
 
         public static void SetLyric(string[] lyric)
         {
             int i = 0;
-            foreach (string number in Numbers)
+            foreach (UNote note in NotesList)
             {
-                UNote note = uNotes[number];
                 note.SetLyric(lyric[i]);
                 i++;
             }
@@ -280,25 +281,25 @@ namespace PianoRoll.Model
 
         public static void InsertNote(string number, string lyric, Insert insert = Insert.Before)
         {
-            string newNumber = UpgradeNumber(number, 0, 10, insert: insert);
-            List<string> listNumbers = Numbers.ToList();
-            int newIndex = listNumbers.IndexOf(number);
-            listNumbers.Insert(newIndex + 1, newNumber);
-            Ust.Numbers = listNumbers.ToArray();
+        //    string newNumber = UpgradeNumber(number, 0, 10, insert: insert);
+        //    List<string> listNumbers = Numbers.ToList();
+        //    int newIndex = listNumbers.IndexOf(number);
+        //    listNumbers.Insert(newIndex + 1, newNumber);
+        //    Ust.Numbers = listNumbers.ToArray();
 
-            UNote notePrev = uNotes[number];
-            UNote noteN = notePrev.Copy();
-            noteN.Lyric = lyric;
-            int len = GetLength(lyric);
-            if (len > notePrev.Length)
-            {
-                // note length is too small
-                return;
-            }
-            noteN.Length = len;
-            notePrev.Length -= noteN.Length;
+        //    UNote notePrev = uNotes[number];
+        //    UNote noteN = notePrev.Copy();
+        //    noteN.Lyric = lyric;
+        //    int len = GetLength(lyric);
+        //    if (len > notePrev.Length)
+        //    {
+        //        // note length is too small
+        //        return;
+        //    }
+        //    noteN.Length = len;
+        //    notePrev.Length -= noteN.Length;
 
-            uNotes[newNumber] = noteN;
+        //    uNotes[newNumber] = noteN;
         }
 
         public static int GetLength(string lyric)
@@ -330,13 +331,6 @@ namespace PianoRoll.Model
             if (hasNext && hasPrev) SetLyricNext(otherLyric);
             else if (hasPrev) SetLyricPrev(otherLyric);
             else if (hasNext) SetLyricNext(otherLyric);
-        }
-
-        public static void SetLyric(string number, string lyric)
-        {
-            if (number == "[#PREV]") SetLyricPrev(lyric);
-            else if (number == "[#NEXT]") SetLyricNext(lyric);
-            else uNotes[number].Lyric = lyric;
         }
 
         public static string UpgradeNumber(string initNumber, int i, Insert insert = Insert.Before)
@@ -388,11 +382,6 @@ namespace PianoRoll.Model
             return number.Contains("-");
         }
 
-        public static void ResetAlias(string number)
-        {
-            if (number == "[#NEXT]") uNext.ResetAlias();
-            else uNotes[number].ResetAlias();
-        }
 
         public static string NoteNum2String(int noteNum)
         {
@@ -449,13 +438,16 @@ namespace PianoRoll.Model
         {
             List<UNote> notes = GetSortedNotes();
             int i = notes.IndexOf(note);
+            if (i == 0) return null;
             return NotesList[i - 1];
+
         }
 
         public static UNote GetNextNote(UNote note)
         {
             List<UNote> notes = GetSortedNotes();
             int i = notes.IndexOf(note);
+            if (i > notes.Count - 2) return null;
             return NotesList[i + 1];
         }
 

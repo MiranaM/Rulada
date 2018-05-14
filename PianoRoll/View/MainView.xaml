@@ -17,7 +17,8 @@
         <control:PianoRollControl
             x:Name="PianoRollControl"
             Margin="0,20,0,100"
-            Background="#FFEBEDEE" />
+            Background="#FFEBEDEE"
+            MouseMove="PianoRollControl_MouseMove" />
         <Menu
             Width="Auto"
             Height="20"
@@ -36,5 +37,13 @@
                 <MenuItem Click="MenuItemStop_Click" Header="_Stop" />
             </MenuItem>
         </Menu>
+        <Label
+            x:Name="CursorTrack"
+            Width="109"
+            Height="35"
+            Margin="130,-5,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Top"
+            Content="sdsd" />
     </Grid>
 </Window>

@@ -19,7 +19,7 @@
             <GradientStop Color="#FF5D6E76" />
         </LinearGradientBrush>
     </UserControl.Background>
-    <Grid>
+    <Grid x:Name="grid">
         <Label
             x:Name="Lyric"
             Height="28"

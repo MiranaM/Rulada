@@ -50,6 +50,7 @@ namespace PianoRoll.Model
         public VibratoExpression Vibrato;
         public string UNumber;
         public long AbsoluteTime;
+        public bool isRest = false;
         public int Volume = 80;
         public UOto Oto { get; set; }
         public double RequiredLength { get; set; }
@@ -69,7 +70,7 @@ namespace PianoRoll.Model
             switch (parameter)
             {
                 case "NoteNum":
-                    this[parameter] = int.Parse(value) + 12;
+                    this[parameter] = int.Parse(value) - 12;
                     break;
                 case "Length":
                 case "Velocity":

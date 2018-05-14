@@ -35,6 +35,7 @@ namespace PianoRoll.Control
 
         SolidColorBrush measureSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);
         SolidColorBrush beatSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
+        SolidColorBrush pitchBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCoral);
 
         public PianoRollControl()
         {
@@ -81,7 +82,7 @@ namespace PianoRoll.Control
             {
                 NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
-                if (noteControl.Text != "")
+                if (!note.isRest)
                 {
                     noteControl.note = note;
                     noteControl.onUstChanged += DrawUst;
@@ -94,13 +95,65 @@ namespace PianoRoll.Control
                     {
                         noteControl.Background = new SolidColorBrush(System.Windows.Media.Colors.DarkOrange);
                         noteControl.ToolTip = "can't found source file";
-                    }                    
+                    }
                     NoteCanvas.Children.Add(noteControl);
+                    //double x0 = (double) noteControl.GetValue(Canvas.LeftProperty);
+                    //double y0 = (double) noteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+                    //if (!note.isRest) DrawPitch(note, x0, y0);
                 }
                 
 
             }
             //scrollViewer.ScrollToVerticalOffset(540);
+        }
+
+
+        private void DrawPitch(UNote note, double x0, double y0)
+        {
+            if (note.PitchBend.Points.Count == 0) return;
+            string pitchSource = PitchDataToPath(note, x0, y0);
+
+            Path pitchPath = new Path()
+            {
+                Stroke = pitchBrush,
+                StrokeThickness = 2,
+                Data = Geometry.Parse(pitchSource)
+            };
+
+            PitchCanvas.Children.Add(pitchPath);
+        }
+
+        public string PitchPointsToPath(UNote note, double x0, double y0)
+        {
+            double x1 = Ust.MillisecondToTick(note.PitchBend.Points[0].X);
+            double y1 = note.PitchBend.Points[0].Y;
+            string pitchSource = $"M {x0 + x1} {y0 + y1} ";
+            for (int i = 1; i < note.PitchBend.Points.Count; i++)
+            {
+                x1 = Ust.MillisecondToTick(note.PitchBend.Points[i].X);
+                y1 = note.PitchBend.Points[i].Y;
+                pitchSource += $"L {x0 + x1} {y0 + y1} ";
+            }
+            return pitchSource;
+        }
+
+        public string PitchDataToPath(UNote note, double x0, double y0)
+        {
+            const int intervalTick = 5;
+            double intervalMs = Ust.TickToMillisecond(intervalTick) * xScale;
+            double c = 10;
+            int[] pitchData = UPitch.BuildPitchData(note);
+            double xP = Ust.MillisecondToTick(note.Oto.Preutter) * xScale;
+            double y1 = pitchData[0] / (yScale);
+            double x1 = 0;
+            string pitchSource = $"M {x0 - xP} {y0 + y1} ";
+            foreach (int point in pitchData.Skip(1))
+            {
+                y1 = pitchData[0] / (yScale);
+                x1 += intervalMs;
+                pitchSource += $"L {x0 - xP + x1} {y0 + y1} ";
+            }
+            return pitchSource;
         }
 
         private NoteControl MakeNote(int noteNumber, long startTime, int duration, string lyric)
@@ -242,6 +295,7 @@ namespace PianoRoll.Control
                 Piano.Children.Add(line);
             }
         }
+
 
     }
 }

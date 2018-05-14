@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using NAudio.Wave;
+using PianoRoll.Util;
 
 namespace PianoRoll.Model
 {
@@ -56,6 +57,7 @@ namespace PianoRoll.Model
 
         public static void SendToResampler(UNote note, string tempfilename)
         {
+            string pitchData = Base64.Base64EncodeInt12(UPitch.BuildPitchData(note));
             string ops = string.Format
             (
                 "{0} {1:D} \"{2}\" {3} {4:D} {5} {6} {7:D} {8:D} !{9} {10}",
@@ -69,7 +71,7 @@ namespace PianoRoll.Model
                 note.Volume,
                 0, // modulation
                 note.NoteNum,
-                UPitch.BuildPitchData(note) // "+c#24#+f+p+3/J/c/s/5//AA#17#"
+                pitchData // "+c#24#+f+p+3/J/c/s/5//AA#17#"
             );
             string request = $"\"{Settings.Resampler}\" \"{Path.Combine(USinger.UPath,note.Oto.File)}\" \"{tempfilename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);

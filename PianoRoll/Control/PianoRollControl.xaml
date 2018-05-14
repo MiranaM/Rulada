@@ -47,6 +47,7 @@
                 </Canvas>
                 <Canvas x:Name="GridCanvas" />
                 <Canvas x:Name="NoteCanvas" />
+                <Canvas x:Name="PitchCanvas" />
             </Canvas>
         </Grid>
     </ScrollViewer>

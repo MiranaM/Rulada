@@ -92,5 +92,10 @@ namespace PianoRoll.View
             SingerDialog dialog = new SingerDialog();
             dialog.Show();
         }
+
+        private void PianoRollControl_MouseMove(object sender, MouseEventArgs e)
+        {
+            this.CursorTrack.Content = e.GetPosition(this.PianoRollControl);
+        }
     }
 }

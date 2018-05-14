@@ -59,6 +59,7 @@ namespace PianoRoll.Util
 
         public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x)
         {
+            var z = y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
             return y0 + (y1 - y0) * (1 - Math.Cos((x - x0) / (x1 - x0) * Math.PI)) / 2;
         }
 
