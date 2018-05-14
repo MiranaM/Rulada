@@ -28,6 +28,7 @@ namespace PianoRoll.Control
         private long lastPosition = 9598;
         public int MaxDivider = 4;
         public bool doSnap = true;
+        public int octaves = 7;
 
         SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
         SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
@@ -58,7 +59,9 @@ namespace PianoRoll.Control
         {
             xScale = (80.0 / Settings.Resolution);
             PianoRollGrid.Width = lastPosition * xScale;
-            PianoRollGrid.Height = 128 * yScale;
+            PianoRollGrid.Height = octaves * 12 * yScale;
+            RootCanvas.Width = PianoRollGrid.Width;
+            RootCanvas.Height = PianoRollGrid.Height;
         }
 
         public void DrawInit()
@@ -115,7 +118,7 @@ namespace PianoRoll.Control
 
         private double GetNoteYPosition(int noteNumber)
         {
-            return (double)(127 - noteNumber) * yScale;
+            return (double)(octaves * 12 - 1 - noteNumber) * yScale;
         }
 
         private double GetNoteXPosition(long startTime)
@@ -126,7 +129,7 @@ namespace PianoRoll.Control
 
         private void CreateBackgroundCanvas()
         {
-            for (int note = 0; note < 127; note++)
+            for (int note = 0; note < octaves * 12; note++)
             {
                 if ((note % 12 == 1) // C#
                  || (note % 12 == 3) // E#
@@ -142,7 +145,7 @@ namespace PianoRoll.Control
                     NoteBackgroundCanvas.Children.Add(rect);
                 }
             }
-            for (int note = 0; note < 128; note++)
+            for (int note = 0; note < octaves * 12 - 1; note++)
             {
                 Line line = new Line();
                 line.X1 = 0;
@@ -164,7 +167,7 @@ namespace PianoRoll.Control
                 line.X1 = n * xScale;
                 line.X2 = n * xScale;
                 line.Y1 = 0;
-                line.Y2 = 128 * yScale;
+                line.Y2 = octaves * 12 * yScale;
                 if (beat % 4 == 0)
                 {
                     line.Stroke = measureSeparatorBrush;
@@ -186,7 +189,7 @@ namespace PianoRoll.Control
             long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
             int MinLength = Settings.Resolution / MaxDivider;
             startTime = (long) Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
-            int noteNumber = (int) (127 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
+            int noteNumber = (int) (octaves * 12 - 1 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
 
             int duration = (int)(Settings.Resolution);
             string Lyric = "a";
@@ -205,7 +208,7 @@ namespace PianoRoll.Control
         private void CreatePiano()
         {
             
-            for (int note = 0; note < 127; note++)
+            for (int note = 0; note < octaves * 12; note++)
             {
                 if ((note % 12 == 1) // C#
                  || (note % 12 == 3) // E#
@@ -220,8 +223,15 @@ namespace PianoRoll.Control
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     Piano.Children.Add(rect);
                 }
+                Label label = new Label();
+                string noteName = Ust.NoteNum2String(note);
+                label.Content = noteName;
+                label.SetValue(Canvas.TopProperty, GetNoteYPosition(note) - 6);
+                Console.WriteLine(label.Content);
+                Piano.Children.Add(label);
+                // label.SetValue(Canvas.LeftProperty, 12);
             }
-            for (int note = 0; note < 128; note++)
+            for (int note = 0; note < octaves * 12 - 1; note++)
             {
                 Line line = new Line();
                 line.X1 = 0;

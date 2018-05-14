@@ -26,7 +26,7 @@
             </Grid.ColumnDefinitions>
 
             <Canvas
-                x:Name="Piano"
+                Name="Piano"
                 Grid.Column="0"
                 Width="43"
                 Background="#FFEEEEEE" />

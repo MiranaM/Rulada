@@ -68,8 +68,10 @@ namespace PianoRoll.Model
             Console.WriteLine($"\t{parameter}={value}");
             switch (parameter)
             {
-                case "Length":
                 case "NoteNum":
+                    this[parameter] = int.Parse(value) + 12;
+                    break;
+                case "Length":
                 case "Velocity":
                 case "Intensity":
                 case "Modulation":

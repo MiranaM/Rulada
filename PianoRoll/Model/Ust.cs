@@ -396,7 +396,7 @@ namespace PianoRoll.Model
 
         public static string NoteNum2String(int noteNum)
         {
-            int octave = noteNum / 12 - 1;
+            int octave = noteNum / 12;
             string note;
             switch (11 - noteNum % 12)
             {
