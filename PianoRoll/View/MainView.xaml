@@ -16,25 +16,84 @@
 
         <control:PianoRollControl
             x:Name="PianoRollControl"
-            Margin="0,20,0,100"
+            Margin="0,55,0,100"
+            Padding="0"
             Background="#FFEBEDEE" />
         <Menu
             Width="Auto"
             Height="20"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
-            Background="#FFA9D1F4"
+            Background="White"
             DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Click="MenuItemOpenUst_Click" Header="_Open UST" />
-                <MenuItem Click="MenuItemExit_Click" Header="_Exit" />
-                <MenuItem Click="MenuItemSave_Click" Header="_Save" />
+            <MenuItem Header="_Файл">
+                <MenuItem Click="MenuItemOpenUst_Click" Header="_Открыть UST" />
+                <MenuItem Click="MenuItemSave_Click" Header="_Сохранить" />
+                <MenuItem Click="MenuItemExport_Click" Header="_Экспорт" />
+                <MenuItem Click="MenuItemSettings_Click" Header="_Настройки проекта" />
+                <MenuItem Click="MenuItemExit_Click" Header="_Выход" />
             </MenuItem>
-            <MenuItem Click="MenuItemSinger_Click" Header="_Singer" />
+
+            <MenuItem Click="MenuItemSinger_Click" Header="_Голос" />
             <MenuItem Header="_Render">
-                <MenuItem Click="MenuItemPlay_Click" Header="_Play" />
-                <MenuItem Click="MenuItemStop_Click" Header="_Stop" />
+                <MenuItem Click="MenuItemPlay_Click" Header="_Воспроизвести" />
+                <MenuItem Click="MenuItemStop_Click" Header="_Остановить" />
+
             </MenuItem>
         </Menu>
+        <Border Margin="0,20,761,464">
+            <Grid
+                Width="130"
+                Height="35"
+                MinWidth="130"
+                MinHeight="35"
+                Margin="0,0,0,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+                <Label
+                    x:Name="SingerName"
+                    Width="44"
+                    Height="35"
+                    Margin="65,0,0,0"
+                    Padding="5,8,5,4"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top"
+                    Content="-------"
+                    FontWeight="Bold"
+                    Foreground="#FFDDDDDD"
+                    IsEnabled="False" />
+                <Label
+                    x:Name="AboutSinger"
+                    Width="58"
+                    Height="16"
+                    Margin="0,0,73,19"
+                    Padding="5,2,5,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Background="{x:Null}"
+                    BorderBrush="Black"
+                    Content="Подробнее"
+                    FontSize="9"
+                    FontStyle="Italic"
+                    Foreground="#FFDDDDDD"
+                    IsEnabled="False"
+                    MouseLeftButtonUp="AboutSinger_MouseLeftButtonUp" />
+                <Label
+                    x:Name="ChangeSinger"
+                    Width="58"
+                    Height="16"
+                    Margin="0,16,73,0"
+                    Padding="5,2,5,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Background="{x:Null}"
+                    BorderBrush="Black"
+                    Content="Изменить"
+                    FontSize="9"
+                    FontStyle="Italic"
+                    Foreground="#FFDDDDDD"
+                    IsEnabled="False" />
+            </Grid>
+        </Border>
     </Grid>
 </Window>

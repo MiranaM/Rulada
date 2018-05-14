@@ -30,7 +30,7 @@ namespace PianoRoll.Control
         public bool doSnap = true;
         public int octaves = 7;
 
-        SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
+        public SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
         SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
 
         SolidColorBrush measureSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);

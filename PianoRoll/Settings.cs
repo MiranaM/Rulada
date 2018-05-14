@@ -9,7 +9,7 @@ namespace PianoRoll
 {
     class Settings
     {
-        public static string VoiceDir = @"D:\DISCS\YandexDisk\Heiden\UTAU\_voicebanks\";
+        public static string VoiceDir = @"D:\UTAU\voice\";
         public static string WavTool = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\wavtool.exe");
         public static string Resampler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\m4.exe");
         public static string CacheFolder = Path.Combine(Path.GetTempPath(), @"Rulada\Cache\");

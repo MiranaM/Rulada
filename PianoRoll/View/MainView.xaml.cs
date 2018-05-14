@@ -23,16 +23,32 @@ namespace PianoRoll.View
     /// </summary>
     public partial class MainWindow : Window
     {
+        public SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);
 
         public MainWindow()
         {
             InitializeComponent();
         }
 
+        public void EnableSingerInformation(bool statement)
+        {
+            SingerName.IsEnabled = statement;
+            AboutSinger.IsEnabled = statement;
+            ChangeSinger.IsEnabled = statement;
+
+            SingerName.Foreground = blackNoteChannelBrush;
+            AboutSinger.Foreground = blackNoteChannelBrush;
+            ChangeSinger.Foreground = blackNoteChannelBrush;
+
+            SingerName.Content = USinger.Name;
+            
+        }
+
 
         private void MenuItemOpenUst_Click(object sender, RoutedEventArgs e)
         {
-            LoadUST();
+            LoadUST();            
+            EnableSingerInformation(true);
         }
 
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
@@ -59,6 +75,8 @@ namespace PianoRoll.View
         {
             Render.Stop();
         }
+
+
 
 
         private void LoadUST()
@@ -91,6 +109,21 @@ namespace PianoRoll.View
         {
             SingerDialog dialog = new SingerDialog();
             dialog.Show();
+        }
+
+        private void AboutSinger_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ShowSingerDialog();
+        }
+
+        private void MenuItemExport_Click(object sender, RoutedEventArgs e)
+        {
+            //
+        }
+
+        private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
+        {
+            //
         }
     }
 }
