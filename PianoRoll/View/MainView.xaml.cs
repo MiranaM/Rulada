@@ -15,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PianoRoll.Model;
+using System.IO;
 
 namespace PianoRoll.View
 {
@@ -33,11 +34,31 @@ namespace PianoRoll.View
         private void MenuItemOpenUst_Click(object sender, RoutedEventArgs e)
         {
             LoadUST();
+            InitElementsAfterUSTLoading();
+        }
+
+        private void InitElementsAfterUSTLoading()
+        {
+            SingerName.Content = USinger.Name;
+            SingerName.IsEnabled = true;
+            VoiceMenu.IsEnabled = true;
+            RenderMenu.IsEnabled = true;
+
         }
 
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
         {
             Save();
+        }
+
+        private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
+        {            
+            Window1 settings = new Window1();            
+            if(settings.ShowDialog().Value == true)
+            {
+                USinger.Load(Ust.uSettings["VoiceDir"]);                
+                SingerName.Content = System.IO.Path.GetFileName(Ust.uSettings["VoiceDir"]);
+            }
         }
 
         private void MenuItemExit_Click(object sender, RoutedEventArgs e)
@@ -60,10 +81,8 @@ namespace PianoRoll.View
             Render.Stop();
         }
 
-
         private void LoadUST()
         {
-
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "UST Files (*.ust)|*.ust|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
@@ -71,10 +90,8 @@ namespace PianoRoll.View
             {
                 Ust.Load(openFileDialog.FileName);
                 USinger.Load(Ust.uSettings["VoiceDir"]);
-                this.PianoRollControl.UNotes = Ust.NotesList;
-                
+                this.PianoRollControl.UNotes = Ust.NotesList;                
             }
-
         }
 
         private void Save()
@@ -84,7 +101,7 @@ namespace PianoRoll.View
 
         private void Exit()
         {
-
+            this.Close();
         }
 
         private void ShowSingerDialog()
@@ -96,6 +113,21 @@ namespace PianoRoll.View
         private void PianoRollControl_MouseMove(object sender, MouseEventArgs e)
         {
             this.CursorTrack.Content = e.GetPosition(this.PianoRollControl);
+        }
+
+        private void SingerNameInfo_dClick(object sender, RoutedEventArgs e)
+        {
+            ShowSingerDialog();
+        }
+
+        private void SingerName_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ShowSingerDialog();
+        }
+
+        private void SingerName_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -228,6 +229,7 @@ namespace PianoRoll.Control
                 }
                 else
                 {
+                    line.StrokeDashCap = PenLineCap.Flat;
                     line.Stroke = Themes.beatSeparatorBrush;
                 }
                 GridCanvas.Children.Add(line);
@@ -237,26 +239,29 @@ namespace PianoRoll.Control
 
         private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Point currentMousePosition = e.GetPosition(RootCanvas);
-            Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {            
+                Point currentMousePosition = e.GetPosition(RootCanvas);
+                Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
 
-            long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
-            int MinLength = Settings.Resolution / MaxDivider;
-            startTime = (long) Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
-            int noteNumber = (int) (octaves * 12 - 1 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
+                long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
+                int MinLength = Settings.Resolution / MaxDivider;
+                startTime = (long) Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
+                int noteNumber = (int) (octaves * 12 - 1 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
 
-            int duration = (int)(Settings.Resolution);
-            string Lyric = "a";
+                int duration = (int)(Settings.Resolution);
+                string Lyric = "a";
 
-            UNote uNote = new UNote();
-            uNote.SetDefaultNoteSettings();
-            uNote.NoteNum = noteNumber;
-            uNote.Lyric = Lyric;
-            uNote.Length = duration;
-            uNote.AbsoluteTime = startTime;
-            Ust.NotesList.Add(uNote);
-            USinger.NoteOtoRefresh();
-            DrawUst();
+                UNote uNote = new UNote();
+                uNote.SetDefaultNoteSettings();
+                uNote.NoteNum = noteNumber;
+                uNote.Lyric = Lyric;
+                uNote.Length = duration;
+                uNote.AbsoluteTime = startTime;
+                Ust.NotesList.Add(uNote);
+                USinger.NoteOtoRefresh();
+                DrawUst();
+            }
         }
 
         private void CreatePiano()

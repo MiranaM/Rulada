@@ -69,8 +69,17 @@ namespace PianoRoll.Control
 
         private void Lyric_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Ust.NotesList.Remove(note);
-            onUstChanged();
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                Ust.NotesList.Remove(note);
+                onUstChanged();
+            }
+
+        }
+
+        private void ResizeArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            
         }
     }
 }

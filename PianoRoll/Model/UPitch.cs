@@ -89,6 +89,7 @@ namespace PianoRoll.Model
         }
         public override UExpression Split(UNote newParent, int postick) { var exp = Clone(newParent); return exp; }
     }
+
     public class PitchPointHitTestResult
     {
         public UNote Note;
@@ -327,6 +328,5 @@ namespace PianoRoll.Model
 
             return pitches.ToArray();
         }
-
     }
 }

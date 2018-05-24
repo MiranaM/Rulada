@@ -16,6 +16,7 @@ namespace PianoRoll.Model
 
         public static void Play()
         {
+
             File.WriteAllText(Settings.Bat, "");
             //if (Directory.Exists(Settings.CacheFolder)) Directory.Delete(Settings.CacheFolder);
             //Directory.CreateDirectory(Settings.CacheFolder);)
@@ -31,7 +32,7 @@ namespace PianoRoll.Model
                     $"del \"{Settings.Output}.whd\" \r\n" +
                     $"del \"{Settings.Output}.dat\" \r\n" +
                     ":E");
-
+           
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             proc.StartInfo.FileName = Settings.Bat;
             proc.StartInfo.WorkingDirectory = Settings.CacheFolder;
@@ -61,7 +62,7 @@ namespace PianoRoll.Model
             string ops = string.Format
             (
                 "{0} {1:D} \"{2}\" {3} {4:D} {5} {6} {7:D} {8:D} !{9} {10}",
-                Ust.NoteNum2String(note.NoteNum),
+                Ust.NoteNum2String(note.NoteNum), 
                 note.Velocity,
                 "g-5", //note.Flags,
                 note.Oto.Offset,
@@ -71,7 +72,7 @@ namespace PianoRoll.Model
                 note.Volume,
                 0, // modulation
                 note.NoteNum,
-                pitchData // "+c#24#+f+p+3/J/c/s/5//AA#17#"
+                pitchData 
             );
             string request = $"\"{Settings.Resampler}\" \"{Path.Combine(USinger.UPath,note.Oto.File)}\" \"{tempfilename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);
@@ -110,7 +111,6 @@ namespace PianoRoll.Model
             }
             string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{tempfilename}\" {ops} {opsNote} \r\n";
             File.AppendAllText(Settings.Bat, request);
-
         }
     }
 }

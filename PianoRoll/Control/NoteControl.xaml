@@ -30,6 +30,17 @@
             Foreground="#FFC6F2FF"
             MouseDoubleClick="Lyric_MouseDoubleClick"
             MouseRightButtonDown="Lyric_MouseRightButtonDown" />
+        <Button
+            x:Name="ResizeArea"
+            Width="6"
+            Margin="0"
+            HorizontalAlignment="Right"
+            Background="#7FDDDDDD"
+            BorderBrush="#7FDDDDDD"
+            Content=""
+            Cursor="SizeWE"
+            MouseLeftButtonDown="ResizeArea_MouseLeftButtonDown"
+            Opacity="50" />
         <TextBox
             x:Name="EditLyric"
             Width="60"

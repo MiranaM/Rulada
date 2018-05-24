@@ -12,11 +12,11 @@
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
     mc:Ignorable="d">
-    <Grid Background="#FFECECEC">
+    <Grid Background="#FFDADADA">
         <Grid.RowDefinitions>
-            <RowDefinition Height="20*" />
-            <RowDefinition Height="35" />
-            <RowDefinition Height="464*" />
+            <RowDefinition Height="10*" />
+            <RowDefinition Height="33" />
+            <RowDefinition Height="203*" />
             <RowDefinition Height="60" />
         </Grid.RowDefinitions>
 
@@ -27,20 +27,27 @@
             Background="#FF001122"
             MouseMove="PianoRollControl_MouseMove" />
         <Menu
-            Width="131"
             Height="20"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             Background="#00A9D1F4">
-            <MenuItem Header="_File">
-                <MenuItem Click="MenuItemOpenUst_Click" Header="_Open UST" />
-                <MenuItem Click="MenuItemExit_Click" Header="_Exit" />
-                <MenuItem Click="MenuItemSave_Click" Header="_Save" />
+            <MenuItem Header="_Файл">
+                <MenuItem Click="MenuItemOpenUst_Click" Header="_Открыть UST" />
+                <MenuItem Click="MenuItemSave_Click" Header="_Сохранить" />
+                <MenuItem Click="MenuItemSettings_Click" Header="_Настройка" />
+                <MenuItem Click="MenuItemExit_Click" Header="_Выход" />
             </MenuItem>
-            <MenuItem Click="MenuItemSinger_Click" Header="_Singer" />
-            <MenuItem Header="_Render">
-                <MenuItem Click="MenuItemPlay_Click" Header="_Play" />
-                <MenuItem Click="MenuItemStop_Click" Header="_Stop" />
+            <MenuItem
+                Name="VoiceMenu"
+                Click="MenuItemSinger_Click"
+                Header="_Голос"
+                IsEnabled="False" />
+            <MenuItem
+                Name="RenderMenu"
+                Header="_Рендер"
+                IsEnabled="False">
+                <MenuItem Click="MenuItemPlay_Click" Header="_Воспроизвести" />
+                <MenuItem Click="MenuItemStop_Click" Header="_Остановить" />
             </MenuItem>
         </Menu>
         <Label
@@ -60,10 +67,23 @@
                 Margin="5"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Center">
-                <Label Content="AAAAAAAAA" Foreground="#FFFFFF" />
+                <Label
+                    x:Name="SingerName"
+                    Content="------------------"
+                    Foreground="#FF90FFFF"
+                    IsEnabled="False"
+                    MouseDoubleClick="SingerNameInfo_dClick"
+                    MouseRightButtonDown="SingerName_MouseRightButtonDown"
+                    MouseRightButtonUp="SingerName_MouseRightButtonUp" />
 
             </Border>
         </ToolBarPanel>
+        <Rectangle
+            Grid.Row="3"
+            Width="Auto"
+            Margin="0"
+            Fill="#FF001122"
+            Stroke="Black" />
 
     </Grid>
 </Window>
