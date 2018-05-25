@@ -16,7 +16,11 @@ namespace PianoRoll.Model
 
         public static void Play()
         {
-            File.WriteAllText(Settings.Bat, "");
+            USinger.NoteOtoRefresh();
+            Ust.BuildPitch();
+
+            string delcommand = $"del \"{ Settings.CacheFolder }\\*.wav\"\r\n";
+            File.WriteAllText(Settings.Bat, delcommand);
             //if (Directory.Exists(Settings.CacheFolder)) Directory.Delete(Settings.CacheFolder);
             //Directory.CreateDirectory(Settings.CacheFolder);)
             foreach (UNote note in Ust.NotesList)
@@ -57,7 +61,7 @@ namespace PianoRoll.Model
 
         public static void SendToResampler(UNote note, string tempfilename)
         {
-
+            string pitchBase64 = Base64.Base64EncodeInt12(note.PitchBend.Array);
             string ops = string.Format
             (
                 "{0} {1:D} \"{2}\" {3} {4:D} {5} {6} {7:D} {8:D} !{9} {10}",
@@ -68,10 +72,10 @@ namespace PianoRoll.Model
                 (int)note.GetRequiredLength(), // (int)note.RequiredLength,
                 note.Oto.Preutter,
                 note.Oto.Cutoff,
-                note.Volume,
+                note.Intensity,
                 0, // modulation
                 note.NoteNum,
-                Base64.Base64EncodeInt12(note.PitchBend.Array) // "+c#24#+f+p+3/J/c/s/5//AA#17#"
+                pitchBase64 // "+c#24#+f+p+3/J/c/s/5//AA#17#"
             );
             string request = $"\"{Settings.Resampler}\" \"{Path.Combine(USinger.UPath,note.Oto.File)}\" \"{tempfilename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);
@@ -81,8 +85,8 @@ namespace PianoRoll.Model
         {
             UNote notePrev = Ust.GetPrevNote(note);
             double pre, ovl, STP;
-            pre = note.Oto.Preutter;
-            ovl = note.Oto.Overlap;
+            pre = note.HasOto ? note.Oto.Preutter : 30;
+            ovl = note.HasOto ? note.Oto.Overlap : 30;
             STP = 0;
             if (notePrev != null && Ust.TickToMillisecond(note.Length) / 2 < pre - ovl)
             {
@@ -92,7 +96,7 @@ namespace PianoRoll.Model
             }
 
             double dunnowut;
-            if (notePrev == null || notePrev.isRest) dunnowut = pre;
+            if (notePrev == null || notePrev.IsRest) dunnowut = pre;
             else dunnowut = notePrev.Oto.Preutter - pre + ovl;
             //if (noteNext == null) dunnowut = note.Oto.Preutter;
             //else dunnowut = note.Oto.Preutter - noteNext.Oto.Preutter + noteNext.Oto.Overlap;
@@ -109,7 +113,7 @@ namespace PianoRoll.Model
                 note.Envelope.p2
             );
             string opsNote;
-            if (note.isRest) opsNote = "";
+            if (note.IsRest) opsNote = "";
             else
             {
                 opsNote = string.Format

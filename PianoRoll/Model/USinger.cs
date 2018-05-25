@@ -95,6 +95,7 @@ namespace PianoRoll.Model
         {
             foreach (UNote note in Ust.NotesList)
             {
+                if (note.IsRest) continue;
                 note.Oto = FindOto(note.Lyric);
                 if (note.Oto != null) note.HasOto = true;
             }

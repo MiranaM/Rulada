@@ -93,7 +93,7 @@ namespace PianoRoll.Control
             {
                 NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
-                if (!note.isRest)
+                if (!note.IsRest)
                 {
                     noteControl.note = note;
                     noteControl.onUstChanged += DrawUst;
@@ -107,7 +107,7 @@ namespace PianoRoll.Control
                         noteControl.Background = new SolidColorBrush(System.Windows.Media.Colors.DarkOrange);
                         noteControl.ToolTip = "can't found source file";
                     }
-                    note.noteControl = noteControl;
+                    note.NoteControl = noteControl;
                     NoteCanvas.Children.Add(noteControl);
                 }
                 
@@ -127,12 +127,13 @@ namespace PianoRoll.Control
             }
             else
             {
+                if (UNotes == null) return false;
                 int i = 0;
                 foreach (UNote note in UNotes)
                 {
-                    if (!note.HasOto || note.isRest) continue;
-                    double x0 = (double)note.noteControl.GetValue(Canvas.LeftProperty);
-                    double y0 = (double)note.noteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+                    if (!note.HasOto || note.IsRest) continue;
+                    double x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
+                    double y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
                     DrawPitchPath(note, x0, y0, i);
                     i++;
                 }

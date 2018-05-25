@@ -54,20 +54,6 @@ namespace PianoRoll.Model
             Read(ini.data, ini.Sections.ToArray());
         }
 
-        public static void Save()
-        {
-            Text = ToStrings();
-            File.WriteAllText(Dir, Text);
-            Console.WriteLine("Successfully saved UST.");
-        }
-
-        public static void Save(string dir)
-        {
-            Text = ToStrings();
-            File.WriteAllText(dir, Text);
-            Console.WriteLine("Successfully saved debug UST.");
-        }
-
         private static void Read(dynamic data, string[] sections)
         {
             NotesList.Clear();
@@ -116,21 +102,6 @@ namespace PianoRoll.Model
             }
         }
 
-        public static bool IsTempUst(string Dir)
-        {
-            string filename = Dir.Split('\\').Last();
-            return filename.StartsWith("tmp") && filename.EndsWith(".tmp");
-        }
-
-        public static void SetDefaultNoteSettings()
-        {
-            // We will apply this to "r" note which we won't consider Rest
-            uDefaultNote.Intensity = 100;
-            uDefaultNote.Modulation = 0;
-            uDefaultNote.Envelope = "0,21,35,0,100,100,0,%,0";
-            uDefaultNote.Vibrato = new VibratoExpression(uDefaultNote);
-        }
-
         private static UNote NoteRead(dynamic data, string which, ref long absoluteTime, out string number)
         {
             // May be #PREV, #0000 .... #NNNN, #NEXT
@@ -147,32 +118,16 @@ namespace PianoRoll.Model
                 var value = data[number][parameter];
                 switch(parameter)
                 {
-                    case "Lyric":
-                        note.Lyric = value;
-                        break;
-                    case "Length":
-                        note.Length = double.Parse(value, new CultureInfo("ja-JP").NumberFormat);
-                        break;
-                    case "NoteNum":
-                        note.NoteNum = value;
-                        break;
-                    case "Envelope":
-                        note.Envelope = value;
-                        break;
-                    case "Velocity":
-                        note.Velocity = value;
-                        break;
-                    case "Modulation":
-                        note.Modulation = int.Parse(value);
-                        break;
-                    case "Intensity":
-                        note.Intensity = int.Parse(value);
-                        break;
-                    case "Flags":
-                        note.Flags = value;
-                        break;
+                    case "Lyric": note.Lyric = value; break;
+                    case "Length": note.Length = double.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
+                    case "STP": note.STP = double.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
+                    case "NoteNum": note.NoteNum = int.Parse(value, new CultureInfo("ja-JP").NumberFormat) - 12; break;
+                    case "Envelope": note.Envelope = value; break;
+                    case "Velocity": note.Velocity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
+                    case "Modulation": note.Modulation = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
+                    case "Intensity": note.Intensity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
+                    case "Flags": note.Flags = value; break;
                 }
-                note.isRest = note.Lyric == "";
                 i++;
             }
             note.UNumber = number;
@@ -184,30 +139,19 @@ namespace PianoRoll.Model
             return note;
         }
 
-        public static string ToStrings()
+        public static bool IsTempUst(string Dir)
         {
-            string text = "";
-            List<string> vartext = new List<string> { };
-            vartext.Add("[#VERSION]");
-            vartext.Add(uVersion);
-            vartext.Add("[#SETTING]");
-            foreach (string setting in USettingsList)
-            {
-                vartext.Add($"{setting}={uSettings[setting]}");
-            }
-            foreach (UNote note in NotesList)
-            {
-                vartext.Add(note.UNumber);
-                foreach (string line in note.ToStrings())
-                {
-                    vartext.Add(line);
-                }
-            }
-            foreach (string line in vartext)
-            {
-                text += line + "\r\n";
-            }
-            return text;
+            string filename = Dir.Split('\\').Last();
+            return filename.StartsWith("tmp") && filename.EndsWith(".tmp");
+        }
+
+        public static void SetDefaultNoteSettings()
+        {
+            // We will apply this to "r" note which we won't consider Rest
+            uDefaultNote.Intensity = 100;
+            uDefaultNote.Modulation = 0;
+            uDefaultNote.Envelope = "0,21,35,0,100,100,0,%,0";
+            uDefaultNote.Vibrato = new VibratoExpression(uDefaultNote);
         }
 
         //public static void Split(string number)
@@ -267,7 +211,7 @@ namespace PianoRoll.Model
             int i = 0;
             foreach (UNote note in NotesList)
             {
-                if (note.isRest) continue;
+                if (note.IsRest) continue;
                 note.Lyric = lyric[i];
                 i++;
             }
@@ -435,9 +379,9 @@ namespace PianoRoll.Model
 
             foreach (UNote note in NotesList)
             {
-                if (!note.isRest)
+                if (!note.IsRest)
                 {
-                    note.PitchBend.Array = UPitch.BuildPitchData2(note);
+                    UPitch.BuildPitchData2(note);
                 }
             }
             for (int i = 0; i < NotesCount-1; i++)
@@ -445,23 +389,32 @@ namespace PianoRoll.Model
                 UNote note = NotesList[i];
                 UNote noteNext = NotesList[i + 1];
                 UNote notePrev = GetPrevNote(note);
-                double pre, ovl, STP, preNext, ovlNext;
+                if (note.IsRest) continue;
+                double pre, ovl, preNext, ovlNext;
                 pre = note.Oto.Preutter;
                 ovl = note.Oto.Overlap;
-                preNext = noteNext.Oto.Preutter;
-                ovlNext = noteNext.Oto.Overlap;
                 if (notePrev != null && TickToMillisecond(note.Length) / 2 < pre - ovl)
                 {
                     pre = note.Oto.Preutter / (note.Oto.Preutter - note.Oto.Overlap) * note.RequiredLength / 2;
                     ovl = note.Oto.Overlap / (note.Oto.Preutter - note.Oto.Overlap) * note.RequiredLength / 2;
                 }
-                if (!note.isRest && TickToMillisecond(noteNext.Length) / 2 < preNext - ovlNext)
+                if (noteNext.HasOto)
+                {
+                    preNext = noteNext.Oto.Preutter;
+                    ovlNext = noteNext.Oto.Overlap;
+                }
+                else
+                {
+                    preNext = 40;
+                    ovlNext = 40;
+                }
+                if (!noteNext.IsRest && TickToMillisecond(noteNext.Length) / 2 < preNext - ovlNext)
                 {
                     preNext = noteNext.Oto.Preutter / (noteNext.Oto.Preutter - noteNext.Oto.Overlap) * noteNext.RequiredLength / 2;
                     ovlNext = noteNext.Oto.Overlap / (noteNext.Oto.Preutter - noteNext.Oto.Overlap) * noteNext.RequiredLength / 2;
                 }
 
-                if (note.PitchBend == null || note.isRest) continue;
+                if (note.PitchBend == null || note.IsRest) continue;
 
                 // remove excess pitch
                 var xPre = Ust.TickToMillisecond((long)note.PitchBend.Points[0].X);
@@ -471,7 +424,7 @@ namespace PianoRoll.Model
                     note.PitchBend.Array = note.PitchBend.Array.Skip(tokick).ToArray();
                 }
 
-                if (noteNext.PitchBend == null || noteNext.isRest) continue;
+                if (noteNext.PitchBend == null || noteNext.IsRest) continue;
 
                 // end pitch from next note
                 int length = (int) Math.Round(preNext / Settings.IntervalMs);

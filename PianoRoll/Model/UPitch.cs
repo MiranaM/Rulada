@@ -327,7 +327,7 @@ namespace PianoRoll.Model
             return pitches.ToArray();
         }
 
-        public static int[] BuildPitchData2(UNote note)
+        public static void BuildPitchData2(UNote note)
         {
 
             List<int> pitches = new List<int>();
@@ -344,7 +344,7 @@ namespace PianoRoll.Model
             UNote nextNote = Ust.GetNextNote(note);
             // 1 halftone value
             int val = 10;
-            if (prevNote != null && !prevNote.isRest) pps.First().Y = (prevNote.NoteNum - note.NoteNum) * val;
+            if (prevNote != null && !prevNote.IsRest) pps.First().Y = (prevNote.NoteNum - note.NoteNum) * val;
 
 
             // if not all the length involved, add end and/or start pitch point
@@ -399,13 +399,11 @@ namespace PianoRoll.Model
 
                 pitches.Add((int)Math.Round(y));
                 //Console.WriteLine($"[{x}; {y}] where X are {(int)((endMs - startMs) / Settings.IntervalMs)}, current={(int)((endMs - x) / Settings.IntervalMs)}, i={i}");
-                if ((int)((endMs - x) / Settings.IntervalMs) < 0)
-                {
-                    throw new Exception("wut");
-                }
+                if ((int)((endMs - x) / Settings.IntervalMs) < 0) throw new Exception("wut");
             }
 
-            return pitches.ToArray();
+            if (pitches == null) throw new Exception("Так блет а где питч");
+            note.PitchBend.Array = pitches.ToArray();
         }
     }
 }

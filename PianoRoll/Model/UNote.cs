@@ -25,48 +25,33 @@ namespace PianoRoll.Model
 
     public class UNote
     {
-
-        static public string[] Parameters =
-        {
-            "Length",
-            "Lyric",
-            "NoteNum",
-            "Velocity",
-            "Intensity",
-            "Modulation",
-            "Flags",
-            "Envelope"
-        };
-
-        private Dictionary<string, dynamic> OtherParameters = new Dictionary<string, dynamic> { };
-        private Dictionary<string, dynamic> AliasParameters = new Dictionary<string, dynamic> { };
-
         private int _length;
         private string _lyric;
         private int _noteNum;
-        public UEnvelope _envelope;
+        private long _absoluteTime;
+        private UEnvelope _envelope;
 
         public dynamic Length { get => _length; set { SetLength(value); } }
         public dynamic Lyric { get => _lyric; set { SetLyric(value); } }
         public dynamic NoteNum { get => _noteNum; set { SetNoteNum(value); } }
         public dynamic Envelope { get => _envelope; set { SetEnvelope(value); } }
+        public long AbsoluteTime { get => _absoluteTime; set { _absoluteTime = (long) value; } }
 
-        public int Velocity;
-        public int Intensity;
-        public int Modulation;
-        public string Flags;
-        public PitchBendExpression PitchBend;
-        public VibratoExpression Vibrato;
-        public string UNumber;
-        public long AbsoluteTime;
-        public bool isRest = false;
-        public int Volume = 80;
-        public UOto Oto { get; set; }
         public double RequiredLength { get; set; }
-        public bool HasOto = false;
-        public NoteControl noteControl;
+        public int Velocity { get; set; }
+        public int Intensity { get; set; }
+        public int Modulation { get; set; }
+        public string Flags { get; set; }
+        public string UNumber { get; set; }
+        public UOto Oto { get; set; }
+        public PitchBendExpression PitchBend { get; set; }
+        public VibratoExpression Vibrato { get; set; }
+        public NoteControl NoteControl { get; set; }
 
-        private List<string> GotParameters = new List<string> { };
+        public double STP { get; set; }
+
+        public bool IsRest = false;
+        public bool HasOto = false;
 
         //public void Set(string parameter, dynamic value)
         //{
@@ -121,12 +106,10 @@ namespace PianoRoll.Model
         //    GotParameters.Add(parameter);
         //}
 
-        private void SetLength(string value) { _length = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); }
         private void SetLength(int value) { _length = value; }
         private void SetLength(double value) { _length = (int) value; }
         private void SetLength(float value) { _length = (int) value; }
 
-        private void SetNoteNum(string value) { _noteNum = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); }
         private void SetNoteNum(int value) { _noteNum = value; }
         private void SetNoteNum(double value) { _noteNum = (int) value; }
         private void SetNoteNum(float value) { _noteNum = (int) value; }
@@ -171,70 +154,11 @@ namespace PianoRoll.Model
         private void SetLyric(string lyric)
         {
             if (lyric == "R") lyric = "";
+            if (lyric == "") IsRest = true;
             _lyric = lyric;
             Oto = USinger.FindOto(lyric);
         }
-
-        public string[] ToStrings()
-        {
-            if (GotParameters.Count == 0)
-            {
-                return new string[] { "" };
-            }
-            string[] text = new string[GotParameters.Count];
-            for (int i = 0; i < GotParameters.Count; i++)
-            {
-                string parameter = GotParameters[i];
-                string value;
-                switch (parameter)
-                {
-                    case "Lyric":
-                        //if (this[parameter].ToString() == "r") value = "rr";
-                        //else value = this[parameter].ToString();
-                        break;
-                    default:
-                        //value = this[parameter].ToString();
-                        break;
-                }
-                //text[i] = $"{parameter}={value}";
-            }
-            return text;
-        }
-
-        public bool IsSet(string parameter)
-        {
-            return GotParameters.Contains(parameter);
-        }
-
-        public UNote Copy()
-        {
-            // Copy only main parameters
-            UNote NewNote = new UNote();
-            List<string> NewParameters = new List<string> { };
-            foreach(string parameter in GotParameters)
-            {
-                if (Parameters.Contains(parameter))
-                {
-                    //NewNote[parameter] = this[parameter];
-                    //NewParameters.Add(parameter);
-                }
-            }
-            NewNote.GotParameters = NewParameters;
-            return NewNote;
-        }
-
-        public UNote CopyWhole()
-        {
-            // Copy all parameters
-            UNote NewNote = new UNote();
-            foreach(string parameter in GotParameters)
-            {
-                //NewNote[parameter] = this[parameter];
-            }
-            NewNote.GotParameters = GotParameters;
-            return NewNote;
-        }
-
+        
         public void SetDefaultNoteSettings()
         {
             // We will apply this to "r" note which we won't consider Rest
@@ -243,21 +167,13 @@ namespace PianoRoll.Model
             Envelope = Ust.uDefaultNote.Envelope;
             PitchBend = Ust.uDefaultNote.PitchBend;
         }
-
-        public void ResetAlias()
-        {
-            foreach (string parameter in AliasParameters.Keys)
-            {
-                GotParameters.Remove(parameter);
-            }
-            AliasParameters = new Dictionary<string, dynamic> { };
-        }
-
+        
         public double GetRequiredLength()
         {
-            double rl = Ust.TickToMillisecond(Length) + Oto.Preutter;
+            double rl = Ust.TickToMillisecond(Length);
+            if (HasOto) rl += Oto.Preutter;
             UNote next = Ust.GetNextNote(this);
-            if (next != null && !next.isRest)
+            if (next != null && !next.IsRest)
             {
                 rl -= next.Oto.Preutter;
                 rl += next.Oto.Overlap;
