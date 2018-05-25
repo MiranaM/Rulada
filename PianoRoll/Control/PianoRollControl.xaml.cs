@@ -13,6 +13,7 @@ using NAudio;
 using NAudio.Midi;
 using PianoRoll.Control;
 using PianoRoll.Model;
+using System.Drawing;
 
 namespace PianoRoll.Control
 {
@@ -22,14 +23,16 @@ namespace PianoRoll.Control
     public partial class PianoRollControl : UserControl
     {
 
+        #region variables
         private List<UNote> uNotes;
-        double xScale = 1.0 / 10;
+        double xScale = 1.0 / 15;
         double yScale = 15;
         private long lastPosition;
         public int MaxDivider = 4;
         public bool doSnap = true;
         public int octaves = 7;
         private int minBars = 4;
+        private double minWidth;
 
         SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
         SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
@@ -37,9 +40,13 @@ namespace PianoRoll.Control
         SolidColorBrush measureSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);
         SolidColorBrush beatSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
         SolidColorBrush pitchBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCoral);
+        SolidColorBrush pitchSecondBrush = new SolidColorBrush(System.Windows.Media.Colors.CadetBlue);
+        #endregion
 
         public PianoRollControl()
         {
+            xScale = (80.0 / Settings.Resolution);
+            minWidth = minBars * Settings.BeatPerBar * Settings.Resolution;
             InitializeComponent();
             DrawInit();
         }
@@ -59,8 +66,7 @@ namespace PianoRoll.Control
 
         public void Resize()
         {
-            xScale = (80.0 / Settings.Resolution);
-            RootCanvas.Width = lastPosition * xScale;
+            RootCanvas.Width = lastPosition > minWidth ? lastPosition * xScale : minWidth * xScale;
             RootCanvas.Height = octaves * 12 * yScale;
         }
 
@@ -76,7 +82,10 @@ namespace PianoRoll.Control
         public void DrawUst()
         {
             NoteCanvas.Children.Clear();
+            PitchCanvas.Children.Clear();
+            PitchPointCanvas.Children.Clear();
             lastPosition = 0;
+            int i = 0;
 
             foreach (UNote note in uNotes)
             {
@@ -97,9 +106,10 @@ namespace PianoRoll.Control
                         noteControl.ToolTip = "can't found source file";
                     }
                     NoteCanvas.Children.Add(noteControl);
-                    //double x0 = (double) noteControl.GetValue(Canvas.LeftProperty);
-                    //double y0 = (double) noteControl.GetValue(Canvas.TopProperty) + yScale / 2;
-                    //if (!note.isRest) DrawPitch(note, x0, y0);
+                    double x0 = (double) noteControl.GetValue(Canvas.LeftProperty);
+                    double y0 = (double) noteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+                    if (!note.isRest) DrawPitch(note, x0, y0, i);
+                    i++;
                 }
                 
 
@@ -107,51 +117,63 @@ namespace PianoRoll.Control
             //scrollViewer.ScrollToVerticalOffset(540);
         }
 
-
-        private void DrawPitch(UNote note, double x0, double y0)
+        private void DrawPitch(UNote note, double x0, double y0, int i = 0)
         {
             if (note.PitchBend.Points.Count == 0) return;
             string pitchSource = PitchDataToPath(note, x0, y0);
 
+            var itt = Math.DivRem(i, 2, out int res);
             Path pitchPath = new Path()
             {
-                Stroke = pitchBrush,
-                StrokeThickness = 2,
+                Stroke = res == 0? pitchBrush : pitchSecondBrush,
+                StrokeThickness = 1.5,
                 Data = Geometry.Parse(pitchSource)
             };
 
             PitchCanvas.Children.Add(pitchPath);
-        }
-
-        public string PitchPointsToPath(UNote note, double x0, double y0)
-        {
-            double x1 = Ust.MillisecondToTick(note.PitchBend.Points[0].X);
-            double y1 = note.PitchBend.Points[0].Y;
-            string pitchSource = $"M {x0 + x1} {y0 + y1} ";
-            for (int i = 1; i < note.PitchBend.Points.Count; i++)
+            foreach (Ellipse ellipse in DrawPitchPoints(note, x0, y0, i))
             {
-                x1 = Ust.MillisecondToTick(note.PitchBend.Points[i].X);
-                y1 = note.PitchBend.Points[i].Y;
-                pitchSource += $"L {x0 + x1} {y0 + y1} ";
+                PitchPointCanvas.Children.Add(ellipse);
             }
-            return pitchSource;
         }
 
+        public Ellipse[] DrawPitchPoints(UNote note, double x0, double y0, int i = 0)
+        {
+            double radius = 5;
+            double m = 2.26;
+            List<Ellipse> ellipses = new List<Ellipse>();
+            foreach (PitchPoint point in note.PitchBend.Points)
+            {
+                var itt = Math.DivRem(i, 2, out int res);
+                Ellipse ellipse = new Ellipse()
+                {
+                    Fill = res == 0 ? pitchBrush : pitchSecondBrush,
+                    Width = radius,
+                    Height = radius
+                };
+                ellipse.SetValue(Canvas.LeftProperty, x0 + point.X *xScale - radius/2);
+                ellipse.SetValue(Canvas.TopProperty, y0 - point.Y / yScale * m - radius / 2);
+                ellipses.Add(ellipse);
+            }
+            return ellipses.ToArray();
+        }
+        
         public string PitchDataToPath(UNote note, double x0, double y0)
         {
-            const int intervalTick = 5;
-            double intervalMs = Ust.TickToMillisecond(intervalTick) * xScale;
-            double c = 10;
-            int[] pitchData = UPitch.BuildPitchData(note);
-            double xP = Ust.MillisecondToTick(note.Oto.Preutter) * xScale;
-            double y1 = pitchData[0] / (yScale);
+            double c = (yScale);
+            int[] pitchData = note.PitchBend.Array;
+            //double val = -note.Oto.Preutter < note.PitchBend.Points.First().X ? -note.Oto.Preutter : note.PitchBend.Points.First().X;
+            double val = -note.Oto.Preutter;
+            double xP = Ust.MillisecondToTick(val) * xScale;
+            double y1 = pitchData[0] / c;
             double x1 = 0;
-            string pitchSource = $"M {x0 - xP} {y0 + y1} ";
-            foreach (int point in pitchData.Skip(1))
+            double m = 2.26;
+            string pitchSource = $"M {x0 + xP} {y0 - y1 * m} ";
+            for (int i = 0; i < pitchData.Length - 1; i++)
             {
-                y1 = pitchData[0] / (yScale);
-                x1 += intervalMs;
-                pitchSource += $"L {x0 - xP + x1} {y0 + y1} ";
+                y1 = pitchData[i] / c;
+                x1 += Settings.IntervalTick * xScale;
+                pitchSource += $"L {x0 + xP + x1} {y0 - y1 * m} ";
             }
             return pitchSource;
         }
@@ -178,7 +200,6 @@ namespace PianoRoll.Control
         {
             return (double)startTime * xScale;
         }
-
 
         private void CreateBackgroundCanvas()
         {
@@ -212,9 +233,10 @@ namespace PianoRoll.Control
 
         private void DrawGrid()
         {
+            double width = lastPosition > minWidth ? lastPosition : minWidth;
             GridCanvas.Children.Clear();
             int beat = 0;
-            for (long n = 0; n < lastPosition; n += Settings.Resolution)
+            for (long n = 0; n < width; n += Settings.Resolution)
             {
                 Line line = new Line();
                 line.X1 = n * xScale;
@@ -236,13 +258,17 @@ namespace PianoRoll.Control
 
         private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Point currentMousePosition = e.GetPosition(RootCanvas);
-            Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
+            // AddNote(e.GetPosition(RootCanvas).X, e.GetPosition(RootCanvas).Y);
+        }
 
-            long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
+        private void AddNote(double X, double Y)
+        {
+            Console.WriteLine($"{X}, {Y}");
+
+            long startTime = Convert.ToInt64((X + scrollViewer.HorizontalOffset) / xScale);
             int MinLength = Settings.Resolution / MaxDivider;
-            startTime = (long) Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
-            int noteNumber = (int) (octaves * 12 - 1 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
+            startTime = (long)Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
+            int noteNumber = (int)(octaves * 12 - 1 - Math.Round((Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
 
             int duration = (int)(Settings.Resolution);
             string Lyric = "a";

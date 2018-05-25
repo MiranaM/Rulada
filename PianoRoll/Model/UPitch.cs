@@ -25,6 +25,7 @@ namespace PianoRoll.Model
         public abstract UExpression Clone(UNote newParent);
         public abstract UExpression Split(UNote newParent, int offset);
     }
+
     public class PitchBendExpression : UExpression
     {
         public PitchBendExpression(UNote parent) : base(parent, "pitch", "PIT")
@@ -40,6 +41,7 @@ namespace PianoRoll.Model
         public bool SnapFirst { set { _snapFirst = value; } get { return _snapFirst; } }
         public void AddPoint(PitchPoint p) { _data.Add(p); _data.Sort(); }
         public void RemovePoint(PitchPoint p) { _data.Remove(p); }
+        public int[] Array { get; set; }
         public override UExpression Clone(UNote newParent)
         {
             var data = new List<PitchPoint>();
@@ -89,6 +91,7 @@ namespace PianoRoll.Model
         }
         public override UExpression Split(UNote newParent, int postick) { var exp = Clone(newParent); return exp; }
     }
+
     public class PitchPointHitTestResult
     {
         public UNote Note;
@@ -119,7 +122,6 @@ namespace PianoRoll.Model
         public new PitchPoint Clone() { return new PitchPoint(X, Y, Shape); }
     }
 
-
     public enum PitchPointShape
     {
         /// <summary>
@@ -142,61 +144,60 @@ namespace PianoRoll.Model
 
     class UPitch
     {
-
-
         public static void PitchFromUst(dynamic data, ref UNote note)
         {
+            if (!data.ContainsKey("PBS"))
+            {
+                data["PBS"] = "-25";
+                data["PBW"] = "50";
+            }
             string pbs = "";
             note.PitchBend = new PitchBendExpression(note);
             var pts = note.PitchBend.Data as List<PitchPoint>;
             pts.Clear();
-            if (data.ContainsKey("PBS"))
+            pbs = data["PBS"];
+            // PBS
+            if (pbs.Contains(';'))
             {
-                pbs = data["PBS"];
-                // PBS
-                if (pbs.Contains(';'))
-                {
-                    pts.Add(new PitchPoint(double.Parse(pbs.Split(new[] { ';' })[0]), double.Parse(pbs.Split(new[] { ';' })[1])));
-                    note.PitchBend.SnapFirst = false;
-                }
-                else
-                {
-                    pts.Add(new PitchPoint(double.Parse(pbs), 0));
-                    note.PitchBend.SnapFirst = true;
-                }
+                pts.Add(new PitchPoint(double.Parse(pbs.Split(new[] { ';' })[0]), double.Parse(pbs.Split(new[] { ';' })[1])));
+                note.PitchBend.SnapFirst = false;
+            }
+            else
+            {
+                pts.Add(new PitchPoint(double.Parse(pbs), 0));
+                note.PitchBend.SnapFirst = true;
+            }
 
-                double x = pts.First().X;
-                if (data.ContainsKey("PBW"))
+            double x = pts.First().X;
+            if (data.ContainsKey("PBW"))
+            {
+                string[] w  = (data["PBW"]).GetType() == typeof(string) ? new string[] {data["PBW"]} : data["PBW"];
+                //string[] w = pbw.Split(new[] { ',' });
+                string[] y = null;
+                if (data.ContainsKey("PBY"))
                 {
-                    string[] w  = (data["PBW"]).GetType() == typeof(string) ? new string[] {data["PBW"]} : data["PBW"];
-                    //string[] w = pbw.Split(new[] { ',' });
-                    string[] y = null;
-                    if (data.ContainsKey("PBY"))
-                    {
-                        y = (data["PBY"]).GetType() == typeof(string) ? new string[] { data["PBY"] } : data["PBY"];
-                    }
-                    // if (w.Count() > 1) y = pby.Split(new[] { ',' });
-                    for (int l = 0; l < w.Count() - 1; l++)
-                    {
-                        x += w[l] == "" ? 0 : float.Parse(w[l]);
-                        pts.Add(new PitchPoint(x, y[l] == "" ? 0 : double.Parse(y[l])));
-                    }
-                    pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
+                    y = (data["PBY"]).GetType() == typeof(string) ? new string[] { data["PBY"] } : data["PBY"];
+                }
+                // if (w.Count() > 1) y = pby.Split(new[] { ',' });
+                for (int l = 0; l < w.Count() - 1; l++)
+                {
+                    x += w[l] == "" ? 0 : float.Parse(w[l]);
+                    pts.Add(new PitchPoint(x, y[l] == "" ? 0 : double.Parse(y[l])));
+                }
+                pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
 
-                    if (data.ContainsKey("PBM"))
+                if (data.ContainsKey("PBM"))
+                {
+                    string[] m = (data["PBM"]).GetType() == typeof(string) ? new string[] { data["PBM"] } : data["PBM"];
+                    for (int l = 0; l < m.Count() - 1; l++)
                     {
-                        string[] m = (data["PBM"]).GetType() == typeof(string) ? new string[] { data["PBM"] } : data["PBM"];
-                        for (int l = 0; l < m.Count() - 1; l++)
-                        {
-                            pts[l].Shape = m[l] == "r" ? PitchPointShape.o :
-                                           m[l] == "s" ? PitchPointShape.l :
-                                           m[l] == "j" ? PitchPointShape.l : PitchPointShape.io;
-                        }
+                        pts[l].Shape = m[l] == "r" ? PitchPointShape.o :
+                                        m[l] == "s" ? PitchPointShape.l :
+                                        m[l] == "j" ? PitchPointShape.l : PitchPointShape.io;
                     }
                 }
             }
         }
-
 
         public static VibratoExpression VibratoFromUst(string StringData, UNote note)
         {
@@ -302,8 +303,6 @@ namespace PianoRoll.Model
             }
 
             // Interpolation
-            const int intervalTick = 5;
-            double intervalMs = Ust.TickToMillisecond(intervalTick);
             double currMs = startMs;
             int i = 0;
 
@@ -322,7 +321,88 @@ namespace PianoRoll.Model
                     pit += InterpolateVibrato(note.Vibrato, currMs - vibratoStartMs);
 
                 pitches.Add((int)pit);
-                currMs += intervalMs;
+                currMs += Settings.IntervalMs;
+            }
+
+            return pitches.ToArray();
+        }
+
+        public static int[] BuildPitchData2(UNote note)
+        {
+
+            List<int> pitches = new List<int>();
+            List<PitchPoint> pps = new List<PitchPoint>();
+
+            foreach (PitchPoint pp in note.PitchBend.Points) pps.Add(pp);
+
+            // end and start points
+            double startMs = pps.First().X < -note.Oto.Preutter ? pps.First().X : - note.Oto.Preutter;
+            double endMs = Ust.TickToMillisecond(note.Length);
+
+            // if there is notePrev, I change first point Y
+            UNote prevNote = Ust.GetPrevNote(note);
+            UNote nextNote = Ust.GetNextNote(note);
+            // 1 halftone value
+            int val = 10;
+            if (prevNote != null && !prevNote.isRest) pps.First().Y = (prevNote.NoteNum - note.NoteNum) * val;
+
+
+            // if not all the length involved, add end and/or start pitch point
+            if (pps.Count > 0)
+            {
+                if (pps.First().X > startMs) pps.Insert(0, new PitchPoint(startMs, pps.First().Y));
+                if (pps.Last().X < endMs) pps.Add(new PitchPoint(endMs, pps.Last().Y));
+            }
+            else
+            {
+                throw new Exception("Zero pitch points.");
+            }
+
+            // Interpolation
+            int i = -1;
+
+            // up or down
+            int dir = -222;
+            // point value
+            double y = -9999;
+            // sin width
+            double xk = -9991;
+            // sin height
+            double yk = -9990;
+            // normalize to zero
+            double C = -9990;
+            // multiplayer
+            double m = 10;
+            foreach (PitchPoint pp in pps) pp.Y *= m;
+
+            Console.WriteLine($"New note");
+            foreach (PitchPoint pp in pps) Console.WriteLine($"y:{pp.Y}");
+
+            for (double x = startMs; x <= endMs; x += Settings.IntervalMs)
+            {
+                // only S shape is allowed
+                if (Math.Ceiling(pps[i+1].X / Settings.IntervalMs) == Math.Ceiling(x / Settings.IntervalMs) 
+                                    && (i + 1) < pps.Count - 1)
+                {
+                    // goto next pitch points pair
+                    i++;
+                    xk = pps[i + 1].X - pps[i].X;
+                    yk = pps[i + 1].Y - pps[i].Y;
+                    dir = pps[i + 1].Y > pps[i].Y ? 1 : -1;
+                    dir = pps[i + 1].Y == pps[i].Y ? 0 : dir;
+                    C = pps[i + 1].Y;
+                }
+                // local x
+                double xl = x - pps[i].X;
+                // y
+                y = -yk * ( 0.5 * Math.Cos((1 / xk) * 10 * xl / Math.PI) + 0.5) + C;
+
+                pitches.Add((int)Math.Round(y));
+                //Console.WriteLine($"[{x}; {y}] where X are {(int)((endMs - startMs) / Settings.IntervalMs)}, current={(int)((endMs - x) / Settings.IntervalMs)}, i={i}");
+                if ((int)((endMs - x) / Settings.IntervalMs) < 0)
+                {
+                    throw new Exception("wut");
+                }
             }
 
             return pitches.ToArray();

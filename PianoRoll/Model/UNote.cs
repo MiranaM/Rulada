@@ -272,5 +272,17 @@ namespace PianoRoll.Model
             }
             AliasParameters = new Dictionary<string, dynamic> { };
         }
+
+        public double GetRequiredLength()
+        {
+            double rl = Ust.TickToMillisecond(Length) + Oto.Preutter;
+            UNote next = Ust.GetNextNote(this);
+            if (next != null && !next.isRest)
+            {
+                rl -= next.Oto.Preutter;
+                rl += next.Oto.Overlap;
+            }
+            return rl;
+        }
     }
 }

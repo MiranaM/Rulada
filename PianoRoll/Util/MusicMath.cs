@@ -49,7 +49,8 @@ namespace PianoRoll.Util
 
         public static double TickToMillisecond(double tick, double BPM, int beatUnit, int resolution)
         {
-            return tick * 60000.0 / BPM * beatUnit / 4 / resolution;
+            var temp = tick * 60000.0 / BPM * beatUnit / 4 / resolution;
+            return temp;
         }
 
         public static int MillisecondToTick(double ms, double BPM, int beatUnit, int resolution)

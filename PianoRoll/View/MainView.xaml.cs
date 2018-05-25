@@ -71,8 +71,8 @@ namespace PianoRoll.View
             {
                 Ust.Load(openFileDialog.FileName);
                 USinger.Load(Ust.uSettings["VoiceDir"]);
-                this.PianoRollControl.UNotes = Ust.NotesList;
-                
+                Ust.BuildPitch();
+                this.PianoRollControl.UNotes = Ust.NotesList;                
             }
 
         }

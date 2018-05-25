@@ -73,6 +73,8 @@ namespace PianoRoll.Model
 
         private static void Read(dynamic data, string[] sections)
         {
+            NotesList.Clear();
+
             string stage = "Init";
             stage = "Version";
             // Reading string
@@ -97,10 +99,6 @@ namespace PianoRoll.Model
             if (data.ContainsKey("[#NEXT]")) NotesCount--;
 
             long absoluteTime = 0;
-            // Reading prev
-            stage = "Prev";
-            hasPrev = data.ContainsKey("[#PREV]");
-            if (hasPrev) uPrev = NoteRead(data, "PREV", ref absoluteTime, out string number);
 
             // Reading notes
             stage = "Notes";
@@ -119,12 +117,6 @@ namespace PianoRoll.Model
                 //Numbers[i] = number;
                 NotesList.Add(note);
             }
-
-            // Reading next
-            stage = "Next";
-            hasNext = data.ContainsKey("[#NEXT]");
-            if (hasNext) uNext = NoteRead(data, "NEXT", ref absoluteTime, out string number);
-            Console.WriteLine("Read UST successfully");
         }
 
         public static bool IsTempUst(string Dir)
@@ -139,6 +131,7 @@ namespace PianoRoll.Model
             uDefaultNote.Intensity = 100;
             uDefaultNote.Modulation = 0;
             uDefaultNote.Set("Envelope", "0,21,35,0,100,100,0,%,0");
+            uDefaultNote.Vibrato = new VibratoExpression(uDefaultNote);
         }
 
         private static UNote NoteRead(dynamic data, string which, ref long absoluteTime, out string number)
@@ -154,7 +147,6 @@ namespace PianoRoll.Model
             }
 
             UNote note = new UNote();
-            note.Vibrato = new VibratoExpression(note);
             note.SetDefaultNoteSettings();
             int i = 0;
             Console.WriteLine($"Setting values for note {number}");
@@ -382,7 +374,6 @@ namespace PianoRoll.Model
             return number.Contains("-");
         }
 
-
         public static string NoteNum2String(int noteNum)
         {
             int octave = noteNum / 12;
@@ -451,7 +442,6 @@ namespace PianoRoll.Model
             return NotesList[i + 1];
         }
 
-
         public static long MillisecondToTick(double ms)
         {
             return MusicMath.MillisecondToTick(ms, Settings.Tempo, Settings.BeatUnit, Settings.Resolution);
@@ -460,6 +450,62 @@ namespace PianoRoll.Model
         public static double TickToMillisecond(long tick)
         {
             return MusicMath.TickToMillisecond(tick, Settings.Tempo, Settings.BeatUnit, Settings.Resolution);
+        }
+
+        public static void BuildPitch()
+        {
+
+            foreach (UNote note in NotesList)
+            {
+                if (!note.isRest)
+                {
+                    note.PitchBend.Array = UPitch.BuildPitchData2(note);
+                }
+            }
+            for (int i = 0; i < NotesCount-1; i++)
+            {
+                UNote note = NotesList[i];
+                UNote noteNext = NotesList[i + 1];
+                UNote notePrev = GetPrevNote(note);
+                double pre, ovl, STP, preNext, ovlNext;
+                pre = note.Oto.Preutter;
+                ovl = note.Oto.Overlap;
+                preNext = noteNext.Oto.Preutter;
+                ovlNext = noteNext.Oto.Overlap;
+                if (notePrev != null && TickToMillisecond(note.Length) / 2 < pre - ovl)
+                {
+                    pre = note.Oto.Preutter / (note.Oto.Preutter - note.Oto.Overlap) * note.RequiredLength / 2;
+                    ovl = note.Oto.Overlap / (note.Oto.Preutter - note.Oto.Overlap) * note.RequiredLength / 2;
+                }
+                if (!note.isRest && TickToMillisecond(noteNext.Length) / 2 < preNext - ovlNext)
+                {
+                    preNext = noteNext.Oto.Preutter / (noteNext.Oto.Preutter - noteNext.Oto.Overlap) * noteNext.RequiredLength / 2;
+                    ovlNext = noteNext.Oto.Overlap / (noteNext.Oto.Preutter - noteNext.Oto.Overlap) * noteNext.RequiredLength / 2;
+                }
+
+                if (note.PitchBend == null || note.isRest) continue;
+
+                // remove excess pitch
+                var xPre = Ust.TickToMillisecond((long)note.PitchBend.Points[0].X);
+                if (xPre < - pre)
+                {
+                    int tokick = (int) Math.Round(-(pre + xPre) / Settings.IntervalMs);
+                    note.PitchBend.Array = note.PitchBend.Array.Skip(tokick).ToArray();
+                }
+
+                if (noteNext.PitchBend == null || noteNext.isRest) continue;
+
+                // end pitch from next note
+                int length = (int) Math.Round(preNext / Settings.IntervalMs);
+                int[] part = NotesList[i + 1].PitchBend.Array.Take(length).ToArray();
+                int noteLast = NotesList[i].PitchBend.Array.Length - 1;
+                int partLast = part.Length < NotesList[i].PitchBend.Array.Length ? part.Length - 1 : noteLast;
+                int C = (NotesList[i].NoteNum - NotesList[i + 1].NoteNum) * 100;
+                for (int k = 0; k < partLast+1; k++)
+                {
+                    NotesList[i].PitchBend.Array[noteLast - k] = part[partLast - k] - C;
+                }
+            }
         }
     }
 }

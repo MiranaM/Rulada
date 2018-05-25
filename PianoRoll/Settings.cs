@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading.Tasks;
+using PianoRoll.Model;
 
 namespace PianoRoll
 {
@@ -20,5 +21,7 @@ namespace PianoRoll
         public static int Resolution = 480;
         public static int BeatPerBar = 4;
         public static int BeatUnit = 4;
+        public static int IntervalTick = 10;
+        public static double IntervalMs { get { return Ust.TickToMillisecond(IntervalTick); } }
     }
 }

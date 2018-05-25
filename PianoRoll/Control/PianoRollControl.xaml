@@ -19,18 +19,16 @@
                 <GradientStop Offset="1" Color="#FF767489" />
             </LinearGradientBrush>
         </ScrollViewer.Foreground>
-        <Grid Name="PianoRollGrid">
+        <Grid Name="PianoRollGrid" HorizontalAlignment="Left">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="40" />
                 <ColumnDefinition Width="1000*" />
             </Grid.ColumnDefinitions>
-
             <Canvas
                 Name="Piano"
                 Grid.Column="0"
                 Width="43"
                 Background="#FFEEEEEE" />
-
             <Canvas
                 x:Name="RootCanvas"
                 Grid.Column="1"
@@ -48,6 +46,7 @@
                 <Canvas x:Name="GridCanvas" Margin="0" />
                 <Canvas x:Name="NoteCanvas" Margin="0" />
                 <Canvas x:Name="PitchCanvas" Margin="0" />
+                <Canvas x:Name="PitchPointCanvas" Margin="0" />
             </Canvas>
         </Grid>
     </ScrollViewer>
