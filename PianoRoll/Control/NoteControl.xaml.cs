@@ -90,5 +90,6 @@ namespace PianoRoll.Control
         {
             ResizeArea.Visibility = Visibility.Hidden;
         }
+
     }
 }

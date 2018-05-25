@@ -25,7 +25,7 @@ namespace PianoRoll.Control
     {
 
         #region variables
-        private List<UNote> uNotes;
+        private List<UNote> uNotes = new List<UNote>();
         double xScale = 1.0 / 15;
         double yScale = 15;
         private long lastPosition;
@@ -110,7 +110,7 @@ namespace PianoRoll.Control
                     note.NoteControl = noteControl;
                     NoteCanvas.Children.Add(noteControl);
                 }
-                
+
 
             }
             //scrollViewer.ScrollToVerticalOffset(540);
@@ -177,13 +177,13 @@ namespace PianoRoll.Control
                     Width = radius,
                     Height = radius
                 };
-                ellipse.SetValue(Canvas.LeftProperty, x0 + point.X *xScale - radius/2);
+                ellipse.SetValue(Canvas.LeftProperty, x0 + point.X * xScale - radius / 2);
                 ellipse.SetValue(Canvas.TopProperty, y0 - point.Y / yScale * m - radius / 2);
                 ellipses.Add(ellipse);
             }
             return ellipses.ToArray();
         }
-        
+
         public string PitchDataToPath(UNote note, double x0, double y0)
         {
             double c = (yScale);
@@ -286,14 +286,14 @@ namespace PianoRoll.Control
         private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
-            {            
+            {
                 Point currentMousePosition = e.GetPosition(RootCanvas);
                 Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
 
                 long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
                 int MinLength = Settings.Resolution / MaxDivider;
-                startTime = (long) Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
-                int noteNumber = (int) (octaves * 12 - 1 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
+                startTime = (long)Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
+                int noteNumber = (int)(octaves * 12 - 1 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
 
                 int duration = (int)(Settings.Resolution);
                 string Lyric = "a";
@@ -312,7 +312,7 @@ namespace PianoRoll.Control
 
         private void CreatePiano()
         {
-            
+
             for (int note = 0; note < octaves * 12; note++)
             {
                 if ((note % 12 == 1) // C#
@@ -348,7 +348,6 @@ namespace PianoRoll.Control
                 Piano.Children.Add(line);
             }
         }
-
 
     }
 }
