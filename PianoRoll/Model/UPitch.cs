@@ -407,6 +407,5 @@ namespace PianoRoll.Model
 
             return pitches.ToArray();
         }
-
     }
 }

@@ -1,0 +1,106 @@
+﻿<Window
+    x:Class="PianoRoll.View.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:PianoRoll.View"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="SettingsWindow"
+    Title="Настройки"
+    Width="420"
+    Height="300"
+    WindowStyle="ToolWindow"
+    mc:Ignorable="d">
+    <Grid>
+        <TabControl Margin="0" Background="#FFF0F0F0">
+            <TabItem x:Name="Project" Header="Проект">
+                <Grid Background="#FFF7F7F7">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="50" />
+                        <RowDefinition Height="50" />
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <ComboBox
+                        x:Name="Resamplers"
+                        Width="120"
+                        Height="22"
+                        Margin="162,20,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top" />
+                    <Label
+                        Width="105"
+                        Height="26"
+                        Margin="42,16,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="Выбор resampler:" />
+                    <Label
+                        Grid.Row="1"
+                        Width="94"
+                        Height="26"
+                        Margin="42,10,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top"
+                        Content="Выбор wavtool:" />
+                    <ComboBox
+                        x:Name="WavTools"
+                        Grid.Row="1"
+                        Width="120"
+                        Height="22"
+                        Margin="162,14,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top" />
+                    <Button
+                        Grid.Row="2"
+                        Width="88"
+                        Height="27"
+                        Margin="108,8,109,28"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Click="Button_Click"
+                        Content="Применить" />
+                </Grid>
+            </TabItem>
+            <TabItem
+                Width="54"
+                Height="20"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                Header="Голос">
+                <Grid Background="#FFF7F7F7">
+                    <TextBox
+                        x:Name="VoicePath"
+                        Width="240"
+                        Height="20"
+                        Margin="32,36,33,120"
+                        MouseDoubleClick="VoicePath_MouseDoubleClick"
+                        TextWrapping="Wrap" />
+                    <Button
+                        x:Name="OKVoice"
+                        Width="170"
+                        Height="20"
+                        Margin="68,135,67,19"
+                        Click="OKVoice_Click"
+                        Content="Принято" />
+                    <Label
+                        Margin="94,9,94,143"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="Путь к войсбанкам:" />
+                    <ComboBox
+                        x:Name="Voicebanks"
+                        Width="325"
+                        Height="25"
+                        Margin="47,120,0,0"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Top" />
+                    <Label
+                        Margin="138,72,138,94"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        Content="Выбранный голос:" />
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

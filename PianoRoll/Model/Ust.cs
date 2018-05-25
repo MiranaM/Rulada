@@ -90,7 +90,8 @@ namespace PianoRoll.Model
                     uSettings[setting] = data["[#SETTING]"][setting];
                 }
             }
-            Settings.Tempo = double.Parse(data["[#SETTING]"]["Tempo"]);
+            Settings.Tempo = double.Parse((data["[#SETTING]"]["Tempo"]).Replace(".", ",")); //замена точки на запятую
+            
 
             // Sections - Version, Settings;
             stage = "Notes count";

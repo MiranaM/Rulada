@@ -76,8 +76,12 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Util\Base64.cs" />
     <Compile Include="Util\MusicMath.cs" />
+    <Compile Include="Util\Themes.cs" />
     <Compile Include="View\SingerDialog.xaml.cs">
       <DependentUpon>SingerDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Control\NoteControl.xaml">
       <SubType>Designer</SubType>
@@ -113,6 +117,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\SingerDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -13,7 +14,7 @@ using NAudio;
 using NAudio.Midi;
 using PianoRoll.Control;
 using PianoRoll.Model;
-using System.Drawing;
+using PianoRoll.Util;
 
 namespace PianoRoll.Control
 {
@@ -34,14 +35,12 @@ namespace PianoRoll.Control
         private int minBars = 4;
         private double minWidth;
 
-        SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
-        SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
+        //SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
+        //SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
 
-        SolidColorBrush measureSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);
-        SolidColorBrush beatSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
-        SolidColorBrush pitchBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCoral);
-        SolidColorBrush pitchSecondBrush = new SolidColorBrush(System.Windows.Media.Colors.CadetBlue);
-        #endregion
+        //SolidColorBrush measureSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);
+        //SolidColorBrush beatSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
+        //SolidColorBrush pitchBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCoral);
 
         public PianoRollControl()
         {
@@ -125,8 +124,8 @@ namespace PianoRoll.Control
             var itt = Math.DivRem(i, 2, out int res);
             Path pitchPath = new Path()
             {
-                Stroke = res == 0? pitchBrush : pitchSecondBrush,
-                StrokeThickness = 1.5,
+                Stroke = Themes.pitchBrush,
+                StrokeThickness = 2,
                 Data = Geometry.Parse(pitchSource)
             };
 
@@ -214,7 +213,7 @@ namespace PianoRoll.Control
                     Rectangle rect = new Rectangle();
                     rect.Height = yScale;
                     rect.Width = RootCanvas.Width;
-                    rect.Fill = blackNoteChannelBrush;
+                    rect.Fill = Themes.blackNoteChannelBrush;
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     NoteBackgroundCanvas.Children.Add(rect);
                 }
@@ -226,7 +225,7 @@ namespace PianoRoll.Control
                 line.X2 = RootCanvas.Width;
                 line.Y1 = GetNoteYPosition(note);
                 line.Y2 = GetNoteYPosition(note);
-                line.Stroke = noteSeparatorBrush;
+                line.Stroke = Themes.noteSeparatorBrush;
                 NoteBackgroundCanvas.Children.Add(line);
             }
         }
@@ -245,11 +244,12 @@ namespace PianoRoll.Control
                 line.Y2 = octaves * 12 * yScale;
                 if (beat % 4 == 0)
                 {
-                    line.Stroke = measureSeparatorBrush;
+                    line.Stroke = Themes.measureSeparatorBrush;
                 }
                 else
                 {
-                    line.Stroke = beatSeparatorBrush;
+                    line.StrokeDashCap = PenLineCap.Flat;
+                    line.Stroke = Themes.beatSeparatorBrush;
                 }
                 GridCanvas.Children.Add(line);
                 beat++;
@@ -258,30 +258,29 @@ namespace PianoRoll.Control
 
         private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            // AddNote(e.GetPosition(RootCanvas).X, e.GetPosition(RootCanvas).Y);
-        }
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {            
+                Point currentMousePosition = e.GetPosition(RootCanvas);
+                Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
 
-        private void AddNote(double X, double Y)
-        {
-            Console.WriteLine($"{X}, {Y}");
+                long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
+                int MinLength = Settings.Resolution / MaxDivider;
+                startTime = (long) Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
+                int noteNumber = (int) (octaves * 12 - 1 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
 
-            long startTime = Convert.ToInt64((X + scrollViewer.HorizontalOffset) / xScale);
-            int MinLength = Settings.Resolution / MaxDivider;
-            startTime = (long)Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
-            int noteNumber = (int)(octaves * 12 - 1 - Math.Round((Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
+                int duration = (int)(Settings.Resolution);
+                string Lyric = "a";
 
-            int duration = (int)(Settings.Resolution);
-            string Lyric = "a";
-
-            UNote uNote = new UNote();
-            uNote.SetDefaultNoteSettings();
-            uNote.NoteNum = noteNumber;
-            uNote.Lyric = Lyric;
-            uNote.Length = duration;
-            uNote.AbsoluteTime = startTime;
-            Ust.NotesList.Add(uNote);
-            USinger.NoteOtoRefresh();
-            DrawUst();
+                UNote uNote = new UNote();
+                uNote.SetDefaultNoteSettings();
+                uNote.NoteNum = noteNumber;
+                uNote.Lyric = Lyric;
+                uNote.Length = duration;
+                uNote.AbsoluteTime = startTime;
+                Ust.NotesList.Add(uNote);
+                USinger.NoteOtoRefresh();
+                DrawUst();
+            }
         }
 
         private void CreatePiano()
@@ -298,13 +297,14 @@ namespace PianoRoll.Control
                     Rectangle rect = new Rectangle();
                     rect.Height = yScale;
                     rect.Width = Piano.Width;
-                    rect.Fill = blackNoteChannelBrush;
+                    rect.Fill = Themes.pianoBlackNote;
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     Piano.Children.Add(rect);
                 }
                 Label label = new Label();
                 string noteName = Ust.NoteNum2String(note);
                 label.Content = noteName;
+                label.Foreground = Themes.pianoNoteNames;
                 label.SetValue(Canvas.TopProperty, GetNoteYPosition(note) - 6);
                 Console.WriteLine(label.Content);
                 Piano.Children.Add(label);
@@ -317,7 +317,7 @@ namespace PianoRoll.Control
                 line.X2 = Piano.Width;
                 line.Y1 = GetNoteYPosition(note);
                 line.Y2 = GetNoteYPosition(note);
-                line.Stroke = noteSeparatorBrush;
+                line.Stroke = Themes.pianoBlackNote;
                 Piano.Children.Add(line);
             }
         }
