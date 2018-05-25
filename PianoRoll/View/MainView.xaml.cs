@@ -28,6 +28,18 @@ namespace PianoRoll.View
         public MainWindow()
         {
             InitializeComponent();
+            InitSettings();
+
+        }
+
+        private void InitSettings()
+        {
+            using (StreamReader sr = new StreamReader(Settings.SettingsFile))
+            {
+                Settings.VoiceDir = sr.ReadLine();
+                Settings.VoiceBankDir = sr.ReadLine();
+                Settings.ToolsDirectory = sr.ReadLine();
+            }
         }
 
 
@@ -57,7 +69,8 @@ namespace PianoRoll.View
             if(settings.ShowDialog().Value == true)
             {
                 USinger.Load(Ust.uSettings["VoiceDir"]);                
-                SingerName.Content = System.IO.Path.GetFileName(Ust.uSettings["VoiceDir"]);
+                SingerName.Content = new DirectoryInfo(Ust.uSettings["VoiceDir"]).Name;
+
             }
         }
 

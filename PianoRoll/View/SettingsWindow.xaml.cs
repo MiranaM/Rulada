@@ -1,4 +1,5 @@
 ﻿using Microsoft.Win32;
+using PianoRoll.Model;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -71,8 +72,10 @@ namespace PianoRoll.View
 
         private void OKVoice_Click(object sender, RoutedEventArgs e)
         {
-            Settings.VoiceDir = (string)Voicebanks.SelectedItem;
-            this.DialogResult = true;
+            Settings.VoiceBankDir = (string)Voicebanks.SelectedItem;
+            Settings.VoiceDir = System.IO.Path.GetFullPath(Settings.VoiceBankDir + "\\..\\");
+            Ust.uSettings["VoiceDir"] = Settings.VoiceBankDir;
+            this.DialogResult = true;            
             this.Close();
         }
 

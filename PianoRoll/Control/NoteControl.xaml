@@ -55,6 +55,7 @@
             VerticalAlignment="Top"
             FontSize="14"
             KeyDown="EditLyric_KeyDown"
+            LostFocus="EditLyric_LostFocus"
             SelectionOpacity="-4"
             Text="TextBox"
             TextWrapping="Wrap"

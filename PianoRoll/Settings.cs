@@ -11,6 +11,7 @@ namespace PianoRoll
     class Settings
     {
         public static string VoiceDir = @"D:\DISCS\YandexDisk\Heiden\UTAU\_voicebanks\";
+        public static string VoiceBankDir = @"D:\DISCS\YandexDisk\Heiden\UTAU\_voicebanks\";
         public static string WavTool = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\wavtool.exe");
         public static string Resampler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\m4.exe");
 
@@ -28,5 +29,8 @@ namespace PianoRoll
         public static double IntervalMs = 5;
         //public static int IntervalTick = 5;
         //public static double IntervalMs { get { return (int)Ust.TickToMillisecond(IntervalTick); } }
+
+        public static string SettingsFile = Path.Combine(Environment.CurrentDirectory, @"settings.ini");
+
     }
 }

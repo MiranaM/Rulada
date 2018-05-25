@@ -91,5 +91,9 @@ namespace PianoRoll.Control
             ResizeArea.Visibility = Visibility.Hidden;
         }
 
+        private void EditLyric_LostFocus(object sender, RoutedEventArgs e)
+        {
+            EditLyric.Visibility = Visibility.Hidden;
+        }
     }
 }

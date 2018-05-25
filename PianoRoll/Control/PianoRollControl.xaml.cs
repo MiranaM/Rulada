@@ -305,7 +305,10 @@ namespace PianoRoll.Control
                 uNote.Length = duration;
                 uNote.AbsoluteTime = startTime;
                 Ust.NotesList.Add(uNote);
-                USinger.NoteOtoRefresh();
+                if (USinger.isEnabled)
+                {
+                    USinger.NoteOtoRefresh();
+                }                
                 DrawUst();
             }
         }
