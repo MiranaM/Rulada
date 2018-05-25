@@ -9,26 +9,26 @@ namespace PianoRoll.Model
 {
     public abstract class UExpression
     {
-        public UExpression(UNote parent, string name, string abbr) { _parent = parent; _name = name; _abbr = abbr; }
+        public UExpression(string name, string abbr) { _name = name; _abbr = abbr; }
 
-        protected UNote _parent;
+        //protected UNote _parent;
         protected string _name;
         protected string _abbr;
 
-        public UNote Parent { get { return _parent; } }
+        //public UNote Parent { get { return _parent; } }
         public virtual string Name { get { return _name; } }
         public virtual string Abbr { get { return _abbr; } }
 
         public abstract string Type { get; }
         public abstract object Data { set; get; }
 
-        public abstract UExpression Clone(UNote newParent);
-        public abstract UExpression Split(UNote newParent, int offset);
+        //public abstract UExpression Clone(UNote newParent);
+        //public abstract UExpression Split(UNote newParent, int offset);
     }
 
     public class PitchBendExpression : UExpression
     {
-        public PitchBendExpression(UNote parent) : base(parent, "pitch", "PIT")
+        public PitchBendExpression() : base("pitch", "PIT")
         {
             _data.Add(new PitchPoint(0, 0));
             _data.Add(new PitchPoint(0, 0));
@@ -42,24 +42,24 @@ namespace PianoRoll.Model
         public void AddPoint(PitchPoint p) { _data.Add(p); _data.Sort(); }
         public void RemovePoint(PitchPoint p) { _data.Remove(p); }
         public int[] Array { get; set; }
-        public override UExpression Clone(UNote newParent)
-        {
-            var data = new List<PitchPoint>();
-            foreach (var p in this._data) data.Add(p.Clone());
-            return new PitchBendExpression(newParent) { Data = data };
-        }
-        public override UExpression Split(UNote newParent, int offset)
-        {
-            var newdata = new List<PitchPoint>();
-            while (_data.Count > 0 && _data.Last().X >= offset) { newdata.Add(_data.Last()); _data.Remove(_data.Last()); }
-            newdata.Reverse();
-            return new PitchBendExpression(newParent) { Data = newdata, SnapFirst = true };
-        }
+        //public override UExpression Clone(UNote newParent)
+        //{
+        //    var data = new List<PitchPoint>();
+        //    foreach (var p in this._data) data.Add(p.Clone());
+        //    return new PitchBendExpression(newParent) { Data = data };
+        //}
+        //public override UExpression Split(UNote newParent, int offset)
+        //{
+        //    var newdata = new List<PitchPoint>();
+        //    while (_data.Count > 0 && _data.Last().X >= offset) { newdata.Add(_data.Last()); _data.Remove(_data.Last()); }
+        //    newdata.Reverse();
+        //    return new PitchBendExpression(newParent) { Data = newdata, SnapFirst = true };
+        //}
     }
 
     public class VibratoExpression : UExpression
     {
-        public VibratoExpression(UNote parent) : base(parent, "vibrato", "VBR") { }
+        public VibratoExpression() : base("vibrato", "VBR") { }
         double _length;
         double _period;
         double _depth;
@@ -76,20 +76,20 @@ namespace PianoRoll.Model
         public double Drift { set { _drift = Math.Max(-100, Math.Min(100, value)); } get { return _drift; } }
         public override string Type { get { return "pitch"; } }
         public override object Data { set; get; }
-        public override UExpression Clone(UNote newParent)
-        {
-            return new VibratoExpression(newParent)
-            {
-                _length = _length,
-                _period = _period,
-                _depth = _depth,
-                _in = _in,
-                _out = _out,
-                _shift = _shift,
-                _drift = _drift
-            };
-        }
-        public override UExpression Split(UNote newParent, int postick) { var exp = Clone(newParent); return exp; }
+        //public override UExpression Clone(UNote newParent)
+        //{
+        //    return new VibratoExpression(newParent)
+        //    {
+        //        _length = _length,
+        //        _period = _period,
+        //        _depth = _depth,
+        //        _in = _in,
+        //        _out = _out,
+        //        _shift = _shift,
+        //        _drift = _drift
+        //    };
+        //}
+        //public override UExpression Split(UNote newParent, int postick) { var exp = Clone(newParent); return exp; }
     }
 
     public class PitchPointHitTestResult
@@ -152,7 +152,7 @@ namespace PianoRoll.Model
                 data["PBW"] = "50";
             }
             string pbs = "";
-            note.PitchBend = new PitchBendExpression(note);
+            note.PitchBend = new PitchBendExpression();
             var pts = note.PitchBend.Data as List<PitchPoint>;
             pts.Clear();
             pbs = data["PBS"];
@@ -199,26 +199,9 @@ namespace PianoRoll.Model
             }
         }
 
-        public static VibratoExpression VibratoFromUst(string StringData, UNote note)
+        private static double InterpolateVibrato(VibratoExpression vibrato, double posMs, long noteLength)
         {
-            VibratoExpression vibrato = note.Vibrato;
-            var args = StringData.Split(new[] { ',' }).Select(double.Parse).ToList();
-            if (args.Count() >= 7)
-            {
-                vibrato.Length = args[0];
-                vibrato.Period = args[1];
-                vibrato.Depth = args[2];
-                vibrato.In = args[3];
-                vibrato.Out = args[4];
-                vibrato.Shift = args[5];
-                vibrato.Drift = args[6];
-            }
-            return vibrato;
-        }
-
-        private static double InterpolateVibrato(VibratoExpression vibrato, double posMs)
-        {
-            double lengthMs = vibrato.Length / 100 * Ust.TickToMillisecond(vibrato.Parent.Length);
+            double lengthMs = vibrato.Length / 100 * Ust.TickToMillisecond(noteLength);
             double inMs = lengthMs * vibrato.In / 100;
             double outMs = lengthMs * vibrato.Out / 100;
 
@@ -228,103 +211,6 @@ namespace PianoRoll.Model
             else if (posMs > lengthMs - outMs) value *= (lengthMs - posMs) / outMs;
 
             return value;
-        }
-
-        public static int[] BuildPitchData(UNote note)
-        {
-
-            List<int> pitches = new List<int>();
-            UNote prevNote = Ust.GetPrevNote(note);
-            UNote nextNote = Ust.GetNextNote(note);
-            // Get relevant pitch points
-            List<PitchPoint> pps = new List<PitchPoint>();
-
-            // what?
-            bool prevNoteInvolved = prevNote != null; // && phoneme.Overlapped;
-            bool nextNoteInvolved = nextNote != null; // && nextNote.Phonemes[0].Overlapped;
-
-            double lastVibratoStartMs = 0;
-            double lastVibratoEndMs = 0;
-            double vibratoStartMs = 0;
-            double vibratoEndMs = 0;
-
-            if (prevNoteInvolved)
-            {
-                double offsetMs = Ust.TickToMillisecond(note.AbsoluteTime - prevNote.AbsoluteTime);
-                foreach (PitchPoint pp in prevNote.PitchBend.Points)
-                {
-                    var newpp = pp.Clone();
-                    newpp.X -= offsetMs;
-                    newpp.Y -= (note.NoteNum - prevNote.NoteNum) * 10;
-                    pps.Add(newpp);
-                }
-                if (prevNote.Vibrato.Depth != 0)
-                {
-                    lastVibratoStartMs = -Ust.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
-                    lastVibratoEndMs = 0;
-                }
-            }
-
-            foreach (PitchPoint pp in note.PitchBend.Points) pps.Add(pp);
-            if (note.Vibrato.Depth != 0)
-            {
-                vibratoEndMs = Ust.TickToMillisecond(note.Length);
-                vibratoStartMs = vibratoEndMs * (1 - note.Vibrato.Length / 100);
-            }
-
-            if (nextNoteInvolved)
-            {
-                double offsetMs = Ust.TickToMillisecond(note.AbsoluteTime - nextNote.AbsoluteTime);
-                foreach (PitchPoint pp in nextNote.PitchBend.Points)
-                {
-                    var newpp = pp.Clone();
-                    newpp.X -= offsetMs;
-                    newpp.Y -= (note.NoteNum - nextNote.NoteNum) * 10;
-                    pps.Add(newpp);
-                }
-            }
-
-            double startMs = -note.Oto.Preutter;
-            double endMs = Ust.TickToMillisecond(note.Length) -
-                (nextNote != null ? nextNote.Oto.Preutter - nextNote.Oto.Preutter : 0);
-            //double startMs = Ust.TickToMillisecond(note.AbsoluteTime) - note.Oto.Preutter;
-            //double endMs = Ust.TickToMillisecond(note.Length + note.AbsoluteTime) -
-            //    (nextNote != null ? nextNote.Oto.Preutter - nextNote.Oto.Overlap : 0);
-                // (nextNote != null && nextNote.Phonemes[0].Overlapped ? nextNote.Phonemes[0].Preutter - nextNote.Phonemes[0].Overlap : 0);
-            if (pps.Count > 0)
-            {
-                if (pps.First().X > startMs) pps.Insert(0, new PitchPoint(startMs, pps.First().Y));
-                if (pps.Last().X < endMs) pps.Add(new PitchPoint(endMs, pps.Last().Y));
-            }
-            else
-            {
-                throw new Exception("Zero pitch points.");
-                //return "\"\"";
-            }
-
-            // Interpolation
-            double currMs = startMs;
-            int i = 0;
-
-            while (currMs < endMs)
-            {
-                //while (pps[i + 1].X < currMs - 1) i++;
-                while (pps[i + 1].Y == pps[i].Y && i < pps.Count() - 2) i++;
-                double pit = MusicMath.InterpolateShape(pps[i].X, pps[i + 1].X, pps[i].Y, pps[i + 1].Y, currMs, pps[i].Shape);
-                //pit *= 10;
-
-                // Apply vibratos
-                if (currMs < lastVibratoEndMs && currMs >= lastVibratoStartMs)
-                    pit += InterpolateVibrato(prevNote.Vibrato, currMs - lastVibratoStartMs);
-
-                if (currMs < vibratoEndMs && currMs >= vibratoStartMs)
-                    pit += InterpolateVibrato(note.Vibrato, currMs - vibratoStartMs);
-
-                pitches.Add((int)pit);
-                currMs += Settings.IntervalMs;
-            }
-
-            return pitches.ToArray();
         }
 
         public static void BuildPitchData2(UNote note)
@@ -358,8 +244,22 @@ namespace PianoRoll.Model
                 throw new Exception("Zero pitch points.");
             }
 
+            double prevVibratoStartMs = 0;
+            double prevVibratoEndMs = 0;
+            double vibratoStartMs = 0;
+            double vibratoEndMs = 0;
+            if (note.Vibrato != null && note.Vibrato.Depth != 0)
+            {
+                vibratoEndMs = Ust.TickToMillisecond(note.Length);
+                vibratoStartMs = vibratoEndMs * (1 - note.Vibrato.Length / 100);
+            }
+            if (prevNote != null && prevNote.Vibrato != null && prevNote.Vibrato.Depth != 0)
+            {
+                prevVibratoStartMs = -Ust.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
+                prevVibratoEndMs = 0;
+            }
+
             // Interpolation
-            int i = -1;
 
             // up or down
             int dir = -222;
@@ -371,18 +271,15 @@ namespace PianoRoll.Model
             double yk = -9990;
             // normalize to zero
             double C = -9990;
-            // multiplayer
-            double m = 10;
-            foreach (PitchPoint pp in pps) pp.Y *= m;
 
-            Console.WriteLine($"New note");
-            foreach (PitchPoint pp in pps) Console.WriteLine($"y:{pp.Y}");
+            int startTick = (int)Ust.MillisecondToTick(startMs);
+            int endTick = (int)Ust.MillisecondToTick(endMs);
 
-            for (double x = startMs; x <= endMs; x += Settings.IntervalMs)
+            int i = -1;
+            for (int x = (int)pps[0].X; x <= endTick; x += Settings.IntervalTick)
             {
                 // only S shape is allowed
-                if (Math.Ceiling(pps[i+1].X / Settings.IntervalMs) == Math.Ceiling(x / Settings.IntervalMs) 
-                                    && (i + 1) < pps.Count - 1)
+                if (Math.Ceiling(pps[i+1].X/Settings.IntervalTick) == Math.Ceiling((double) x / Settings.IntervalTick) && (i + 1) < pps.Count - 1)
                 {
                     // goto next pitch points pair
                     i++;
@@ -397,9 +294,16 @@ namespace PianoRoll.Model
                 // y
                 y = -yk * ( 0.5 * Math.Cos((1 / xk) * 10 * xl / Math.PI) + 0.5) + C;
 
+                y *= 10;
+
+                // Apply vibratos
+                if (Ust.TickToMillisecond(x) < prevVibratoEndMs && Ust.TickToMillisecond(x) >= prevVibratoStartMs)
+                    y += InterpolateVibrato(prevNote.Vibrato, Ust.TickToMillisecond(x) - prevVibratoStartMs, prevNote.Length);
+
+                if (Ust.TickToMillisecond(x) < vibratoEndMs && Ust.TickToMillisecond(x) >= vibratoStartMs)
+                    y += InterpolateVibrato(note.Vibrato, Ust.TickToMillisecond(x) - vibratoStartMs, note.Length);
+
                 pitches.Add((int)Math.Round(y));
-                //Console.WriteLine($"[{x}; {y}] where X are {(int)((endMs - startMs) / Settings.IntervalMs)}, current={(int)((endMs - x) / Settings.IntervalMs)}, i={i}");
-                if ((int)((endMs - x) / Settings.IntervalMs) < 0) throw new Exception("wut");
             }
 
             if (pitches == null) throw new Exception("Так блет а где питч");

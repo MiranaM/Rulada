@@ -37,6 +37,11 @@ namespace PianoRoll.Model
         static public List<UNote> NotesList = new List<UNote>();
         static public string uVersion;
         static public int NotesCount = 0;
+        static public string Flags
+        {
+            get { return uSettings.ContainsKey("Flags") ? uSettings["Flags"] : ""; }
+            set { uSettings["Flags"] = value; }
+        }
 
         static public string Dir;
 
@@ -127,14 +132,14 @@ namespace PianoRoll.Model
                     case "Modulation": note.Modulation = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
                     case "Intensity": note.Intensity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
                     case "Flags": note.Flags = value; break;
+                    case "VBR": note.Vibrato = value; break;
                 }
                 i++;
             }
             note.UNumber = number;
             note.AbsoluteTime = absoluteTime;
-            note.RequiredLength = Math.Ceiling((double) note.Length / 50 + 1) * 50;
+            note.RequiredLength = note.GetRequiredLength();
             absoluteTime += (long)note.Length;
-            if (data.ContainsKey("VBR")) note.Vibrato = UPitch.VibratoFromUst(data[number]["VBR"], note);
             UPitch.PitchFromUst(data[number], ref note);
             return note;
         }
@@ -151,7 +156,7 @@ namespace PianoRoll.Model
             uDefaultNote.Intensity = 100;
             uDefaultNote.Modulation = 0;
             uDefaultNote.Envelope = "0,21,35,0,100,100,0,%,0";
-            uDefaultNote.Vibrato = new VibratoExpression(uDefaultNote);
+            uDefaultNote.Vibrato = new VibratoExpression();
         }
 
         //public static void Split(string number)

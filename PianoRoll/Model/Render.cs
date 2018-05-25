@@ -57,8 +57,6 @@ namespace PianoRoll.Model
             player.Stop();
         }
 
-
-
         public static void SendToResampler(UNote note, string tempfilename)
         {
             string pitchBase64 = Base64.Base64EncodeInt12(note.PitchBend.Array);
@@ -67,15 +65,15 @@ namespace PianoRoll.Model
                 "{0} {1:D} \"{2}\" {3} {4:D} {5} {6} {7:D} {8:D} !{9} {10}",
                 Ust.NoteNum2String(note.NoteNum), 
                 note.Velocity,
-                "g0", //note.Flags,
+                note.Flags + Ust.Flags,
                 note.Oto.Offset + note.Oto.Preutter - note.Oto.Overlap,
-                (int)note.GetRequiredLength(), // (int)note.RequiredLength,
+                (int)note.GetRequiredLength(),
                 note.Oto.Preutter,
                 note.Oto.Cutoff,
                 note.Intensity,
-                0, // modulation
+                note.Modulation,
                 note.NoteNum,
-                pitchBase64 // "+c#24#+f+p+3/J/c/s/5//AA#17#"
+                pitchBase64
             );
             string request = $"\"{Settings.Resampler}\" \"{Path.Combine(USinger.UPath,note.Oto.File)}\" \"{tempfilename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);

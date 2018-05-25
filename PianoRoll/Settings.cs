@@ -26,5 +26,7 @@ namespace PianoRoll
         public static int BeatUnit = 4;
         public static int IntervalTick { get { return (int) Ust.MillisecondToTick(IntervalMs); } }
         public static double IntervalMs = 5;
+        //public static int IntervalTick = 5;
+        //public static double IntervalMs { get { return (int)Ust.TickToMillisecond(IntervalTick); } }
     }
 }

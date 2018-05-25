@@ -128,6 +128,7 @@ namespace PianoRoll.Control
             else
             {
                 if (UNotes == null) return false;
+                Ust.BuildPitch();
                 int i = 0;
                 foreach (UNote note in UNotes)
                 {
@@ -165,7 +166,7 @@ namespace PianoRoll.Control
         public Ellipse[] GetPitchPoints(UNote note, double x0, double y0, int i = 0)
         {
             double radius = 5;
-            double m = 2.26;
+            double m = 22.6;
             List<Ellipse> ellipses = new List<Ellipse>();
             foreach (PitchPoint point in note.PitchBend.Points)
             {

@@ -30,12 +30,14 @@ namespace PianoRoll.Model
         private int _noteNum;
         private long _absoluteTime;
         private UEnvelope _envelope;
+        private VibratoExpression _vibrato;
 
         public dynamic Length { get => _length; set { SetLength(value); } }
         public dynamic Lyric { get => _lyric; set { SetLyric(value); } }
         public dynamic NoteNum { get => _noteNum; set { SetNoteNum(value); } }
         public dynamic Envelope { get => _envelope; set { SetEnvelope(value); } }
-        public long AbsoluteTime { get => _absoluteTime; set { _absoluteTime = (long) value; } }
+        public dynamic AbsoluteTime { get => _absoluteTime; set { _absoluteTime = (long) value; } }
+        public dynamic Vibrato { get => _vibrato; set { SetVibrato(value); } }
 
         public double RequiredLength { get; set; }
         public int Velocity { get; set; }
@@ -45,7 +47,6 @@ namespace PianoRoll.Model
         public string UNumber { get; set; }
         public UOto Oto { get; set; }
         public PitchBendExpression PitchBend { get; set; }
-        public VibratoExpression Vibrato { get; set; }
         public NoteControl NoteControl { get; set; }
 
         public double STP { get; set; }
@@ -149,6 +150,23 @@ namespace PianoRoll.Model
                 p5 = value.Length > 9 ? double.Parse(value[9], new CultureInfo("ja-JP").NumberFormat) : 0,
                 v5 = value.Length > 9 ? double.Parse(value[10], new CultureInfo("ja-JP").NumberFormat) : 100
             };
+        }
+
+        private void SetVibrato(VibratoExpression value) { _vibrato = value; }
+        private void SetVibrato(string[] value)
+        {
+            VibratoExpression vibrato = new VibratoExpression();
+            if (value.Count() >= 7)
+            {
+                vibrato.Length = double.Parse(value[0], new CultureInfo("ja-JP"));
+                vibrato.Period = double.Parse(value[1], new CultureInfo("ja-JP"));
+                vibrato.Depth = double.Parse(value[2], new CultureInfo("ja-JP"));
+                vibrato.In = double.Parse(value[3], new CultureInfo("ja-JP"));
+                vibrato.Out = double.Parse(value[4], new CultureInfo("ja-JP"));
+                vibrato.Shift = double.Parse(value[5], new CultureInfo("ja-JP"));
+                vibrato.Drift = double.Parse(value[6], new CultureInfo("ja-JP"));
+            }
+            _vibrato = vibrato;
         }
 
         private void SetLyric(string lyric)
