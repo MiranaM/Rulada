@@ -34,6 +34,7 @@ namespace PianoRoll.Control
         public int octaves = 7;
         private int minBars = 4;
         private double minWidth;
+        private bool isPitchShown = false;
 
         //SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
         //SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
@@ -41,6 +42,8 @@ namespace PianoRoll.Control
         //SolidColorBrush measureSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.Black);
         //SolidColorBrush beatSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
         //SolidColorBrush pitchBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCoral);
+
+        #endregion
 
         public PianoRollControl()
         {
@@ -104,11 +107,8 @@ namespace PianoRoll.Control
                         noteControl.Background = new SolidColorBrush(System.Windows.Media.Colors.DarkOrange);
                         noteControl.ToolTip = "can't found source file";
                     }
+                    note.noteControl = noteControl;
                     NoteCanvas.Children.Add(noteControl);
-                    double x0 = (double) noteControl.GetValue(Canvas.LeftProperty);
-                    double y0 = (double) noteControl.GetValue(Canvas.TopProperty) + yScale / 2;
-                    if (!note.isRest) DrawPitch(note, x0, y0, i);
-                    i++;
                 }
                 
 
@@ -116,7 +116,32 @@ namespace PianoRoll.Control
             //scrollViewer.ScrollToVerticalOffset(540);
         }
 
-        private void DrawPitch(UNote note, double x0, double y0, int i = 0)
+        public bool DrawPitch()
+        {
+            if (isPitchShown)
+            {
+                PitchCanvas.Children.Clear();
+                PitchPointCanvas.Children.Clear();
+                isPitchShown = false;
+                return false;
+            }
+            else
+            {
+                int i = 0;
+                foreach (UNote note in UNotes)
+                {
+                    if (!note.HasOto || note.isRest) continue;
+                    double x0 = (double)note.noteControl.GetValue(Canvas.LeftProperty);
+                    double y0 = (double)note.noteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+                    DrawPitchPath(note, x0, y0, i);
+                    i++;
+                }
+                isPitchShown = true;
+                return true;
+            }
+        }
+
+        private void DrawPitchPath(UNote note, double x0, double y0, int i = 0)
         {
             if (note.PitchBend.Points.Count == 0) return;
             string pitchSource = PitchDataToPath(note, x0, y0);
@@ -124,19 +149,19 @@ namespace PianoRoll.Control
             var itt = Math.DivRem(i, 2, out int res);
             Path pitchPath = new Path()
             {
-                Stroke = Themes.pitchBrush,
-                StrokeThickness = 2,
+                Stroke = res == 0 ? Themes.pitchBrush : Themes.pitchSecondBrush,
+                StrokeThickness = 1,
                 Data = Geometry.Parse(pitchSource)
             };
 
             PitchCanvas.Children.Add(pitchPath);
-            foreach (Ellipse ellipse in DrawPitchPoints(note, x0, y0, i))
+            foreach (Ellipse ellipse in GetPitchPoints(note, x0, y0, i))
             {
                 PitchPointCanvas.Children.Add(ellipse);
             }
         }
 
-        public Ellipse[] DrawPitchPoints(UNote note, double x0, double y0, int i = 0)
+        public Ellipse[] GetPitchPoints(UNote note, double x0, double y0, int i = 0)
         {
             double radius = 5;
             double m = 2.26;
@@ -146,7 +171,7 @@ namespace PianoRoll.Control
                 var itt = Math.DivRem(i, 2, out int res);
                 Ellipse ellipse = new Ellipse()
                 {
-                    Fill = res == 0 ? pitchBrush : pitchSecondBrush,
+                    Fill = res == 0 ? Themes.pitchBrush : Themes.pitchSecondBrush,
                     Width = radius,
                     Height = radius
                 };

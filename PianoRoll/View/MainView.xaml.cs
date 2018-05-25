@@ -81,6 +81,13 @@ namespace PianoRoll.View
             Render.Stop();
         }
 
+        private void MenuItemDrawPitch_Click(object sender, RoutedEventArgs e)
+        {
+            bool toDraw = PianoRollControl.DrawPitch();
+            if (toDraw) DrawPitch.Header = "_Рисовать питч ✓";
+            else DrawPitch.Header = "_Рисовать питч";
+        }
+
         private void LoadUST()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -90,6 +97,7 @@ namespace PianoRoll.View
             {
                 Ust.Load(openFileDialog.FileName);
                 USinger.Load(Ust.uSettings["VoiceDir"]);
+                USinger.NoteOtoRefresh();
                 Ust.BuildPitch();
                 this.PianoRollControl.UNotes = Ust.NotesList;                
             }

@@ -96,16 +96,13 @@ namespace PianoRoll.Model
             foreach (UNote note in Ust.NotesList)
             {
                 note.Oto = FindOto(note.Lyric);
-                if (note.Oto.Alias != "")
-                {
-                    note.HasOto = true;
-                }
+                if (note.Oto != null) note.HasOto = true;
             }
         }
 
         public static UOto FindOto(string lyric)
         {
-            if (USinger.isEnabled)
+            if (isEnabled)
             {
 
                 foreach (UOto uOto in Otos)
@@ -115,16 +112,7 @@ namespace PianoRoll.Model
                         return uOto;
                     }
                 }
-                return new UOto()
-                {
-                    File = $"{lyric}.wav",
-                    Alias = "",
-                    Offset = 0,
-                    Consonant = 0,
-                    Cutoff = 0,
-                    Preutter = 0,
-                    Overlap = 0
-                };
+                return null;
 
             }
             return null;

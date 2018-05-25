@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using PianoRoll.Util;
+using System.Globalization;
 
 namespace PianoRoll.Model
 {
@@ -33,11 +34,7 @@ namespace PianoRoll.Model
         static public UNote uDefaultNote = new UNote();
         //static public Dictionary<string, UNote> uNotes;
         //static public string[] Numbers;
-        static public UNote uPrev;
-        static public UNote uNext;
         static public List<UNote> NotesList = new List<UNote>();
-        static public bool hasPrev = false;
-        static public bool hasNext = false;
         static public string uVersion;
         static public int NotesCount = 0;
 
@@ -78,7 +75,9 @@ namespace PianoRoll.Model
             string stage = "Init";
             stage = "Version";
             // Reading string
-            // uVersion = data["[#VERSION]"];
+            if (data.ContainsKey("[#VERSION]")) uVersion = data["[#VERSION]"];
+            //else uVersion = data["[#SETTING]"].uVersion;
+
             // Reading settings
             stage = "Setting";
             data["[#SETTING]"].Keys.CopyTo(USettingsList, 0);
@@ -90,14 +89,12 @@ namespace PianoRoll.Model
                     uSettings[setting] = data["[#SETTING]"][setting];
                 }
             }
-            Settings.Tempo = double.Parse((data["[#SETTING]"]["Tempo"]).Replace(".", ",")); //замена точки на запятую
+            double.Parse((data["[#SETTING]"]["Tempo"]), new CultureInfo("ja-JP").NumberFormat);
             
 
             // Sections - Version, Settings;
             stage = "Notes count";
             NotesCount = data["SectionsNumber"] - 3;
-            if (data.ContainsKey("[#PREV]")) NotesCount--;
-            if (data.ContainsKey("[#NEXT]")) NotesCount--;
 
             long absoluteTime = 0;
 
@@ -107,8 +104,7 @@ namespace PianoRoll.Model
             //Numbers = new string[NotesCount];
             stage = "Searching first note number";
             int firstNote = -1;
-            if (hasPrev) firstNote = NoteNumber2Number(sections[4]);
-            else firstNote = NoteNumber2Number(sections[3]);
+            firstNote = NoteNumber2Number(sections[3]);
 
             for (int i = 0; i < NotesCount; i++)
             {
@@ -131,21 +127,15 @@ namespace PianoRoll.Model
             // We will apply this to "r" note which we won't consider Rest
             uDefaultNote.Intensity = 100;
             uDefaultNote.Modulation = 0;
-            uDefaultNote.Set("Envelope", "0,21,35,0,100,100,0,%,0");
+            uDefaultNote.Envelope = "0,21,35,0,100,100,0,%,0";
             uDefaultNote.Vibrato = new VibratoExpression(uDefaultNote);
         }
 
         private static UNote NoteRead(dynamic data, string which, ref long absoluteTime, out string number)
         {
             // May be #PREV, #0000 .... #NNNN, #NEXT
-            if (int.TryParse(which, out int tempInt))
-            {
-                number = Number2NoteNumber(tempInt);
-            }
-            else
-            {
-                number = $"[#{which}]";
-            }
+            if (int.TryParse(which, out int tempInt)) number = Number2NoteNumber(tempInt);
+            else number = $"[#{which}]";
 
             UNote note = new UNote();
             note.SetDefaultNoteSettings();
@@ -155,7 +145,33 @@ namespace PianoRoll.Model
             {
                 Console.WriteLine($"\tTrying set parameter  {parameter}");
                 var value = data[number][parameter];
-                note.Set(parameter, value);
+                switch(parameter)
+                {
+                    case "Lyric":
+                        note.Lyric = value;
+                        break;
+                    case "Length":
+                        note.Length = double.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                        break;
+                    case "NoteNum":
+                        note.NoteNum = value;
+                        break;
+                    case "Envelope":
+                        note.Envelope = value;
+                        break;
+                    case "Velocity":
+                        note.Velocity = value;
+                        break;
+                    case "Modulation":
+                        note.Modulation = int.Parse(value);
+                        break;
+                    case "Intensity":
+                        note.Intensity = int.Parse(value);
+                        break;
+                    case "Flags":
+                        note.Flags = value;
+                        break;
+                }
                 note.isRest = note.Lyric == "";
                 i++;
             }
@@ -179,26 +195,10 @@ namespace PianoRoll.Model
             {
                 vartext.Add($"{setting}={uSettings[setting]}");
             }
-            if (hasPrev)
-            {
-                vartext.Add("[#PREV]");
-                foreach (string line in uPrev.ToStrings())
-                {
-                    vartext.Add(line);
-                }
-            }
             foreach (UNote note in NotesList)
             {
                 vartext.Add(note.UNumber);
                 foreach (string line in note.ToStrings())
-                {
-                    vartext.Add(line);
-                }
-            }
-            if (hasNext)
-            {
-                vartext.Add("[#NEXT]");
-                foreach (string line in uNext.ToStrings())
                 {
                     vartext.Add(line);
                 }
@@ -262,12 +262,13 @@ namespace PianoRoll.Model
 
         //}
 
-        public static void SetLyric(string[] lyric)
+        public static void SetLyric(string[] lyric, bool skipRest = true)
         {
             int i = 0;
             foreach (UNote note in NotesList)
             {
-                note.SetLyric(lyric[i]);
+                if (note.isRest) continue;
+                note.Lyric = lyric[i];
                 i++;
             }
         }
@@ -299,31 +300,6 @@ namespace PianoRoll.Model
         {
             // it supposed to be count from oto.ini
             return 120;
-        }
-
-        public static void SetLyricPrev(string lyric)
-        {
-            if (hasPrev) uPrev.SetLyric(lyric);
-        }
-
-        public static void SetLyricNext(string lyric)
-        {
-            if (hasNext) uNext.SetLyric(lyric);
-        }
-
-        public static void SetLyric(string[] lyric, string lyricPrev, string lyricNext)
-        {
-            SetLyric(lyric);
-            SetLyricPrev(lyricPrev);
-            SetLyricNext(lyricNext);
-        }
-
-        public static void SetLyric(string[] lyric, string otherLyric = "")
-        {
-            SetLyric(lyric);
-            if (hasNext && hasPrev) SetLyricNext(otherLyric);
-            else if (hasPrev) SetLyricPrev(otherLyric);
-            else if (hasNext) SetLyricNext(otherLyric);
         }
 
         public static string UpgradeNumber(string initNumber, int i, Insert insert = Insert.Before)
@@ -450,7 +426,8 @@ namespace PianoRoll.Model
 
         public static double TickToMillisecond(long tick)
         {
-            return MusicMath.TickToMillisecond(tick, Settings.Tempo, Settings.BeatUnit, Settings.Resolution);
+            var temp = MusicMath.TickToMillisecond(tick, Settings.Tempo, Settings.BeatUnit, Settings.Resolution);
+            return temp;
         }
 
         public static void BuildPitch()

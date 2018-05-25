@@ -11,6 +11,8 @@
     d:DesignWidth="60"
     BorderBrush="#FF9BD7DA"
     ClipToBounds="True"
+    MouseEnter="UserControl_MouseEnter"
+    MouseLeave="UserControl_MouseLeave"
     SnapsToDevicePixels="True"
     mc:Ignorable="d">
     <UserControl.Background>
@@ -40,7 +42,8 @@
             Content=""
             Cursor="SizeWE"
             MouseLeftButtonDown="ResizeArea_MouseLeftButtonDown"
-            Opacity="50" />
+            Opacity="50"
+            Visibility="Hidden" />
         <TextBox
             x:Name="EditLyric"
             Width="60"

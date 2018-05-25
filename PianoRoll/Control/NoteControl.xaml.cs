@@ -43,8 +43,7 @@ namespace PianoRoll.Control
             Text = _l;
             this.Lyric.Content = Text;
             this.EditLyric.Text = Text;
-            note.Lyric = Text;
-            note.Oto = USinger.FindOto(Text);            
+            note.Lyric = Text;          
         }
 
         private void DrawUstAgain(object sender)
@@ -80,6 +79,16 @@ namespace PianoRoll.Control
         private void ResizeArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             
+        }
+
+        private void UserControl_MouseEnter(object sender, MouseEventArgs e)
+        {
+            ResizeArea.Visibility = Visibility.Visible;
+        }
+
+        private void UserControl_MouseLeave(object sender, MouseEventArgs e)
+        {
+            ResizeArea.Visibility = Visibility.Hidden;
         }
     }
 }

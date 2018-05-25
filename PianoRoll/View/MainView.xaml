@@ -34,7 +34,7 @@
             <MenuItem Header="_Файл">
                 <MenuItem Click="MenuItemOpenUst_Click" Header="_Открыть UST" />
                 <MenuItem Click="MenuItemSave_Click" Header="_Сохранить" />
-                <MenuItem Click="MenuItemSettings_Click" Header="_Настройка" />
+                <MenuItem Click="MenuItemSettings_Click" Header="_Настройки" />
                 <MenuItem Click="MenuItemExit_Click" Header="_Выход" />
             </MenuItem>
             <MenuItem
@@ -49,6 +49,10 @@
                 <MenuItem Click="MenuItemPlay_Click" Header="_Воспроизвести" />
                 <MenuItem Click="MenuItemStop_Click" Header="_Остановить" />
             </MenuItem>
+            <MenuItem
+                Name="DrawPitch"
+                Click="MenuItemDrawPitch_Click"
+                Header="_Рисовать питч" />
         </Menu>
         <Label
             x:Name="CursorTrack"
