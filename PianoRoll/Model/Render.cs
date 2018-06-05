@@ -39,6 +39,7 @@ namespace PianoRoll.Model
             System.Diagnostics.Process proc = new System.Diagnostics.Process();
             proc.StartInfo.FileName = Settings.Bat;
             proc.StartInfo.WorkingDirectory = Settings.CacheFolder;
+            proc.EnableRaisingEvents = true;
             proc.Exited += new EventHandler(PlayRendered);
             proc.Start();
         }

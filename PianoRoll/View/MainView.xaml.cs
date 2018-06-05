@@ -56,6 +56,7 @@ namespace PianoRoll.View
             VoiceMenu.IsEnabled = true;
             RenderMenu.IsEnabled = true;
 
+
         }
 
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
@@ -150,6 +151,16 @@ namespace PianoRoll.View
         private void SingerName_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
 
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Render.Play();
+        }
+
+        private void StopPlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Render.Stop();
         }
     }
 }

@@ -146,7 +146,7 @@ namespace PianoRoll.Model
                 v3 = double.Parse(value[5], new CultureInfo("ja-JP").NumberFormat),
                 v4 = double.Parse(value[6], new CultureInfo("ja-JP").NumberFormat),
                 // 7 -- %
-                p4 = double.Parse(value[8]),
+                p4 = value.Length > 7 ? double.Parse(value[8]) : 0,
                 p5 = value.Length > 9 ? double.Parse(value[9], new CultureInfo("ja-JP").NumberFormat) : 0,
                 v5 = value.Length > 9 ? double.Parse(value[10], new CultureInfo("ja-JP").NumberFormat) : 100
             };
