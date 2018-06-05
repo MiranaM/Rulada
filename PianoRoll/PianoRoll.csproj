@@ -72,6 +72,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ModelView\NoteControlModelView.cs" />
     <Compile Include="Model\Render.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Util\Base64.cs" />
@@ -105,7 +106,6 @@
     <Compile Include="Control\PianoRollControl.xaml.cs">
       <DependentUpon>PianoRollControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ModelView\NoteControlModelView.cs" />
     <Compile Include="Model\Ini.cs" />
     <Compile Include="Model\UPitch.cs" />
     <Compile Include="Model\UNote.cs" />

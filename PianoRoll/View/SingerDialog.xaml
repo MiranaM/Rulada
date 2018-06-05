@@ -18,6 +18,10 @@
             Name="SingerInfo"
             Grid.Row="0"
             VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="55*"/>
+                <ColumnDefinition Width="191*"/>
+            </Grid.ColumnDefinitions>
             <Image
                 Name="Avatar"
                 Width="100"
@@ -28,26 +32,23 @@
                 Source="../Image/avatar.png" />
             <Label
                 Name="Name"
-                Grid.ColumnSpan="2"
-                Margin="120,0,0,0"
+                Margin="10,0,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
                 Content="MyVB"
-                FontSize="24" />
+                FontSize="24" Grid.Column="1" />
             <Label
                 Name="Author"
-                Grid.ColumnSpan="2"
-                Margin="120,40,0,0"
+                Margin="10,40,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Content="Author: Author" />
+                Content="Author: Author" Grid.Column="1" />
             <Label
                 Name="Website"
-                Grid.ColumnSpan="2"
-                Margin="120,60,0,0"
+                Margin="10,60,0,0"
                 HorizontalAlignment="Left"
                 VerticalAlignment="Top"
-                Content="Web-site: Hyperlink" />
+                Content="Web-site: Hyperlink" Grid.Column="1" />
         </Grid>
         <ListView Name="OtoView" Margin="10,115,10,10">
             <ListView.View>

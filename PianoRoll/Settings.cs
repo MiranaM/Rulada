@@ -17,6 +17,8 @@ namespace PianoRoll
 
         public static string ToolsDirectory = @"D:\UTAU\_resampler";
 
+        public static string DefaultVoicebank = @"D:\UTAU\_voicebanks\Minto CVC Rus\";
+
         public static string CacheFolder = Path.Combine(Path.GetTempPath(), @"Rulada\Cache\");
         public static string Bat = Path.Combine(Path.GetTempPath(), @"Rulada\render.bat");
         public static string Output = Path.Combine(Path.GetTempPath(), @"Rulada\output.wav");

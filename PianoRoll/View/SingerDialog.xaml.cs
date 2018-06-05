@@ -16,7 +16,9 @@ namespace PianoRoll.View
             InitializeComponent();
             Name.Content = USinger.Name;
             Author.Content = $"Author: {USinger.Author}";
-            string imagepath = System.IO.Path.Combine(USinger.UPath, USinger.Image);
+            //string imagepath = System.IO.Path.Combine(USinger.UPath, USinger.Image);
+            string imagepath = System.IO.Path.Combine(Environment.CurrentDirectory, ".\\Image\\avatar.png");
+            
             Avatar.Source = new BitmapImage(new Uri(imagepath));
             DrawOto();
         }

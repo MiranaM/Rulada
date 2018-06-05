@@ -40,6 +40,7 @@ namespace PianoRoll.View
                 Settings.VoiceBankDir = sr.ReadLine();
                 Settings.ToolsDirectory = sr.ReadLine();
             }
+            USinger.UPath = Settings.DefaultVoicebank;
         }
 
 

@@ -45,7 +45,8 @@ namespace PianoRoll.Model
                 foreach (string line in charlines)
                 {
                     if (line.StartsWith("author=")) Author = line.Substring("author=".Length);
-                    if (line.StartsWith("image=")) Image = line.Substring("image=".Length);
+                    //if (line.StartsWith("image=")) { Image = line.Substring("image=".Length); } else
+                    Image = "../Image/avatar.png";
                     if (line.StartsWith("name=")) Name = line.Substring("name=".Length);
                     if (line.StartsWith("sample=")) Sample = line.Substring("sample=".Length);
                 }
