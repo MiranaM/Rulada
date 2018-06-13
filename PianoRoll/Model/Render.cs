@@ -11,20 +11,23 @@ namespace PianoRoll.Model
 {
     class Render
     {
-        public static WaveChannel32 waveChannel;
-        public static WaveOutEvent player;
+        static WaveChannel32 waveChannel;
+        static WaveOutEvent player;
+        static WaveStream output;
         static long position = 0;
 
-        public static void Play()
+        public static void Send()
         {
+            position = 0;
             USinger.NoteOtoRefresh();
             Ust.BuildPitch();
+
+            if (output != null) output.Close();
+            if (File.Exists(Settings.Output)) File.Delete(Settings.Output);
 
             if (!File.Exists(Settings.Bat)) File.Create(Settings.Bat);
             string delcommand = $"del \"{ Settings.CacheFolder }\\*.wav\"\r\n";
             File.WriteAllText(Settings.Bat, delcommand);
-            //if (Directory.Exists(Settings.CacheFolder)) Directory.Delete(Settings.CacheFolder);
-            //Directory.CreateDirectory(Settings.CacheFolder);)
             foreach (UNote note in Ust.NotesList)
             {
                 string tempfilename = Path.Combine(Settings.CacheFolder, $"{note.UNumber.Substring(2, 4)}.wav");
@@ -42,13 +45,19 @@ namespace PianoRoll.Model
             proc.StartInfo.FileName = Settings.Bat;
             proc.StartInfo.WorkingDirectory = Settings.CacheFolder;
             proc.EnableRaisingEvents = true;
-            proc.Exited += new EventHandler(PlayRendered);
+            proc.Exited += new EventHandler(OnExited);
             proc.Start();
         }
 
-        public static void PlayRendered(object sender, System.EventArgs e)
+        public static void OnExited(object sender, System.EventArgs e)
         {
-            WaveStream output = new WaveFileReader(Settings.Output);
+            Play();
+        }
+
+        public static void Play()
+        {
+            if (!File.Exists(Settings.Output)) return;
+            output = new WaveFileReader(Settings.Output);
             output.Position = position;
             waveChannel = new WaveChannel32(output);
             player = new WaveOutEvent();
@@ -60,12 +69,14 @@ namespace PianoRoll.Model
         {
             position = 0;
             player.Stop();
+            output.Close();
         }
 
         public static void Pause()
         {
             position = player.GetPosition();
             player.Stop();
+            output.Close();
         }
 
         public static void SendToResampler(UNote note, string tempfilename)

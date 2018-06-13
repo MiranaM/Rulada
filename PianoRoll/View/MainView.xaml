@@ -83,7 +83,7 @@
             Grid.Row="1"
             Width="30"
             Height="26"
-            Margin="173,3,0,4"
+            Margin="162,3,0,4"
             Padding="3,0,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
@@ -95,11 +95,11 @@
             FontSize="17"
             Foreground="#FF90FFFF" />
         <Button
-            x:Name="PausePlayButton"
+            x:Name="PauseButton"
             Grid.Row="1"
             Width="31"
             Height="26"
-            Margin="208,4,0,3"
+            Margin="197,4,0,3"
             Padding="0"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
@@ -111,11 +111,11 @@
             FontSize="17"
             Foreground="#FF90FFFF" />
         <Button
-            x:Name="StopPlayButton"
+            x:Name="StopButton"
             Grid.Row="1"
             Width="30"
             Height="26"
-            Margin="244,3,0,4"
+            Margin="233,3,0,4"
             Padding="0,-5,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Center"
@@ -136,5 +136,24 @@
             Margin="0"
             Fill="#FF001122"
             Stroke="Black" />
+        <Button
+            x:Name="PlayRenderedButton"
+            Grid.Row="1"
+            Width="30"
+            Height="26"
+            Margin="268,0,0,0"
+            Padding="0,-5,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="PlayRenderedButton_Click"
+            Content="↺"
+            FontFamily="Arial"
+            FontSize="24"
+            FontWeight="Bold"
+            Foreground="#FF90FFFF" />
     </Grid>
 </Window>
