@@ -71,6 +71,7 @@ namespace PianoRoll
             CacheFolder = Path.Combine(Local, @"Cache\");
             Bat = Path.Combine(Local, @"render.bat");
             Output = Path.Combine(Local, @"output.wav");
+            if (!Directory.Exists(CacheFolder)) Directory.CreateDirectory(CacheFolder);
     }
 
         public static void Save()

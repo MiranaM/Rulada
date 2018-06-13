@@ -15,6 +15,7 @@ using NAudio.Midi;
 using PianoRoll.Control;
 using PianoRoll.Model;
 using PianoRoll.Util;
+using System.Globalization;
 
 namespace PianoRoll.Control
 {
@@ -194,12 +195,13 @@ namespace PianoRoll.Control
             double y1 = pitchData[0] / c;
             double x1 = 0;
             double m = 2.26;
-            string pitchSource = $"M {x0 + xP} {y0 - y1 * m} ";
+            string f = "f2";
+            string pitchSource = $"M {(x0 + xP).ToString(f)} {(y0 - y1 * m).ToString(f)} ";
             for (int i = 0; i < pitchData.Length - 1; i++)
             {
                 y1 = pitchData[i] / c;
                 x1 += Settings.IntervalTick * xScale;
-                pitchSource += $"L {x0 + xP + x1} {y0 - y1 * m} ";
+                pitchSource += $"L {(x0 + xP + x1).ToString(f)} {(y0 - y1 * m).ToString(f)} ";
             }
             return pitchSource;
         }
