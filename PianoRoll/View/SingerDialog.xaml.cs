@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -16,10 +17,12 @@ namespace PianoRoll.View
             InitializeComponent();
             Name.Content = USinger.Name;
             Author.Content = $"Author: {USinger.Author}";
-            //string imagepath = System.IO.Path.Combine(USinger.UPath, USinger.Image);
-            string imagepath = System.IO.Path.Combine(Environment.CurrentDirectory, ".\\Image\\avatar.png");
-            
-            Avatar.Source = new BitmapImage(new Uri(imagepath));
+            if (USinger.Image != null)
+            {
+                string imagepath = System.IO.Path.Combine(USinger.UPath, USinger.Image);
+                if (File.Exists(imagepath)) Avatar.Source = new BitmapImage(new Uri(imagepath));
+            }
+
             DrawOto();
         }
 

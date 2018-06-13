@@ -11,29 +11,54 @@ namespace PianoRoll.Model
 
     public class USinger
     {
-        public static string Name { get; set; }
-        public static string Author { get; set; }
-        public static string Image { get; set; }
-        public static string Sample { get; set; }
-        public static string UPath { get; set; }
-        public static string Readme { get; set; }
-        public static List<string> Paths { get; set; }
-        public static List<UOto> Otos { get; set; }
-        public static bool isEnabled { get; set; }
+        public static string Name { get; private set; }
+        public static string Author { get; private set; }
+        public static string Image { get; private set; }
+        public static string Sample { get; private set; }
+        public static string UPath { get; private set; }
+        public static string VoicebankType { get; private set; }
+        public static string Readme { get; private set; }
+        public static List<string> Paths { get; private set; }
+        public static List<UOto> Otos { get; private set; }
+        public static bool isEnabled { get; private set; }
         
         public USinger() { }
 
         public static void Load(string dir)
         {
-            UPath = dir.Replace("%VOICE%", Settings.VoiceDir);
-            isEnabled = File.Exists(Path.Combine(UPath, "oto.ini"));
-            if (!isEnabled) return;
-            // Обработать отсутствие банка
+            UPath = dir.Replace("%VOICE%", Settings.VoicebankDirectory);
+            CheckVoicebank();
+            if (isEnabled)
+            {
+                CharLoad();
+                OtoLoad();
+                NoteOtoRefresh();
+            }
+            else
+            {
+                Name = Ust.VoiceDir;
+            }
+        }
+
+        static void CheckVoicebank()
+        {
+            if (!Directory.Exists(UPath))
+            { isEnabled = false; return;
+            }
             Paths = Directory.EnumerateDirectories(UPath).ToList();
-            Paths.Add("");
-            CharLoad();
-            OtoLoad();
-            NoteOtoRefresh();
+            Paths.Add(UPath);
+            isEnabled = false;
+            foreach (string path in Paths)
+            {
+                string otopath = Path.Combine(path, "oto.ini");
+                if (File.Exists(otopath))
+                {
+                    isEnabled = true;
+                    return;
+                }
+            }
+            isEnabled = false;
+            return;
         }
 
         private static void CharLoad()
@@ -45,11 +70,15 @@ namespace PianoRoll.Model
                 foreach (string line in charlines)
                 {
                     if (line.StartsWith("author=")) Author = line.Substring("author=".Length);
-                    //if (line.StartsWith("image=")) { Image = line.Substring("image=".Length); } else
-                    Image = "../Image/avatar.png";
+                    if (line.StartsWith("image=")) Image = line.Substring("image=".Length);
                     if (line.StartsWith("name=")) Name = line.Substring("name=".Length);
                     if (line.StartsWith("sample=")) Sample = line.Substring("sample=".Length);
+                    if (line.StartsWith("VoicebankType=")) VoicebankType = line.Substring("VoicebankType=".Length);
                 }
+            }
+            else
+            {
+                Name = Ust.VoiceDir;
             }
         }
 
@@ -97,8 +126,12 @@ namespace PianoRoll.Model
             foreach (UNote note in Ust.NotesList)
             {
                 if (note.IsRest) continue;
-                note.Oto = FindOto(note.Lyric);
-                if (note.Oto != null) note.HasOto = true;
+                UOto oto = FindOto(note.Lyric);
+                if (oto != null)
+                {
+                    note.Oto = oto;
+                    note.HasOto = true;
+                }
             }
         }
 

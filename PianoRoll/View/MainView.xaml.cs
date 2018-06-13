@@ -28,21 +28,38 @@ namespace PianoRoll.View
         public MainWindow()
         {
             InitializeComponent();
-            InitSettings();
-
+            Settings.Read();
+            if (Settings.LastFile != null) Open(Settings.LastFile);
+            else New();
+            SingerName.Content = USinger.Name;
+            SetPosition();
         }
 
-        private void InitSettings()
+        void SetPosition()
         {
-            using (StreamReader sr = new StreamReader(Settings.SettingsFile))
-            {
-                Settings.VoiceDir = sr.ReadLine();
-                Settings.VoiceBankDir = sr.ReadLine();
-                Settings.ToolsDirectory = sr.ReadLine();
-            }
-            USinger.UPath = Settings.DefaultVoicebank;
+            PianoRollControl.scrollViewer.ScrollToVerticalOffset(Settings.LastV);
+            PianoRollControl.scrollViewer.ScrollToHorizontalOffset(Settings.LastV);
         }
 
+        private void Open(string path)
+        {
+            Ust.Load(path);
+            USinger.Load(System.IO.Path.Combine(Settings.VoicebankDirectory, Ust.VoiceDir));
+            USinger.NoteOtoRefresh();
+            Ust.BuildPitch();
+            this.PianoRollControl.UNotes = Ust.NotesList;
+            Settings.LastFile = path;
+        }
+
+        private void New()
+        {
+
+        }
+
+        private void Save()
+        {
+
+        }
 
         private void MenuItemOpenUst_Click(object sender, RoutedEventArgs e)
         {
@@ -54,10 +71,7 @@ namespace PianoRoll.View
         {
             SingerName.Content = USinger.Name;
             SingerName.IsEnabled = true;
-            VoiceMenu.IsEnabled = true;
             RenderMenu.IsEnabled = true;
-
-
         }
 
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
@@ -108,24 +122,21 @@ namespace PianoRoll.View
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "UST Files (*.ust)|*.ust|All Files (*.*)|*.*";
             openFileDialog.FilterIndex = 1;
-            if (openFileDialog.ShowDialog().Value)
-            {
-                Ust.Load(openFileDialog.FileName);
-                USinger.Load(Ust.uSettings["VoiceDir"]);
-                USinger.NoteOtoRefresh();
-                Ust.BuildPitch();
-                this.PianoRollControl.UNotes = Ust.NotesList;                
-            }
-        }
-
-        private void Save()
-        {
-
+            if (openFileDialog.ShowDialog().Value) Open(openFileDialog.FileName);
         }
 
         private void Exit()
         {
             this.Close();
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            Settings.LastV = PianoRollControl.scrollViewer.VerticalOffset;
+            Settings.LastH = PianoRollControl.scrollViewer.HorizontalOffset;
+            Settings.Save();
+            base.OnClosed(e);
+            App.Current.Shutdown();
         }
 
         private void ShowSingerDialog()
@@ -136,22 +147,8 @@ namespace PianoRoll.View
 
         private void PianoRollControl_MouseMove(object sender, MouseEventArgs e)
         {
-            this.CursorTrack.Content = e.GetPosition(this.PianoRollControl);
-        }
-
-        private void SingerNameInfo_dClick(object sender, RoutedEventArgs e)
-        {
-            ShowSingerDialog();
-        }
-
-        private void SingerName_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            ShowSingerDialog();
-        }
-
-        private void SingerName_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-
+            Point p = e.GetPosition(this.PianoRollControl);
+            this.CursorTrack.Content = $"[{p.X.ToString("F2")} {p.Y.ToString("F2")}]";
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
@@ -162,6 +159,26 @@ namespace PianoRoll.View
         private void StopPlayButton_Click(object sender, RoutedEventArgs e)
         {
             Render.Stop();
+        }
+
+        private void SingerName_Click(object sender, MouseButtonEventArgs e)
+        {
+            ShowSingerDialog();
+        }
+
+        private void SingerName_MouseEnter(object sender, MouseEventArgs e)
+        {
+            SingerName.FontWeight = FontWeights.Bold;
+        }
+
+        private void SingerName_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SingerName.FontWeight = FontWeights.Normal;
+        }
+
+        private void PausePlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Render.Pause();
         }
     }
 }

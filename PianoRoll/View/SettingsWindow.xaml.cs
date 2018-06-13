@@ -25,6 +25,7 @@ namespace PianoRoll.View
         private List<String> ResamplerList = new List<string>();
         private List<String> WavToolList = new List<string>();
         private List<String> VoicebankList = new List<string>();
+        private Dictionary<string, string> VoicebankPaths = new Dictionary<string, string>();
 
         public Window1()
         {
@@ -34,7 +35,7 @@ namespace PianoRoll.View
             this.WavTools.ItemsSource = WavToolList;
             Resamplers.SelectedIndex = 1;
             this.WavTools.SelectedIndex = 1;
-            VoicePath.Text = Settings.VoiceDir;
+            VoicePath.Text = Settings.VoicebankDirectory;
             InitVoicebanks();
         }
 
@@ -42,7 +43,7 @@ namespace PianoRoll.View
         public void InitLists()
         {
             // Process the list of files found in the directory.
-            string[] fileEntries = Directory.GetFiles(Settings.ToolsDirectory);
+            string[] fileEntries = Directory.GetFiles(System.IO.Path.GetDirectoryName(Settings.Resampler));
             foreach (string fileName in fileEntries)
             {
                 if (fileName.EndsWith(".exe"))
@@ -59,22 +60,47 @@ namespace PianoRoll.View
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Settings.Resampler = System.IO.Path.Combine(Settings.ToolsDirectory, Resamplers.SelectedItem.ToString() + ".exe");
-            Settings.WavTool = System.IO.Path.Combine(Settings.ToolsDirectory, WavTools.SelectedItem.ToString() + ".exe");
+            Settings.Resampler = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Settings.Resampler), Resamplers.SelectedItem.ToString() + ".exe");
+            Settings.WavTool = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Settings.Resampler), WavTools.SelectedItem.ToString() + ".exe");
             this.Close();
         }
 
         private void InitVoicebanks ()
         {
-            VoicebankList = System.IO.Directory.GetDirectories(@VoicePath.Text).ToList<string>();
+            VoicebankList = new List<string>();
+            foreach (string path in System.IO.Directory.GetDirectories(Settings.VoicebankDirectory))
+            {
+                string charpath = System.IO.Path.Combine(path, "character.txt");
+                bool hasChar = false;
+                if (File.Exists(charpath))
+                {
+                    string[] lines = File.ReadAllLines(charpath);
+                    foreach (string line in lines)
+                    {
+                        if (line.Contains("name="))
+                        {
+                            string name = line.Substring("name=".Length);
+                            VoicebankList.Add(name);
+                            VoicebankPaths[name] = path;
+                            hasChar = true;
+                        }
+                    }
+                }
+                if (!hasChar)
+                {
+                    string name = System.IO.Path.GetFileName(path);
+                    VoicebankList.Add(name);
+                    VoicebankPaths[name] = path;
+                }
+            }
             Voicebanks.ItemsSource = VoicebankList;
         }
 
         private void OKVoice_Click(object sender, RoutedEventArgs e)
         {
-            Settings.VoiceBankDir = (string)Voicebanks.SelectedItem;
-            Settings.VoiceDir = System.IO.Path.GetFullPath(Settings.VoiceBankDir + "\\..\\");
-            Ust.uSettings["VoiceDir"] = Settings.VoiceBankDir;
+            Settings.VoicebankDirectory = (string)Voicebanks.SelectedItem;
+            USinger.Load(VoicebankPaths[(string)Voicebanks.SelectedItem]);
+            Ust.uSettings["VoiceDir"] = System.IO.Path.GetFullPath(USinger.UPath + "\\..\\");
             this.DialogResult = true;            
             this.Close();
         }

@@ -31,6 +31,7 @@ namespace PianoRoll.Model
         private long _absoluteTime;
         private UEnvelope _envelope;
         private VibratoExpression _vibrato;
+        private UOto _oto;
 
         public dynamic Length { get => _length; set { SetLength(value); } }
         public dynamic Lyric { get => _lyric; set { SetLyric(value); } }
@@ -45,67 +46,14 @@ namespace PianoRoll.Model
         public int Modulation { get; set; }
         public string Flags { get; set; }
         public string UNumber { get; set; }
-        public UOto Oto { get; set; }
         public PitchBendExpression PitchBend { get; set; }
         public NoteControl NoteControl { get; set; }
+        public UOto Oto { get { if (HasOto) return _oto; else return UOto.GetDefault(Lyric); } set { _oto = value; } }
 
         public double STP { get; set; }
 
         public bool IsRest = false;
         public bool HasOto = false;
-
-        //public void Set(string parameter, dynamic value)
-        //{
-        //    if (value is "") return;
-        //    if (value is IEnumerable<string>)
-        //    {
-        //        value = String.Join(",", value);
-        //    }
-
-        //    Console.WriteLine($"\t{parameter}={value}");
-        //    switch (parameter)
-        //    {
-        //        case "NoteNum":
-        //            this[parameter] = int.Parse(value) - 12;
-        //            break;
-        //        case "Length":
-        //        case "Velocity":
-        //        case "Intensity":
-        //        case "Modulation":
-        //            this[parameter] = int.Parse(value);
-        //            break;
-        //        case "Envelope":
-        //            string[] ops = value.Split(',');
-        //            this.Envelope.p1 = double.Parse(ops[0]);
-        //            this.Envelope.p2 = double.Parse(ops[1]);
-        //            this.Envelope.p3 = double.Parse(ops[2]);
-        //            this.Envelope.v1 = double.Parse(ops[3]);
-        //            this.Envelope.v2 = double.Parse(ops[4]);
-        //            this.Envelope.v3 = double.Parse(ops[5]);
-        //            this.Envelope.v4 = double.Parse(ops[6]);
-        //            // 7 -- %
-        //            this.Envelope.p4 = double.Parse(ops[8]);
-        //            this.Envelope.p5 = ops.Length > 9 ? double.Parse(ops[9]) : 0;
-        //            this.Envelope.v5 = ops.Length > 9 ? double.Parse(ops[10]) : 100;
-        //            break;
-        //        case "VBR":
-        //            break;
-        //        case "PBS":
-        //        case "PBW":
-        //        case "PBY":
-        //        case "PBM":
-        //            break;
-        //        case "Flags":
-        //        case "Lyric":
-        //            this[parameter] = value;
-        //            break;
-        //        default:
-        //            if (parameter[0] == '@') AliasParameters[parameter] = value;
-        //            else OtherParameters[parameter] = value;
-        //            break;
-        //    }
-        //    GotParameters.Add(parameter);
-        //}
 
         private void SetLength(int value) { _length = value; }
         private void SetLength(double value) { _length = (int) value; }

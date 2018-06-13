@@ -36,6 +36,7 @@ namespace PianoRoll.Model
         //static public string[] Numbers;
         static public List<UNote> NotesList = new List<UNote>();
         static public string uVersion;
+        static public string VoiceDir;
         static public int NotesCount = 0;
         static public string Flags
         {
@@ -81,7 +82,7 @@ namespace PianoRoll.Model
                 }
             }
             double.Parse((data["[#SETTING]"]["Tempo"]), new CultureInfo("ja-JP").NumberFormat);
-            
+            VoiceDir = uSettings["VoiceDir"].Replace("%VOICE%", "");
 
             // Sections - Version, Settings;
             stage = "Notes count";
@@ -159,57 +160,6 @@ namespace PianoRoll.Model
             uDefaultNote.Vibrato = new VibratoExpression();
         }
 
-        //public static void Split(string number)
-        //{
-        //    // Bisect all notes 
-        //    Dictionary<string, UNote> NewNotes = new Dictionary<string, UNote> { };
-        //    List<string> NewNumbers = new List<string> { };
-        //    string initNumber = Ust.Numbers[0];
-        //    int i = 0;
-        //    string currentNumber;
-        //    UNote note = uNotes[number];
-        //    UNote noteN = note.Copy();
-        //    int initLength = note.Length;
-        //    note.Length = initLength * 2 / 3;
-        //    noteN.Length = initLength - note.Length;
-        //    noteN.SetDefaultNoteSettings();
-
-        //    currentNumber = UpgradeNumber(initNumber, i);
-        //    NewNumbers.Add(currentNumber);
-        //    NewNotes[currentNumber] = note;
-
-        //    currentNumber = UpgradeNumber(initNumber, i, 10);
-        //    NewNumbers.Add(currentNumber);
-        //    NewNotes[currentNumber] = noteN;
-        //    Ust.Numbers = NewNumbers.ToArray();
-        //    Ust.uNotes = NewNotes;
-        //}
-
-        //public static void Merge(List<string> numbers)
-        //{
-        //    // Merge all notes to 1
-
-        //    UNote NewNote = uNotes[Numbers[0]].Copy();
-        //    string NewNumber = $"[#{Numbers.First().Substring(2, 4)}-{Numbers.Last().Substring(2, 4)}]";
-        //    List<string> lyrics = new List<string> { };
-        //    List<int> length = new List<int> { };
-
-        //    foreach (string number in numbers)
-        //    {
-        //        UNote note = uNotes[number];
-        //        lyrics.Add(note.Lyric);
-        //        length.Add(note.Length);
-        //        uNotes[number] = new UNote();
-        //    }
-        //    string NewLyric = String.Join(" ", lyrics);
-        //    int NewLength = length.Sum();
-        //    NewNote.Length = NewLength;
-        //    NewNote.Lyric = NewLyric;
-
-        //    uNotes[NewNumber] = NewNote;
-        //    Numbers = new string[] { NewNumber };
-
-        //}
 
         public static void SetLyric(string[] lyric, bool skipRest = true)
         {
@@ -222,28 +172,6 @@ namespace PianoRoll.Model
             }
         }
 
-        public static void InsertNote(string number, string lyric, Insert insert = Insert.Before)
-        {
-        //    string newNumber = UpgradeNumber(number, 0, 10, insert: insert);
-        //    List<string> listNumbers = Numbers.ToList();
-        //    int newIndex = listNumbers.IndexOf(number);
-        //    listNumbers.Insert(newIndex + 1, newNumber);
-        //    Ust.Numbers = listNumbers.ToArray();
-
-        //    UNote notePrev = uNotes[number];
-        //    UNote noteN = notePrev.Copy();
-        //    noteN.Lyric = lyric;
-        //    int len = GetLength(lyric);
-        //    if (len > notePrev.Length)
-        //    {
-        //        // note length is too small
-        //        return;
-        //    }
-        //    noteN.Length = len;
-        //    notePrev.Length -= noteN.Length;
-
-        //    uNotes[newNumber] = noteN;
-        }
 
         public static int GetLength(string lyric)
         {
@@ -396,12 +324,14 @@ namespace PianoRoll.Model
                 UNote notePrev = GetPrevNote(note);
                 if (note.IsRest) continue;
                 double pre, ovl, preNext, ovlNext;
-                pre = note.Oto.Preutter;
-                ovl = note.Oto.Overlap;
+                UOto oto;
+                oto = note.Oto;
+                pre = oto.Preutter;
+                ovl = oto.Overlap;
                 if (notePrev != null && TickToMillisecond(note.Length) / 2 < pre - ovl)
                 {
-                    pre = note.Oto.Preutter / (note.Oto.Preutter - note.Oto.Overlap) * note.RequiredLength / 2;
-                    ovl = note.Oto.Overlap / (note.Oto.Preutter - note.Oto.Overlap) * note.RequiredLength / 2;
+                    pre = oto.Preutter / (oto.Preutter - oto.Overlap) * note.RequiredLength / 2;
+                    ovl = oto.Overlap / (oto.Preutter - oto.Overlap) * note.RequiredLength / 2;
                 }
                 if (noteNext.HasOto)
                 {

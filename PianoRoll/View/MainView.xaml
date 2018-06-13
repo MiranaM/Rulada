@@ -38,11 +38,6 @@
                 <MenuItem Click="MenuItemExit_Click" Header="_Выход" />
             </MenuItem>
             <MenuItem
-                Name="VoiceMenu"
-                Click="MenuItemSinger_Click"
-                Header="_Голос"
-                IsEnabled="False" />
-            <MenuItem
                 Name="RenderMenu"
                 Header="_Рендер"
                 IsEnabled="False">
@@ -54,22 +49,6 @@
                 Click="MenuItemDrawPitch_Click"
                 Header="_Рисовать питч" />
         </Menu>
-        <Label
-            x:Name="CursorTrack"
-            Grid.RowSpan="2"
-            Width="109"
-            Height="35"
-            Margin="130,-5,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Content="sdsd"
-            Visibility="Hidden" />
-        <Rectangle
-            Grid.Row="3"
-            Width="Auto"
-            Margin="0"
-            Fill="#FF001122"
-            Stroke="Black" />
         <Rectangle
             Grid.Row="1"
             Height="33"
@@ -85,37 +64,77 @@
             Content="------------------"
             Foreground="#FF90FFFF"
             IsEnabled="False"
-            MouseDoubleClick="SingerNameInfo_dClick"
-            MouseRightButtonDown="SingerName_MouseRightButtonDown"
-            MouseRightButtonUp="SingerName_MouseRightButtonUp" />
+            MouseEnter="SingerName_MouseEnter"
+            MouseLeave="SingerName_MouseLeave"
+            MouseLeftButtonUp="SingerName_Click" />
+        <Label
+            x:Name="CursorTrack"
+            Grid.Row="1"
+            Width="182"
+            Height="33"
+            Margin="318,0,0,0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Content="0"
+            Foreground="#FF90FFFF"
+            Visibility="Visible" />
         <Button
             x:Name="PlayButton"
             Grid.Row="1"
             Width="30"
             Height="26"
-            Margin="0,0,80,0"
+            Margin="173,3,0,4"
+            Padding="3,0,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Center"
             Background="#00DDDDDD"
             BorderBrush="#FF90FFFF"
             Click="PlayButton_Click"
             Content="►"
-            FontFamily="Tetraclericton"
-            FontWeight="Bold"
+            FontFamily="Arial"
+            FontSize="17"
+            Foreground="#FF90FFFF" />
+        <Button
+            x:Name="PausePlayButton"
+            Grid.Row="1"
+            Width="31"
+            Height="26"
+            Margin="208,4,0,3"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="PausePlayButton_Click"
+            Content="❚❚"
+            FontFamily="Arial"
+            FontSize="17"
             Foreground="#FF90FFFF" />
         <Button
             x:Name="StopPlayButton"
             Grid.Row="1"
             Width="30"
             Height="26"
-            Margin="0,4,0,3"
+            Margin="244,3,0,4"
+            Padding="0,-5,0,0"
+            HorizontalAlignment="Left"
             VerticalAlignment="Center"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
             Background="#00DDDDDD"
             BorderBrush="#FF90FFFF"
             Click="StopPlayButton_Click"
-            Content="⏹"
-            FontFamily="Segoe UI Symbol"
+            Content="■"
+            FontFamily="Arial"
+            FontSize="24"
             FontWeight="Bold"
             Foreground="#FF90FFFF" />
 
+        <Rectangle
+            Grid.Row="3"
+            Width="Auto"
+            Margin="0"
+            Fill="#FF001122"
+            Stroke="Black" />
     </Grid>
 </Window>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -159,7 +160,9 @@ namespace PianoRoll.Model
             // PBS
             if (pbs.Contains(';'))
             {
-                pts.Add(new PitchPoint(double.Parse(pbs.Split(new[] { ';' })[0]), double.Parse(pbs.Split(new[] { ';' })[1])));
+                var v1 = double.Parse(pbs.Split(new[] { ';' })[0], new CultureInfo("ja-JP"));
+                var v2 = double.Parse(pbs.Split(new[] { ';' })[1], new CultureInfo("ja-JP"));
+                pts.Add(new PitchPoint(v1, v2));
                 note.PitchBend.SnapFirst = false;
             }
             else
@@ -215,14 +218,14 @@ namespace PianoRoll.Model
 
         public static void BuildPitchData2(UNote note)
         {
-
+            UOto oto = note.Oto;
             List<int> pitches = new List<int>();
             List<PitchPoint> pps = new List<PitchPoint>();
 
             foreach (PitchPoint pp in note.PitchBend.Points) pps.Add(pp);
 
             // end and start points
-            double startMs = pps.First().X < -note.Oto.Preutter ? pps.First().X : - note.Oto.Preutter;
+            double startMs = pps.First().X < -oto.Preutter ? pps.First().X : -oto.Preutter;
             double endMs = Ust.TickToMillisecond(note.Length);
 
             // if there is notePrev, I change first point Y

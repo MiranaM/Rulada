@@ -15,5 +15,19 @@ namespace PianoRoll.Model
         public double Cutoff { set; get; }
         public double Preutter { set; get; }
         public double Overlap { set; get; }
+
+        public static UOto GetDefault(string alias = "")
+        {
+            UOto oto = new UOto()
+            {
+                Alias = alias,
+                Offset = 0,
+                Consonant = 0,
+                Cutoff = 0,
+                Preutter = 50,
+                Overlap = 30
+            };
+            return oto;
+        }
     }
 }

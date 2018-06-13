@@ -13,12 +13,14 @@ namespace PianoRoll.Model
     {
         public static WaveChannel32 waveChannel;
         public static WaveOutEvent player;
+        static long position = 0;
 
         public static void Play()
         {
             USinger.NoteOtoRefresh();
             Ust.BuildPitch();
 
+            if (!File.Exists(Settings.Bat)) File.Create(Settings.Bat);
             string delcommand = $"del \"{ Settings.CacheFolder }\\*.wav\"\r\n";
             File.WriteAllText(Settings.Bat, delcommand);
             //if (Directory.Exists(Settings.CacheFolder)) Directory.Delete(Settings.CacheFolder);
@@ -26,7 +28,7 @@ namespace PianoRoll.Model
             foreach (UNote note in Ust.NotesList)
             {
                 string tempfilename = Path.Combine(Settings.CacheFolder, $"{note.UNumber.Substring(2, 4)}.wav");
-                if (note.HasOto) SendToResampler(note, tempfilename);
+                if (!note.IsRest) SendToResampler(note, tempfilename);
                 SendToWavtool(note, tempfilename);
             }
             File.AppendAllText(Settings.Bat, $"@if not exist \"{Settings.Output}.whd\" goto E \r\n" +
@@ -47,6 +49,7 @@ namespace PianoRoll.Model
         public static void PlayRendered(object sender, System.EventArgs e)
         {
             WaveStream output = new WaveFileReader(Settings.Output);
+            output.Position = position;
             waveChannel = new WaveChannel32(output);
             player = new WaveOutEvent();
             player.Init(waveChannel);
@@ -55,15 +58,25 @@ namespace PianoRoll.Model
 
         public static void Stop()
         {
+            position = 0;
+            player.Stop();
+        }
+
+        public static void Pause()
+        {
+            position = player.GetPosition();
             player.Stop();
         }
 
         public static void SendToResampler(UNote note, string tempfilename)
         {
             string pitchBase64 = Base64.Base64EncodeInt12(note.PitchBend.Array);
-            string ops = string.Format
+            string request = string.Format
             (
-                "{0} {1:D} \"{2}\" {3} {4:D} {5} {6} {7:D} {8:D} !{9} {10}",
+                "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n",
+                Settings.Resampler,
+                Path.Combine(USinger.UPath, note.Oto.File),
+                tempfilename,
                 Ust.NoteNum2String(note.NoteNum), 
                 note.Velocity,
                 note.Flags + Ust.Flags,
@@ -76,7 +89,6 @@ namespace PianoRoll.Model
                 note.NoteNum,
                 pitchBase64
             );
-            string request = $"\"{Settings.Resampler}\" \"{Path.Combine(USinger.UPath,note.Oto.File)}\" \"{tempfilename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);
         }
 

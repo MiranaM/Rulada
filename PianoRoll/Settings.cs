@@ -10,19 +10,25 @@ namespace PianoRoll
 {
     class Settings
     {
-        public static string VoiceDir = @"D:\DISCS\YandexDisk\Heiden\UTAU\_voicebanks\";
-        public static string VoiceBankDir = @"D:\DISCS\YandexDisk\Heiden\UTAU\_voicebanks\";
-        public static string WavTool = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\wavtool.exe");
-        public static string Resampler = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\m4.exe");
+        public static string SettingsFile = @"settings";
 
-        public static string ToolsDirectory = @"D:\UTAU\_resampler";
+        // take from settings
+        public static string Local;
+        public static string VoicebankDirectory;
+        public static string DefaultVoicebank;
+        public static string DefaultVoicebankType;
+        public static string WavTool;
+        public static string Resampler;
+        public static string LastFile;
+        public static double LastV;
+        public static double LastH;
 
-        public static string DefaultVoicebank = @"D:\UTAU\_voicebanks\Minto CVC Rus\";
+        // in local folder
+        public static string CacheFolder;
+        public static string Bat;
+        public static string Output;
 
-        public static string CacheFolder = Path.Combine(Path.GetTempPath(), @"Rulada\Cache\");
-        public static string Bat = Path.Combine(Path.GetTempPath(), @"Rulada\render.bat");
-        public static string Output = Path.Combine(Path.GetTempPath(), @"Rulada\output.wav");
-        //public static string Output = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), @"Rulada\output.wav");
+        // others
         public static double Tempo = 120.0;
         public static int Resolution = 480;
         public static int BeatPerBar = 4;
@@ -32,7 +38,57 @@ namespace PianoRoll
         //public static int IntervalTick = 5;
         //public static double IntervalMs { get { return (int)Ust.TickToMillisecond(IntervalTick); } }
 
-        public static string SettingsFile = Path.Combine(Environment.CurrentDirectory, @"settings.ini");
 
+
+        public static void Read()
+        {
+            if (!File.Exists(SettingsFile)) File.Create(SettingsFile);
+            string[] lines = File.ReadAllLines(SettingsFile);
+            foreach (string line in lines)
+            {
+                if (line.StartsWith("Local="))
+                    Local = line.Substring("Local=".Length);
+                if (line.StartsWith("VoicebankDirectory="))
+                    VoicebankDirectory = line.Substring("VoicebankDirectory=".Length).Replace("%Local%",Local);
+                if (line.StartsWith("DefaultVoicebank="))
+                    DefaultVoicebank = line.Substring("DefaultVoicebank=".Length).Replace("%Local%", Local);
+                if (line.StartsWith("DefaultVoicebankType="))
+                    DefaultVoicebankType = line.Substring("DefaultVoicebankType=".Length);
+                if (line.StartsWith("WavTool="))
+                    WavTool = line.Substring("WavTool=".Length).Replace("%Local%", Local);
+                if (line.StartsWith("Resampler="))
+                    Resampler = line.Substring("Resampler=".Length).Replace("%Local%", Local);
+                if (line.StartsWith("LastFile="))
+                    LastFile = line.Substring("LastFile=".Length).Replace(Local, "%Local%");
+                if (line.StartsWith("LastV="))
+                    if (double.TryParse(line.Substring("LastV=".Length), out double result))
+                        LastV = result;
+                if (line.StartsWith("LastH="))
+                    if (double.TryParse(line.Substring("LastH=".Length), out double result))
+                        LastH = result;
+            }
+            if (!File.Exists(LastFile)) LastFile = null;
+            CacheFolder = Path.Combine(Local, @"Cache\");
+            Bat = Path.Combine(Local, @"render.bat");
+            Output = Path.Combine(Local, @"output.wav");
+    }
+
+        public static void Save()
+        {
+            if (!File.Exists(SettingsFile)) File.Create(SettingsFile);
+            string[] lines = new string[]
+            {
+                $"Local=" + Local,
+                $"VoicebankDirectory=" + VoicebankDirectory.Replace(Local, "%Local%"),
+                $"DefaultVoicebank=" + DefaultVoicebank.Replace(Local, "%Local%"),
+                $"DefaultVoicebankType=" + DefaultVoicebankType,
+                $"WavTool=" + WavTool.Replace(Local, "%Local%"),
+                $"Resampler=" + Resampler.Replace(Local, "%Local%"),
+                $"LastFile=" + LastFile.Replace(Local, "%Local%"),
+                $"LastV=" + LastV,
+                $"LastH=" + LastH
+            };
+            File.WriteAllLines(SettingsFile, lines);
+        }
     }
 }
