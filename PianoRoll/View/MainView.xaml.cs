@@ -49,6 +49,7 @@ namespace PianoRoll.View
             Ust.BuildPitch();
             this.PianoRollControl.UNotes = Ust.NotesList;
             Settings.LastFile = path;
+            InitElementsAfterUSTLoading();
         }
 
         private void New()
