@@ -145,12 +145,14 @@ namespace PianoRoll.Model
             pre = IsRest ? 30 : Oto.Preutter;
             ovl = IsRest ? 30 : Oto.Overlap;
             stp = 0;
-            double length = pre + Ust.TickToMillisecond(Length);
+            double length = Ust.TickToMillisecond(Length);
             if (notePrev != null && Ust.TickToMillisecond(Length) / 2 < pre - ovl)
             {
-                pre = Oto.Preutter / (Oto.Preutter - Oto.Overlap) * length / 2;
-                ovl = Oto.Overlap / (Oto.Preutter - Oto.Overlap) * length / 2;
+                pre = Oto.Preutter / (Oto.Preutter - Oto.Overlap) * (length / 2);
+                ovl = Oto.Overlap / (Oto.Preutter - Oto.Overlap) * (length / 2);
                 stp = Oto.Preutter - pre;
+                if (pre > Oto.Preutter || ovl > Oto.Overlap)
+                    throw new Exception("Да еб вашу мать");
             }
         }
 

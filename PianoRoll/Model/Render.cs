@@ -72,16 +72,19 @@ namespace PianoRoll.Model
 
         public static void Stop()
         {
+            if (player != null) player.Stop();
+            if (output != null) output.Close();
             position = 0;
-            player.Stop();
-            output.Close();
         }
 
         public static void Pause()
         {
-            position = player.GetPosition();
-            player.Stop();
-            output.Close();
+            if (player != null)
+            {
+                position = player.GetPosition();
+                player.Stop();
+            }
+            if (output != null) output.Close();
         }
 
         public static void SendToResampler(UNote note, string tempfilename)
