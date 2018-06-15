@@ -218,6 +218,7 @@ namespace PianoRoll.Model
 
         public static void BuildPitchData2(UNote note)
         {
+            string lyric = note.Lyric;
             UOto oto = note.Oto;
             List<int> pitches = new List<int>();
             List<PitchPoint> pps = new List<PitchPoint>();
@@ -277,12 +278,17 @@ namespace PianoRoll.Model
 
             int startTick = (int)Ust.MillisecondToTick(startMs);
             int endTick = (int)Ust.MillisecondToTick(endMs);
+            int interv = Settings.IntervalTick;
 
             int i = -1;
-            for (int x = (int)pps[0].X; x <= endTick; x += Settings.IntervalTick)
+            for (int x = (int)pps[0].X; x <= endTick; x += interv)
             {
                 // only S shape is allowed
-                if (Math.Ceiling(pps[i+1].X/Settings.IntervalTick) == Math.Ceiling((double) x / Settings.IntervalTick) && (i + 1) < pps.Count - 1)
+                int nextX = (int) Math.Ceiling(pps[i + 1].X / interv);
+                int thisX = (int) Math.Ceiling((double)x / interv);
+                bool IsNextPointTime = thisX >= nextX;
+                bool IsLastPoint = (i + 2) == pps.Count;
+                if (IsNextPointTime && !IsLastPoint)
                 {
                     // goto next pitch points pair
                     i++;
@@ -295,16 +301,18 @@ namespace PianoRoll.Model
                 // local x
                 double xl = x - pps[i].X;
                 // y
-                y = -yk * ( 0.5 * Math.Cos((1 / xk) * 10 * xl / Math.PI) + 0.5) + C;
+                yk = Math.Round(yk, 3);
+                var X = Math.Abs(xk) < 5 ? 0 : (1 / xk) * 10 * xl / Math.PI;
+                y = -yk * ( 0.5 * Math.Cos(X) + 0.5) + C;
 
                 y *= 10;
 
                 // Apply vibratos
-                if (Ust.TickToMillisecond(x) < prevVibratoEndMs && Ust.TickToMillisecond(x) >= prevVibratoStartMs)
-                    y += InterpolateVibrato(prevNote.Vibrato, Ust.TickToMillisecond(x) - prevVibratoStartMs, prevNote.Length);
+                //if (Ust.TickToMillisecond(x) < prevVibratoEndMs && Ust.TickToMillisecond(x) >= prevVibratoStartMs)
+                //    y += InterpolateVibrato(prevNote.Vibrato, Ust.TickToMillisecond(x) - prevVibratoStartMs, prevNote.Length);
 
-                if (Ust.TickToMillisecond(x) < vibratoEndMs && Ust.TickToMillisecond(x) >= vibratoStartMs)
-                    y += InterpolateVibrato(note.Vibrato, Ust.TickToMillisecond(x) - vibratoStartMs, note.Length);
+                //if (Ust.TickToMillisecond(x) < vibratoEndMs && Ust.TickToMillisecond(x) >= vibratoStartMs)
+                //    y += InterpolateVibrato(note.Vibrato, Ust.TickToMillisecond(x) - vibratoStartMs, note.Length);
 
                 pitches.Add((int)Math.Round(y));
             }
