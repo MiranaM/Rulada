@@ -40,7 +40,7 @@ namespace PianoRoll.Model
         public dynamic AbsoluteTime { get => _absoluteTime; set { _absoluteTime = (long) value; } }
         public dynamic Vibrato { get => _vibrato; set { SetVibrato(value); } }
 
-        public double RequiredLength { get; set; }
+        public double RequiredLength { get { return GetRequiredLength(); } }
         public int Velocity { get; set; }
         public int Intensity { get; set; }
         public int Modulation { get; set; }
@@ -51,6 +51,11 @@ namespace PianoRoll.Model
         public UOto Oto { get { if (HasOto) return _oto; else return UOto.GetDefault(Lyric); } set { _oto = value; } }
 
         public double STP { get; set; }
+
+        public double pre { get; private set; }
+        public double ovl { get; private set; }
+        public double stp { get; private set; }
+        public double lengthAdd { get; private set; }
 
         public bool IsRest = false;
         public bool HasOto = false;
@@ -133,18 +138,46 @@ namespace PianoRoll.Model
             Envelope = Ust.uDefaultNote.Envelope;
             PitchBend = Ust.uDefaultNote.PitchBend;
         }
-        
+
+        public void Recalculate()
+        {
+            UNote notePrev = Ust.GetPrevNote(this);
+            pre = IsRest ? 30 : Oto.Preutter;
+            ovl = IsRest ? 30 : Oto.Overlap;
+            stp = 0;
+            double length = pre + Ust.TickToMillisecond(Length);
+            if (notePrev != null && Ust.TickToMillisecond(Length) / 2 < pre - ovl)
+            {
+                pre = Oto.Preutter / (Oto.Preutter - Oto.Overlap) * length / 2;
+                ovl = Oto.Overlap / (Oto.Preutter - Oto.Overlap) * length / 2;
+                stp = Oto.Preutter - pre;
+            }
+        }
+
         public double GetRequiredLength()
         {
-            double rl = Ust.TickToMillisecond(Length);
-            if (HasOto) rl += Oto.Preutter;
+            double requiredLength;
             UNote next = Ust.GetNextNote(this);
+            UNote prev = Ust.GetPrevNote(this);
+
+            //var ConsonantStretch = Math.Pow(2, 1 - Velocity / 100 );
+            //var ConsonantModified = Oto.Consonant * ConsonantStretch;
+            //var stpModified = stp * ConsonantStretch;
+            //var PreutterModified = pre * ConsonantStretch;
+            //var OverlapModified = ovl * ConsonantStretch;
+            //var SpokenLength = Ust.TickToMillisecond(Length) + PreutterModified - next.pre + next.ovl;
+            //requiredLength = Math.Ceiling((SpokenLength + stpModified + 25) / 50) * 50;
+
+            var len = Ust.TickToMillisecond(Length);
+            requiredLength = len + pre;
             if (next != null && !next.IsRest)
             {
-                rl -= next.Oto.Preutter;
-                rl += next.Oto.Overlap;
+                requiredLength -= next.Oto.Preutter;
+                requiredLength += next.Oto.Overlap;
             }
-            return rl;
+            requiredLength = Math.Ceiling((requiredLength + stp + 25) / 50 ) * 50;
+
+            return requiredLength;
         }
     }
 }

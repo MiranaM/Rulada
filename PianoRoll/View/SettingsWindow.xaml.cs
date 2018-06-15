@@ -20,27 +20,31 @@ namespace PianoRoll.View
     /// <summary>
     /// Interaction logic for SettingsWindow.xaml
     /// </summary>
-    public partial class Window1 : Window
+    public partial class SettingsWindow : Window
     {
         private List<String> ResamplerList = new List<string>();
         private List<String> WavToolList = new List<string>();
         private List<String> VoicebankList = new List<string>();
         private Dictionary<string, string> VoicebankPaths = new Dictionary<string, string>();
 
-        public Window1()
+        public SettingsWindow()
         {
             InitializeComponent();
+            Init();
+        }
+
+        void Init()
+        {
             InitLists();
-            this.Resamplers.ItemsSource = ResamplerList;
-            this.WavTools.ItemsSource = WavToolList;
+            Resamplers.ItemsSource = ResamplerList;
+            WavTools.ItemsSource = WavToolList;
             Resamplers.SelectedIndex = 1;
-            this.WavTools.SelectedIndex = 1;
+            WavTools.SelectedIndex = 1;
             VoicePath.Text = Settings.VoicebankDirectory;
             InitVoicebanks();
         }
 
-
-        public void InitLists()
+        void InitLists()
         {
             // Process the list of files found in the directory.
             string[] fileEntries = Directory.GetFiles(System.IO.Path.GetDirectoryName(Settings.Resampler));
@@ -98,9 +102,8 @@ namespace PianoRoll.View
 
         private void OKVoice_Click(object sender, RoutedEventArgs e)
         {
-            Settings.VoicebankDirectory = (string)Voicebanks.SelectedItem;
-            USinger.Load(VoicebankPaths[(string)Voicebanks.SelectedItem]);
-            Ust.uSettings["VoiceDir"] = System.IO.Path.GetFullPath(USinger.UPath + "\\..\\");
+            string selected = (string)Voicebanks.SelectedItem;
+            USinger.Load(System.IO.Path.Combine(Settings.VoicebankDirectory, VoicebankPaths[selected]));
             this.DialogResult = true;            
             this.Close();
         }

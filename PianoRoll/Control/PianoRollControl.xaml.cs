@@ -88,7 +88,6 @@ namespace PianoRoll.Control
             PitchCanvas.Children.Clear();
             PitchPointCanvas.Children.Clear();
             lastPosition = 0;
-            int i = 0;
 
             foreach (UNote note in uNotes)
             {

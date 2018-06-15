@@ -43,7 +43,9 @@ namespace PianoRoll.Model
         static void CheckVoicebank()
         {
             if (!Directory.Exists(UPath))
-            { isEnabled = false; return;
+            {
+                isEnabled = false;
+                return;
             }
             Paths = Directory.EnumerateDirectories(UPath).ToList();
             Paths.Add(UPath);
@@ -76,7 +78,7 @@ namespace PianoRoll.Model
                     if (line.StartsWith("VoicebankType=")) VoicebankType = line.Substring("VoicebankType=".Length);
                 }
             }
-            else
+            if (Name == null)
             {
                 Name = Ust.VoiceDir;
             }
@@ -101,6 +103,7 @@ namespace PianoRoll.Model
                         string pattern = "(.*)=(.*),(.*),(.*),(.*),(.*),(.*)";
                         var arr = Regex.Split(line, pattern);
                         double temp;
+                        if (arr.Length == 1) continue;
                         UOto oto = new UOto()
                         {
                             File = arr[1],

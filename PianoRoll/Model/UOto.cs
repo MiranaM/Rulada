@@ -24,8 +24,8 @@ namespace PianoRoll.Model
                 Offset = 0,
                 Consonant = 0,
                 Cutoff = 0,
-                Preutter = 50,
-                Overlap = 30
+                Preutter = 0,
+                Overlap = 0
             };
             return oto;
         }

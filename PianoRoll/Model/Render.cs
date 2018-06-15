@@ -20,17 +20,22 @@ namespace PianoRoll.Model
         {
             position = 0;
             USinger.NoteOtoRefresh();
+            Ust.Recalculate();
             Ust.BuildPitch();
 
             if (output != null) output.Close();
             if (File.Exists(Settings.Output)) File.Delete(Settings.Output);
+            if (File.Exists(Settings.Output + ".dat")) File.Delete(Settings.Output + ".dat");
+            if (File.Exists(Settings.Output + ".whd")) File.Delete(Settings.Output + ".whd");
+            
 
             if (!File.Exists(Settings.Bat)) File.Create(Settings.Bat);
             string delcommand = $"del \"{ Settings.CacheFolder }\\*.wav\"\r\n";
             File.WriteAllText(Settings.Bat, delcommand);
             foreach (UNote note in Ust.NotesList)
             {
-                string tempfilename = Path.Combine(Settings.CacheFolder, $"{note.UNumber.Substring(2, 4)}.wav");
+                string tempfilename = Path.Combine(Settings.CacheFolder, $"{note.UNumber.Substring(2, 4)}");
+                tempfilename += $"_{note.Lyric}_{note.NoteNum}_{note.Length}.wav";
                 if (!note.IsRest) SendToResampler(note, tempfilename);
                 SendToWavtool(note, tempfilename);
             }
@@ -89,11 +94,11 @@ namespace PianoRoll.Model
                 Path.Combine(USinger.UPath, note.Oto.File),
                 tempfilename,
                 Ust.NoteNum2String(note.NoteNum), 
-                note.Velocity,
-                note.Flags + Ust.Flags,
-                note.Oto.Offset + note.Oto.Preutter - note.Oto.Overlap,
-                (int)note.GetRequiredLength(),
-                note.Oto.Preutter,
+                note.Intensity,
+                Ust.Flags + note.Flags,
+                note.Oto.Offset, // + note.Oto.Preutter - note.Oto.Overlap, // offset
+                (int)note.RequiredLength,
+                note.Oto.Consonant,
                 note.Oto.Cutoff,
                 note.Intensity,
                 note.Modulation,
@@ -102,40 +107,40 @@ namespace PianoRoll.Model
             );
             File.AppendAllText(Settings.Bat, request);
         }
-
+        
         public static void SendToWavtool(UNote note, string tempfilename)
         {
-            UNote notePrev = Ust.GetPrevNote(note);
-            double pre, ovl, STP;
-            pre = note.HasOto ? note.Oto.Preutter : 30;
-            ovl = note.HasOto ? note.Oto.Overlap : 30;
-            STP = 0;
-            if (notePrev != null && Ust.TickToMillisecond(note.Length) / 2 < pre - ovl)
+            string lyric = note.Lyric;
+            //double length = Ust.TickToMillisecond(note.Length) + note.pre;
+            UNote next = Ust.GetNextNote(note);
+            //if (next != null)
+            //{
+            //    length -= next.pre;
+            //    length += next.ovl;
+            //}
+
+            double offset = note.pre;
+            if (next != null)
             {
-                pre = note.Oto.Preutter / (note.Oto.Preutter - note.Oto.Overlap) * note.RequiredLength / 2;
-                ovl = note.Oto.Overlap / (note.Oto.Preutter - note.Oto.Overlap) * note.RequiredLength / 2;
-                STP = note.Oto.Preutter - pre;
+                offset -= next.pre;
+                offset += next.ovl;
             }
+            
+            string sign = offset >= 0 ? "+" : "-";
 
-            double dunnowut;
-            if (notePrev == null || notePrev.IsRest) dunnowut = pre;
-            else dunnowut = notePrev.Oto.Preutter - pre + ovl;
-            //if (noteNext == null) dunnowut = note.Oto.Preutter;
-            //else dunnowut = note.Oto.Preutter - noteNext.Oto.Preutter + noteNext.Oto.Overlap;
-
-            string length = $"{note.Length}@{Settings.Tempo}{(pre > 0 ? "+" : "")}{dunnowut}";
-            length = $"{note.GetRequiredLength()}";
+            string length = $"{note.Length}@{Settings.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
 
             string ops = string.Format
             (
                 "{0} {1} {2} {3}",
-                STP, // STP,
-                length, 
+                note.stp, // STP,
+                length, //note.RequiredLength, 
                 note.Envelope.p1,
                 note.Envelope.p2
             );
             string opsNote;
-            if (note.IsRest) opsNote = "";
+            //if (note.IsRest) opsNote = "";
+            if (false) opsNote = "";
             else
             {
                 opsNote = string.Format
@@ -146,7 +151,7 @@ namespace PianoRoll.Model
                     note.Envelope.v2,
                     note.Envelope.v3,
                     note.Envelope.v4,
-                    note.Oto.Overlap, //note.Oto.Overlap,
+                    note.ovl, //note.Oto.Overlap,
                     note.Envelope.p4,
                     note.Envelope.p5,
                     note.Envelope.v5
@@ -155,5 +160,6 @@ namespace PianoRoll.Model
             string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{tempfilename}\" {ops} {opsNote} \r\n";
             File.AppendAllText(Settings.Bat, request);
         }
+
     }
 }

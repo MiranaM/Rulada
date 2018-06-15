@@ -47,15 +47,29 @@ namespace PianoRoll.Util
             }
         }
 
-        public static double TickToMillisecond(double tick, double BPM, int beatUnit, int resolution)
+        static double GetBeatTicks()
         {
-            var temp = tick * 60000.0 / BPM * beatUnit / 4 / resolution;
-            return temp;
+            return Settings.Resolution;
         }
 
-        public static int MillisecondToTick(double ms, double BPM, int beatUnit, int resolution)
+        static double GetTempoCoeff()
         {
-            return (int)Math.Ceiling(ms / 60000.0 * BPM / beatUnit * 4 * resolution);
+            return 60 / Settings.Tempo;
+        }
+
+        public static double TickToMillisecond(double tick)
+        {
+            double BeatTicks = GetBeatTicks();
+            double TempoCoeff = GetTempoCoeff();
+            double size = tick / BeatTicks;
+            return size * TempoCoeff * 1000;
+        }
+
+        public static int MillisecondToTick(double ms)
+        {
+            double BeatTicks = GetBeatTicks();
+            double TempoCoeff = GetTempoCoeff();
+            return (int)(ms / TempoCoeff / 1000 * BeatTicks);
         }
 
         public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x)

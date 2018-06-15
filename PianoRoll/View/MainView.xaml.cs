@@ -46,14 +46,14 @@ namespace PianoRoll.View
             Ust.Load(path);
             USinger.Load(System.IO.Path.Combine(Settings.VoicebankDirectory, Ust.VoiceDir));
             USinger.NoteOtoRefresh();
-            Ust.BuildPitch();
             this.PianoRollControl.UNotes = Ust.NotesList;
             Settings.LastFile = path;
+            InitElements();
         }
 
         private void New()
         {
-
+            InitElements();
         }
 
         private void Save()
@@ -64,14 +64,20 @@ namespace PianoRoll.View
         private void MenuItemOpenUst_Click(object sender, RoutedEventArgs e)
         {
             LoadUST();
-            InitElementsAfterUSTLoading();
         }
 
-        private void InitElementsAfterUSTLoading()
+        private void InitElements()
         {
-            SingerName.Content = USinger.Name;
-            SingerName.IsEnabled = true;
+            if (USinger.isEnabled)
+            {
+                SingerName.Content = USinger.Name;
+                SingerName.IsEnabled = true;
+            }
             RenderMenu.IsEnabled = true;
+            Tempo.Content = $"{Settings.Tempo.ToString("f2")} BPM";
+            BeatInfo.Content = $"{Settings.BeatPerBar}/4, 1/{Settings.BeatPerBar*Settings.BeatUnit}";
+            DrawPitch.Header = "_Рисовать питч";
+            PianoRollControl.Resize();
         }
 
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
@@ -80,8 +86,8 @@ namespace PianoRoll.View
         }
 
         private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
-        {            
-            Window1 settings = new Window1();            
+        {
+            SettingsWindow settings = new SettingsWindow();            
             if(settings.ShowDialog().Value == true)
             {
                 USinger.Load(Ust.uSettings["VoiceDir"]);                
@@ -145,6 +151,13 @@ namespace PianoRoll.View
             dialog.Show();
         }
 
+        void ShowTempoDialog()
+        {
+            TempoDialog dialog = new TempoDialog();
+            dialog.ShowDialog();
+            Tempo.Content = Settings.Tempo.ToString("f2");
+        }
+
         private void PianoRollControl_MouseMove(object sender, MouseEventArgs e)
         {
             Point p = e.GetPosition(this.PianoRollControl);
@@ -185,6 +198,11 @@ namespace PianoRoll.View
         private void PlayRenderedButton_Click(object sender, RoutedEventArgs e)
         {
             Render.Play();
+        }
+
+        private void Tempo_Click(object sender, MouseButtonEventArgs e)
+        {
+            ShowTempoDialog();
         }
     }
 }

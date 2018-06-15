@@ -70,12 +70,37 @@
         <Label
             x:Name="CursorTrack"
             Grid.Row="1"
-            Width="182"
+            Width="120"
             Height="33"
-            Margin="318,0,0,0"
+            Margin="380,0,0,0"
             HorizontalAlignment="Left"
             VerticalContentAlignment="Center"
-            Content="0"
+            Content="[0.00 0.00]"
+            Foreground="#FF90FFFF"
+            Visibility="Visible" />
+        <Label
+            x:Name="Tempo"
+            Grid.Row="1"
+            Width="60"
+            Height="13"
+            Margin="320,-14,0,0"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Content="120.00 BPM"
+            Foreground="#FF90FFFF"
+            MouseLeftButtonUp="Tempo_Click"
+            Visibility="Visible" />
+        <Label
+            x:Name="BeatInfo"
+            Grid.Row="1"
+            Width="60"
+            Height="13"
+            Margin="320,14,0,0"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Content="4/4, 1/64"
             Foreground="#FF90FFFF"
             Visibility="Visible" />
         <Button
