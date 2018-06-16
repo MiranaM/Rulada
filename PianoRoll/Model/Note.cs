@@ -1,4 +1,5 @@
 ﻿using PianoRoll.Control;
+using PianoRoll.Util;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -23,7 +24,7 @@ namespace PianoRoll.Model
         public double v5;
     }
 
-    public class UNote
+    public class Note
     {
         private int _length;
         private string _lyric;
@@ -31,7 +32,9 @@ namespace PianoRoll.Model
         private long _absoluteTime;
         private UEnvelope _envelope;
         private VibratoExpression _vibrato;
-        private UOto _oto;
+        private Phoneme _oto;
+
+        public Part Part;
 
         public dynamic Length { get => _length; set { SetLength(value); } }
         public dynamic Lyric { get => _lyric; set { SetLyric(value); } }
@@ -45,10 +48,9 @@ namespace PianoRoll.Model
         public int Intensity { get; set; }
         public int Modulation { get; set; }
         public string Flags { get; set; }
-        public string UNumber { get; set; }
         public PitchBendExpression PitchBend { get; set; }
         public NoteControl NoteControl { get; set; }
-        public UOto Oto { get { if (HasOto) return _oto; else return UOto.GetDefault(Lyric); } set { _oto = value; } }
+        public Phoneme Phoneme { get { if (HasPhoneme) return _oto; else return Model.Phoneme.GetDefault(Lyric); } set { _oto = value; } }
 
         public double STP { get; set; }
 
@@ -58,7 +60,7 @@ namespace PianoRoll.Model
         public double lengthAdd { get; private set; }
 
         public bool IsRest = false;
-        public bool HasOto = false;
+        public bool HasPhoneme = false;
 
         private void SetLength(int value) { _length = value; }
         private void SetLength(double value) { _length = (int) value; }
@@ -106,8 +108,9 @@ namespace PianoRoll.Model
         }
 
         private void SetVibrato(VibratoExpression value) { _vibrato = value; }
-        private void SetVibrato(string[] value)
+        private void SetVibrato(string vbr)
         {
+            string[] value = vbr.Split(',');
             VibratoExpression vibrato = new VibratoExpression();
             if (value.Count() >= 7)
             {
@@ -127,31 +130,22 @@ namespace PianoRoll.Model
             if (lyric == "R") lyric = "";
             if (lyric == "") IsRest = true;
             _lyric = lyric;
-            Oto = USinger.FindOto(lyric);
+            if (Part != null) Phoneme = Part.Singer.FindPhoneme(lyric);
         }
         
-        public void SetDefaultNoteSettings()
-        {
-            // We will apply this to "r" note which we won't consider Rest
-            Intensity = Ust.uDefaultNote.Intensity;
-            Modulation = Ust.uDefaultNote.Modulation;
-            Envelope = Ust.uDefaultNote.Envelope;
-            PitchBend = Ust.uDefaultNote.PitchBend;
-        }
-
         public void Recalculate()
         {
-            UNote notePrev = Ust.GetPrevNote(this);
-            pre = IsRest ? 30 : Oto.Preutter;
-            ovl = IsRest ? 30 : Oto.Overlap;
+            Note notePrev = Part.GetPrevNote(this);
+            pre = IsRest ? 30 : Phoneme.Preutter;
+            ovl = IsRest ? 30 : Phoneme.Overlap;
             stp = 0;
-            double length = Ust.TickToMillisecond(Length);
-            if (notePrev != null && Ust.TickToMillisecond(Length) / 2 < pre - ovl)
+            double length = MusicMath.TickToMillisecond(Length);
+            if (notePrev != null && MusicMath.TickToMillisecond(Length) / 2 < pre - ovl)
             {
-                pre = Oto.Preutter / (Oto.Preutter - Oto.Overlap) * (length / 2);
-                ovl = Oto.Overlap / (Oto.Preutter - Oto.Overlap) * (length / 2);
-                stp = Oto.Preutter - pre;
-                if (pre > Oto.Preutter || ovl > Oto.Overlap)
+                pre = Phoneme.Preutter / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
+                ovl = Phoneme.Overlap / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
+                stp = Phoneme.Preutter - pre;
+                if (pre > Phoneme.Preutter || ovl > Phoneme.Overlap)
                     throw new Exception("Да еб вашу мать");
             }
         }
@@ -159,23 +153,23 @@ namespace PianoRoll.Model
         public double GetRequiredLength()
         {
             double requiredLength;
-            UNote next = Ust.GetNextNote(this);
-            UNote prev = Ust.GetPrevNote(this);
+            Note next = Part.GetNextNote(this);
+            Note prev = Part.GetPrevNote(this);
 
             //var ConsonantStretch = Math.Pow(2, 1 - Velocity / 100 );
-            //var ConsonantModified = Oto.Consonant * ConsonantStretch;
+            //var ConsonantModified = Phoneme.Consonant * ConsonantStretch;
             //var stpModified = stp * ConsonantStretch;
             //var PreutterModified = pre * ConsonantStretch;
             //var OverlapModified = ovl * ConsonantStretch;
             //var SpokenLength = Ust.TickToMillisecond(Length) + PreutterModified - next.pre + next.ovl;
             //requiredLength = Math.Ceiling((SpokenLength + stpModified + 25) / 50) * 50;
 
-            var len = Ust.TickToMillisecond(Length);
+            var len = MusicMath.TickToMillisecond(Length);
             requiredLength = len + pre;
             if (next != null && !next.IsRest)
             {
-                requiredLength -= next.Oto.Preutter;
-                requiredLength += next.Oto.Overlap;
+                requiredLength -= next.Phoneme.Preutter;
+                requiredLength += next.Phoneme.Overlap;
             }
             requiredLength = Math.Ceiling((requiredLength + stp + 25) / 50 ) * 50;
 

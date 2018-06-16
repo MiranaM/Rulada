@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 using NAudio.Wave;
 using PianoRoll.Util;
+using PianoRoll.View;
 
 namespace PianoRoll.Model
 {
@@ -19,9 +20,10 @@ namespace PianoRoll.Model
         public static void Send()
         {
             position = 0;
-            USinger.NoteOtoRefresh();
-            Ust.Recalculate();
-            Ust.BuildPitch();
+            Part part = Project.Current.Tracks[0].Parts[0];
+            part.RefreshPhonemes();
+            part.Recalculate();
+            part.BuildPitch();
 
             if (output != null) output.Close();
             if (File.Exists(Settings.Output)) File.Delete(Settings.Output);
@@ -32,12 +34,14 @@ namespace PianoRoll.Model
             if (!File.Exists(Settings.Bat)) File.Create(Settings.Bat);
             string delcommand = $"del \"{ Settings.CacheFolder }\\*.wav\"\r\n";
             File.WriteAllText(Settings.Bat, delcommand);
-            foreach (UNote note in Ust.NotesList)
+            int i = 1;
+            foreach (Note note in part.Notes)
             {
-                string tempfilename = Path.Combine(Settings.CacheFolder, $"{note.UNumber.Substring(2, 4)}");
+                string tempfilename = Path.Combine(Settings.CacheFolder, $"{i}");
                 tempfilename += $"_{note.Lyric}_{note.NoteNum}_{note.Length}.wav";
                 if (!note.IsRest) SendToResampler(note, tempfilename);
                 SendToWavtool(note, tempfilename);
+                i++;
             }
             File.AppendAllText(Settings.Bat, $"@if not exist \"{Settings.Output}.whd\" goto E \r\n" +
                     $"@if not exist \"{Settings.Output}.dat\" goto E \r\n" +
@@ -87,22 +91,23 @@ namespace PianoRoll.Model
             if (output != null) output.Close();
         }
 
-        public static void SendToResampler(UNote note, string tempfilename)
+        public static void SendToResampler(Note note, string tempfilename)
         {
+            Part part = Project.Current.Tracks[0].Parts[0];
             string pitchBase64 = Base64.Base64EncodeInt12(note.PitchBend.Array);
             string request = string.Format
             (
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n",
                 Settings.Resampler,
-                Path.Combine(USinger.UPath, note.Oto.File),
+                Path.Combine(part.Singer.Dir, note.Phoneme.File),
                 tempfilename,
-                Ust.NoteNum2String(note.NoteNum), 
+                MusicMath.NoteNum2String(note.NoteNum), 
                 note.Intensity,
-                Ust.Flags + note.Flags,
-                note.Oto.Offset, // + note.Oto.Preutter - note.Oto.Overlap, // offset
+                part.Flags + note.Flags,
+                note.Phoneme.Offset, // + note.Phoneme.Preutter - note.Phoneme.Overlap, // offset
                 (int)note.RequiredLength,
-                note.Oto.Consonant,
-                note.Oto.Cutoff,
+                note.Phoneme.Consonant,
+                note.Phoneme.Cutoff,
                 note.Intensity,
                 note.Modulation,
                 note.NoteNum,
@@ -111,11 +116,12 @@ namespace PianoRoll.Model
             File.AppendAllText(Settings.Bat, request);
         }
         
-        public static void SendToWavtool(UNote note, string tempfilename)
+        public static void SendToWavtool(Note note, string tempfilename)
         {
+            Part part = Project.Current.Tracks[0].Parts[0];
             string lyric = note.Lyric;
             //double length = Ust.TickToMillisecond(note.Length) + note.pre;
-            UNote next = Ust.GetNextNote(note);
+            Note next = part.GetNextNote(note);
             //if (next != null)
             //{
             //    length -= next.pre;
@@ -131,7 +137,7 @@ namespace PianoRoll.Model
             
             string sign = offset >= 0 ? "+" : "-";
 
-            string length = $"{note.Length}@{Settings.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
+            string length = $"{note.Length}@{Project.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
 
             string ops = string.Format
             (
@@ -154,7 +160,7 @@ namespace PianoRoll.Model
                     note.Envelope.v2,
                     note.Envelope.v3,
                     note.Envelope.v4,
-                    note.ovl, //note.Oto.Overlap,
+                    note.ovl, //note.Phoneme.Overlap,
                     note.Envelope.p4,
                     note.Envelope.p5,
                     note.Envelope.v5

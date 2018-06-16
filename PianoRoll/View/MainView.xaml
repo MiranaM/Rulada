@@ -32,9 +32,22 @@
             VerticalAlignment="Top"
             Background="#00A9D1F4">
             <MenuItem Header="_Файл">
-                <MenuItem Click="MenuItemOpenUst_Click" Header="_Открыть UST" />
+                <MenuItem Click="MenuItemNew_Click" Header="_Новый проект..." />
+                <MenuItem Click="MenuItemOpen_Click" Header="_Открыть..." />
                 <MenuItem Click="MenuItemSave_Click" Header="_Сохранить" />
-                <MenuItem Click="MenuItemSettings_Click" Header="_Настройки" />
+                <MenuItem Click="MenuItemSaveAs_Click" Header="_Сохранить как..." />
+                <MenuItem Header="_Импорт">
+                    <MenuItem Click="MenuItemImportUst_Click" Header="_UST (.ust)" />
+                    <MenuItem Click="MenuItemImportMidi_Click" Header="_MIDI (.midi)" />
+                    <MenuItem Click="MenuItemImportVsq_Click" Header="_VSQ (.vsq, .vsqx)" />
+                    <MenuItem Click="MenuItemImportAudio_Click" Header="_Audio (.mp3, .wav, .ogg)" />
+                </MenuItem>
+                <MenuItem Header="_Экспорт">
+                    <MenuItem Click="MenuItemExportUst_Click" Header="_UST (.ust)" />
+                    <MenuItem Click="MenuItemExportMidi_Click" Header="_MIDI (.midi)" />
+                    <MenuItem Click="MenuItemExportVsq_Click" Header="_VSQ (.vsq, vsqx)" />
+                </MenuItem>
+                <MenuItem Click="MenuItemSettings_Click" Header="_Настройки..." />
                 <MenuItem Click="MenuItemExit_Click" Header="_Выход" />
             </MenuItem>
             <MenuItem
@@ -50,11 +63,11 @@
                     Click="MenuItemPitchOff_Click"
                     Header="_Убрать питч" />
                 <MenuItem
-                    Name="DrawPartPitch"
+                    Name="DrawPitch"
                     Click="MenuItemDrawPitch_Click"
                     Header="_Питч нот" />
                 <MenuItem
-                    Name="DrawPitch"
+                    Name="DrawPartPitch"
                     Click="MenuItemDrawPartPitch_Click"
                     Header="_Питч партии" />
             </MenuItem>

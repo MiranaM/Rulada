@@ -73,7 +73,14 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ModelView\NoteControlModelView.cs" />
+    <Compile Include="Model\Midi.cs" />
     <Compile Include="Model\Render.cs" />
+    <Compile Include="Model\Project.cs" />
+    <Compile Include="Model\SoundPart.cs" />
+    <Compile Include="Model\SoundTrack.cs" />
+    <Compile Include="Model\Track.cs" />
+    <Compile Include="Model\Ust.cs" />
+    <Compile Include="Model\Vsq.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Util\Base64.cs" />
     <Compile Include="Util\MusicMath.cs" />
@@ -110,11 +117,11 @@
       <DependentUpon>PianoRollControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Ini.cs" />
-    <Compile Include="Model\UPitch.cs" />
-    <Compile Include="Model\UNote.cs" />
-    <Compile Include="Model\UOto.cs" />
-    <Compile Include="Model\USinger.cs" />
-    <Compile Include="Model\Ust.cs" />
+    <Compile Include="Model\Pitch.cs" />
+    <Compile Include="Model\Note.cs" />
+    <Compile Include="Model\Phoneme.cs" />
+    <Compile Include="Model\Singer.cs" />
+    <Compile Include="Model\Part.cs" />
     <Compile Include="View\MainView.xaml.cs">
       <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>

@@ -95,7 +95,7 @@ namespace PianoRoll.Model
 
     public class PitchPointHitTestResult
     {
-        public UNote Note;
+        public Note Note;
         public int Index;
         public bool OnPoint;
         public double X;
@@ -143,20 +143,20 @@ namespace PianoRoll.Model
         o
     };
 
-    class UPitch
+    class Pitch
     {
-        public static void PitchFromUst(dynamic data, ref UNote note)
+        public static void PitchFromUst(USTPitchData data, ref Note note)
         {
-            if (!data.ContainsKey("PBS"))
+            if (data.PBS == "")
             {
-                data["PBS"] = "-25";
-                data["PBW"] = "50";
+                data.PBS = "-25";
+                data.PBS = "50";
             }
             string pbs = "";
             note.PitchBend = new PitchBendExpression();
             var pts = note.PitchBend.Data as List<PitchPoint>;
             pts.Clear();
-            pbs = data["PBS"];
+            pbs = data.PBS;
             // PBS
             if (pbs.Contains(';'))
             {
@@ -172,16 +172,11 @@ namespace PianoRoll.Model
             }
 
             double x = pts.First().X;
-            if (data.ContainsKey("PBW"))
+            if (data.PBW != "")
             {
-                string[] w  = (data["PBW"]).GetType() == typeof(string) ? new string[] {data["PBW"]} : data["PBW"];
-                //string[] w = pbw.Split(new[] { ',' });
+                string[] w  = data.PBW.Split(new[] { ',' });
                 string[] y = null;
-                if (data.ContainsKey("PBY"))
-                {
-                    y = (data["PBY"]).GetType() == typeof(string) ? new string[] { data["PBY"] } : data["PBY"];
-                }
-                // if (w.Count() > 1) y = pby.Split(new[] { ',' });
+                if (w.Count() > 1) y = data.PBY.Split(new[] { ',' });
                 for (int l = 0; l < w.Count() - 1; l++)
                 {
                     x += w[l] == "" ? 0 : float.Parse(w[l]);
@@ -189,9 +184,9 @@ namespace PianoRoll.Model
                 }
                 pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
 
-                if (data.ContainsKey("PBM"))
+                if (data.PBM != "")
                 {
-                    string[] m = (data["PBM"]).GetType() == typeof(string) ? new string[] { data["PBM"] } : data["PBM"];
+                    string[] m = data.PBM.Split(new[] { ',' });
                     for (int l = 0; l < m.Count() - 1; l++)
                     {
                         pts[l].Shape = m[l] == "r" ? PitchPointShape.o :
@@ -204,7 +199,7 @@ namespace PianoRoll.Model
 
         private static double InterpolateVibrato(VibratoExpression vibrato, double posMs, long noteLength)
         {
-            double lengthMs = vibrato.Length / 100 * Ust.TickToMillisecond(noteLength);
+            double lengthMs = vibrato.Length / 100 * MusicMath.TickToMillisecond(noteLength);
             double inMs = lengthMs * vibrato.In / 100;
             double outMs = lengthMs * vibrato.Out / 100;
 
@@ -216,22 +211,22 @@ namespace PianoRoll.Model
             return value;
         }
 
-        public static void BuildPitchData2(UNote note)
+        public static void BuildPitchData2(Note note)
         {
             string lyric = note.Lyric;
-            UOto oto = note.Oto;
+            Phoneme phoneme = note.Phoneme;
             List<int> pitches = new List<int>();
             List<PitchPoint> pps = new List<PitchPoint>();
 
             foreach (PitchPoint pp in note.PitchBend.Points) pps.Add(pp);
 
             // end and start points
-            double startMs = pps.First().X < -oto.Preutter ? pps.First().X : -oto.Preutter;
-            double endMs = Ust.TickToMillisecond(note.Length);
+            double startMs = pps.First().X < -phoneme.Preutter ? pps.First().X : -phoneme.Preutter;
+            double endMs = MusicMath.TickToMillisecond(note.Length);
 
             // if there is notePrev, I change first point Y
-            UNote prevNote = Ust.GetPrevNote(note);
-            UNote nextNote = Ust.GetNextNote(note);
+            Note prevNote = note.Part.GetPrevNote(note);
+            Note nextNote = note.Part.GetNextNote(note);
             // 1 halftone value
             int val = 10;
             if (prevNote != null && !prevNote.IsRest) pps.First().Y = (prevNote.NoteNum - note.NoteNum) * val;
@@ -254,12 +249,12 @@ namespace PianoRoll.Model
             double vibratoEndMs = 0;
             if (note.Vibrato != null && note.Vibrato.Depth != 0)
             {
-                vibratoEndMs = Ust.TickToMillisecond(note.Length);
+                vibratoEndMs = MusicMath.TickToMillisecond(note.Length);
                 vibratoStartMs = vibratoEndMs * (1 - note.Vibrato.Length / 100);
             }
             if (prevNote != null && prevNote.Vibrato != null && prevNote.Vibrato.Depth != 0)
             {
-                prevVibratoStartMs = -Ust.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
+                prevVibratoStartMs = -MusicMath.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
                 prevVibratoEndMs = 0;
             }
 
@@ -276,8 +271,8 @@ namespace PianoRoll.Model
             // normalize to zero
             double C = -9990;
 
-            int startTick = (int)Ust.MillisecondToTick(startMs);
-            int endTick = (int)Ust.MillisecondToTick(endMs);
+            int startTick = (int)MusicMath.MillisecondToTick(startMs);
+            int endTick = (int)MusicMath.MillisecondToTick(endMs);
             int interv = Settings.IntervalTick;
 
             int i = -1;

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PianoRoll.Model
 {
-    public class UOto
+    public class Phoneme
     {
         public string File { set; get; }
         public string Alias { set; get; }
@@ -16,9 +16,9 @@ namespace PianoRoll.Model
         public double Preutter { set; get; }
         public double Overlap { set; get; }
 
-        public static UOto GetDefault(string alias = "")
+        public static Phoneme GetDefault(string alias = "")
         {
-            UOto oto = new UOto()
+            Phoneme phoneme = new Phoneme()
             {
                 Alias = alias,
                 Offset = 0,
@@ -27,7 +27,7 @@ namespace PianoRoll.Model
                 Preutter = 0,
                 Overlap = 0
             };
-            return oto;
+            return phoneme;
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PianoRoll.Model;
+using PianoRoll.View;
 
 namespace PianoRoll.Util
 {
@@ -54,7 +55,7 @@ namespace PianoRoll.Util
 
         static double GetTempoCoeff()
         {
-            return 60 / Settings.Tempo;
+            return 60 / Project.Tempo;
         }
 
         public static double TickToMillisecond(double tick)
@@ -138,5 +139,52 @@ namespace PianoRoll.Util
         public static double DecibelToLinear(double db) { return Math.Pow(10, db / 20); }
 
         public static double LinearToDecibel(double v) { return Math.Log10(v) * 20; }
+
+
+        public static string NoteNum2String(int noteNum)
+        {
+            int octave = noteNum / 12;
+            string note;
+            switch (11 - noteNum % 12)
+            {
+                case 0:
+                    note = "B";
+                    break;
+                case 1:
+                    note = "A#";
+                    break;
+                case 2:
+                    note = "A";
+                    break;
+                case 3:
+                    note = "G#";
+                    break;
+                case 4:
+                    note = "G";
+                    break;
+                case 5:
+                    note = "F#";
+                    break;
+                case 6:
+                    note = "F";
+                    break;
+                case 7:
+                    note = "E";
+                    break;
+                case 8:
+                    note = "D#";
+                    break;
+                case 9:
+                    note = "D";
+                    break;
+                case 10:
+                    note = "C#";
+                    break;
+                default:
+                    note = "C";
+                    break;
+            }
+            return $"{note}{octave}";
+        }
     }
 }

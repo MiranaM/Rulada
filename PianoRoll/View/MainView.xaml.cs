@@ -29,9 +29,9 @@ namespace PianoRoll.View
         {
             InitializeComponent();
             Settings.Read();
+            Singer.FindSingers();
             if (Settings.LastFile != null) Open(Settings.LastFile);
             else New();
-            SingerName.Content = USinger.Name;
             SetPosition();
         }
 
@@ -43,11 +43,23 @@ namespace PianoRoll.View
 
         private void Open(string path)
         {
-            Ust.Load(path);
-            USinger.Load(System.IO.Path.Combine(Settings.VoicebankDirectory, Ust.VoiceDir));
-            USinger.NoteOtoRefresh();
-            this.PianoRollControl.UNotes = Ust.NotesList;
-            Settings.LastFile = path;
+
+        }
+
+        private void ImportUst(string dir)
+        {
+            Project project = new Project();
+            Track track = new Track();
+            project.Tracks = new Track[] { track };
+            Part part = Ust.Import(dir, out double tempo, out string singerDir);
+            track.Parts = new Part[] { part };
+            Singer singer = project.AddSinger(singerDir);
+            part.Singer = singer;
+            singer.Load();
+            part.RefreshPhonemes();
+            PianoRollControl.Part = part;
+            PianoRollControl.Draw();
+            Settings.LastFile = dir;
             InitElements();
         }
 
@@ -61,22 +73,17 @@ namespace PianoRoll.View
 
         }
 
-        private void MenuItemOpenUst_Click(object sender, RoutedEventArgs e)
-        {
-            LoadUST();
-        }
-
         private void InitElements()
         {
-            if (USinger.isEnabled)
+            Singer singer = Project.Current.Tracks[0].Parts[0].Singer;
+            SingerName.Content = singer.Name;
+            if (singer.IsEnabled)
             {
-                SingerName.Content = USinger.Name;
                 SingerName.IsEnabled = true;
             }
             RenderMenu.IsEnabled = true;
-            Tempo.Content = $"{Settings.Tempo.ToString("f2")} BPM";
-            BeatInfo.Content = $"{Settings.BeatPerBar}/4, 1/{Settings.BeatPerBar*Settings.BeatUnit}";
-            DrawPitch.Header = "_Рисовать питч";
+            Tempo.Content = $"{Project.Tempo.ToString("f2")} BPM";
+            BeatInfo.Content = $"{Project.BeatPerBar}/4, 1/{Project.BeatPerBar * Project.BeatUnit}";
             PianoRollControl.Resize();
         }
 
@@ -87,13 +94,13 @@ namespace PianoRoll.View
 
         private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settings = new SettingsWindow();            
-            if(settings.ShowDialog().Value == true)
-            {
-                USinger.Load(Ust.uSettings["VoiceDir"]);                
-                SingerName.Content = new DirectoryInfo(Ust.uSettings["VoiceDir"]).Name;
+            //SettingsWindow settings = new SettingsWindow();            
+            //if(settings.ShowDialog().Value == true)
+            //{
+            //    Singer.Load(Part.uSettings["VoiceDir"]);                
+            //    SingerName.Content = new DirectoryInfo(Part.uSettings["VoiceDir"]).Name;
 
-            }
+            //}
         }
 
         private void MenuItemExit_Click(object sender, RoutedEventArgs e)
@@ -114,14 +121,6 @@ namespace PianoRoll.View
         private void MenuItemStop_Click(object sender, RoutedEventArgs e)
         {
             Render.Stop();
-        }
-
-        private void LoadUST()
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "UST Files (*.ust)|*.ust|All Files (*.*)|*.*";
-            openFileDialog.FilterIndex = 1;
-            if (openFileDialog.ShowDialog().Value) Open(openFileDialog.FileName);
         }
 
         private void Exit()
@@ -148,7 +147,7 @@ namespace PianoRoll.View
         {
             TempoDialog dialog = new TempoDialog();
             dialog.ShowDialog();
-            Tempo.Content = Settings.Tempo.ToString("f2");
+            Tempo.Content = Project.Tempo.ToString("f2");
         }
 
         private void PianoRollControl_MouseMove(object sender, MouseEventArgs e)
@@ -205,12 +204,70 @@ namespace PianoRoll.View
 
         private void MenuItemDrawPitch_Click(object sender, RoutedEventArgs e)
         {
-            bool toDraw = PianoRollControl.DrawPitch();
+            PianoRollControl.DrawPitch();
         }
 
         private void MenuItemDrawPartPitch_Click(object sender, RoutedEventArgs e)
         {
             PianoRollControl.DrawPartPitch();
+        }
+
+        private void LoadUST()
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "UST Files (*.ust)|*.ust|All Files (*.*)|*.*";
+            openFileDialog.FilterIndex = 1;
+            if (openFileDialog.ShowDialog().Value) ImportUst(openFileDialog.FileName);
+        }
+
+        private void MenuItemImportUst_Click(object sender, RoutedEventArgs e)
+        {
+            LoadUST();
+        }
+
+        private void MenuItemImportMidi_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemImportVsq_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemExportUst_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemExportMidi_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemExportVsq_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemNew_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemImportAudio_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemOpen_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

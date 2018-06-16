@@ -102,10 +102,10 @@ namespace PianoRoll.View
 
         private void OKVoice_Click(object sender, RoutedEventArgs e)
         {
-            string selected = (string)Voicebanks.SelectedItem;
-            USinger.Load(System.IO.Path.Combine(Settings.VoicebankDirectory, VoicebankPaths[selected]));
-            this.DialogResult = true;            
-            this.Close();
+            //string selected = (string)Voicebanks.SelectedItem;
+            //Singer.Load(System.IO.Path.Combine(Settings.VoicebankDirectory, VoicebankPaths[selected]));
+            //this.DialogResult = true;            
+            //this.Close();
         }
 
         private void VoicePath_MouseDoubleClick(object sender, MouseButtonEventArgs e)

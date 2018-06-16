@@ -34,7 +34,7 @@ namespace PianoRoll.Control
             InitializeComponent();
         }
 
-        public UNote note;
+        public Note note;
 
 
         //зафиксить текст _l
@@ -70,7 +70,8 @@ namespace PianoRoll.Control
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
-                Ust.NotesList.Remove(note);
+                Part part = Project.Current.Tracks[0].Parts[0];
+                part.Notes.Remove(note);
                 onUstChanged();
             }
 

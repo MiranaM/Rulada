@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using PianoRoll.Model;
 
 namespace PianoRoll.View
 {
@@ -22,13 +23,13 @@ namespace PianoRoll.View
         public TempoDialog()
         {
             InitializeComponent();
-            NewTempo.Text = Settings.Tempo.ToString();
+            NewTempo.Text = Project.Tempo.ToString();
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             if (double.TryParse(NewTempo.Text, out double tempo))
-                Settings.Tempo = tempo;
+                Project.Tempo = tempo;
             Close();
         }
 
