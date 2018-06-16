@@ -44,10 +44,20 @@
                 <MenuItem Click="MenuItemPlay_Click" Header="_Воспроизвести" />
                 <MenuItem Click="MenuItemStop_Click" Header="_Остановить" />
             </MenuItem>
-            <MenuItem
-                Name="DrawPitch"
-                Click="MenuItemDrawPitch_Click"
-                Header="_Рисовать питч" />
+            <MenuItem Header="_Рисовать питч">
+                <MenuItem
+                    Name="PitchOff"
+                    Click="MenuItemPitchOff_Click"
+                    Header="_Убрать питч" />
+                <MenuItem
+                    Name="DrawPartPitch"
+                    Click="MenuItemDrawPitch_Click"
+                    Header="_Питч нот" />
+                <MenuItem
+                    Name="DrawPitch"
+                    Click="MenuItemDrawPartPitch_Click"
+                    Header="_Питч партии" />
+            </MenuItem>
         </Menu>
         <Rectangle
             Grid.Row="1"

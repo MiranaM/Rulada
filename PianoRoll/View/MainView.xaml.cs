@@ -116,13 +116,6 @@ namespace PianoRoll.View
             Render.Stop();
         }
 
-        private void MenuItemDrawPitch_Click(object sender, RoutedEventArgs e)
-        {
-            bool toDraw = PianoRollControl.DrawPitch();
-            if (toDraw) DrawPitch.Header = "_Рисовать питч ✓";
-            else DrawPitch.Header = "_Рисовать питч";
-        }
-
         private void LoadUST()
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -203,6 +196,21 @@ namespace PianoRoll.View
         private void Tempo_Click(object sender, MouseButtonEventArgs e)
         {
             ShowTempoDialog();
+        }
+
+        private void MenuItemPitchOff_Click(object sender, RoutedEventArgs e)
+        {
+            PianoRollControl.PitchOff();
+        }
+
+        private void MenuItemDrawPitch_Click(object sender, RoutedEventArgs e)
+        {
+            bool toDraw = PianoRollControl.DrawPitch();
+        }
+
+        private void MenuItemDrawPartPitch_Click(object sender, RoutedEventArgs e)
+        {
+            PianoRollControl.DrawPartPitch();
         }
     }
 }

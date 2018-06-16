@@ -35,7 +35,6 @@ namespace PianoRoll.Control
         public int octaves = 7;
         private int minBars = 4;
         private double minWidth;
-        private bool isPitchShown = false;
 
         //SolidColorBrush blackNoteChannelBrush = new SolidColorBrush(System.Windows.Media.Colors.LightCyan);
         //SolidColorBrush noteSeparatorBrush = new SolidColorBrush(System.Windows.Media.Colors.DarkGray);
@@ -116,30 +115,38 @@ namespace PianoRoll.Control
             //scrollViewer.ScrollToVerticalOffset(540);
         }
 
-        public bool DrawPitch()
+        public void PitchOff()
         {
-            if (isPitchShown)
+            PitchCanvas.Children.Clear();
+            PitchPointCanvas.Children.Clear();
+        }
+
+        public void DrawPitch()
+        {
+            PitchOff();
+            Ust.BuildPitch();
+            int i = 0;
+            foreach (UNote note in UNotes)
             {
-                PitchCanvas.Children.Clear();
-                PitchPointCanvas.Children.Clear();
-                isPitchShown = false;
-                return false;
+                if (!note.HasOto || note.IsRest) continue;
+                double x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
+                double y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+                DrawPitchPath(note, x0, y0, i);
+                i++;
             }
-            else
+        }
+
+        public void DrawPartPitch()
+        {
+            Ust.BuildPartPitch();
+            int i = 0;
+            foreach (UNote note in UNotes)
             {
-                if (UNotes == null) return false;
-                Ust.BuildPitch();
-                int i = 0;
-                foreach (UNote note in UNotes)
-                {
-                    if (!note.HasOto || note.IsRest) continue;
-                    double x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
-                    double y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
-                    DrawPitchPath(note, x0, y0, i);
-                    i++;
-                }
-                isPitchShown = true;
-                return true;
+                //if (!note.HasOto || note.IsRest) continue;
+                //double x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
+                //double y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+                //DrawPitchPath(note, x0, y0, i);
+                //i++;
             }
         }
 

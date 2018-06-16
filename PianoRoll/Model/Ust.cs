@@ -348,6 +348,11 @@ namespace PianoRoll.Model
             }
         }
 
+        public static void BuildPartPitch()
+        {
+
+        }
+
         static void AveragePitch(UNote note, UNote noteNext)
         {
             int[] thisPitch = note.PitchBend.Array;
