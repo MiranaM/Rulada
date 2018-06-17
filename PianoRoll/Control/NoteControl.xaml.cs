@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -152,8 +153,9 @@ namespace PianoRoll.Control
         {
             double deltaHorizontal;
             double width;
-
-            deltaHorizontal = e.HorizontalChange;
+            Thumb temp = (Thumb)sender;
+            
+            deltaHorizontal = e.HorizontalChange + temp.ActualWidth; //потому что thumb width = 5
             width = WidthInit + deltaHorizontal;
             if (width > maxwidth) width = maxwidth;
             if (width < minwidth) width = minwidth;
