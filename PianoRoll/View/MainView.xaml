@@ -12,6 +12,77 @@
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
     mc:Ignorable="d">
+    <Window.Resources>
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle
+                            Margin="2"
+                            SnapsToDevicePixels="true"
+                            Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                            StrokeDashArray="1 2"
+                            StrokeThickness="1" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070" />
+        <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD" />
+        <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1" />
+        <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6" />
+        <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B" />
+        <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4" />
+        <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5" />
+        <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383" />
+        <Style x:Key="RuladaButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+            <Setter Property="Background" Value="#00DDDDDD" />
+            <Setter Property="BorderBrush" Value="#FF90FFFF" />
+            <Setter Property="Foreground" Value="#FF90FFFF" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="border"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            SnapsToDevicePixels="true">
+                            <ContentPresenter
+                                x:Name="contentPresenter"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Focusable="False"
+                                RecognizesAccessKey="True"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource Button.Pressed.Background}" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.Pressed.Border}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource Button.Disabled.Background}" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.Disabled.Border}" />
+                                <Setter TargetName="contentPresenter" Property="TextElement.Foreground" Value="{StaticResource Button.Disabled.Foreground}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
     <Grid Background="#FFA6B4B9">
         <Grid.RowDefinitions>
             <RowDefinition Height="20" />
@@ -29,46 +100,28 @@
             Width="60"
             Height="27"
             Margin="5,0,0,0"
-            Padding="0"
-            HorizontalAlignment="Left"
-            VerticalContentAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
             Click="ProjectButton_Click"
             Content="PROJECT"
-            Foreground="#FF90FFFF"
             IsEnabled="True"
-            Visibility="Visible" />
+            Style="{DynamicResource RuladaButtonStyle}" />
         <Button
             x:Name="PlaylistButton"
             Grid.Row="1"
             Width="60"
             Height="27"
             Margin="70,0,0,0"
-            Padding="0"
-            HorizontalAlignment="Left"
-            VerticalContentAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
             Click="PlaylistButton_Click"
             Content="PLAYLIST"
-            Foreground="#FF90FFFF"
-            Visibility="Visible" />
+            Style="{DynamicResource RuladaButtonStyle}" />
         <Button
             x:Name="PartButton"
             Grid.Row="1"
             Width="60"
             Height="27"
             Margin="135,0,0,0"
-            Padding="0"
-            HorizontalAlignment="Left"
-            VerticalContentAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
             Click="PartButton_Click"
             Content="PART"
-            Foreground="#FF90FFFF"
-            Visibility="Visible" />
+            Style="{DynamicResource RuladaButtonStyle}" />
         <Label
             x:Name="CursorTrack"
             Grid.Row="1"
@@ -110,52 +163,37 @@
             Grid.Row="1"
             Width="30"
             Height="26"
-            Margin="462,3,0,4"
+            Margin="462,0,0,0"
             Padding="3,0,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
             Click="PlayButton_Click"
             Content="►"
             FontFamily="Arial"
             FontSize="17"
-            Foreground="#FF90FFFF" />
+            Style="{DynamicResource RuladaButtonStyle}" />
         <Button
             x:Name="PauseButton"
             Grid.Row="1"
             Width="31"
             Height="26"
             Margin="497,4,0,3"
-            Padding="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
             Click="PausePlayButton_Click"
             Content="❚❚"
             FontFamily="Arial"
             FontSize="17"
-            Foreground="#FF90FFFF" />
+            Style="{DynamicResource RuladaButtonStyle}" />
         <Button
             x:Name="StopButton"
             Grid.Row="1"
             Width="30"
             Height="26"
-            Margin="533,3,0,4"
+            Margin="533,0,0,0"
             Padding="0,-5,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
             Click="StopPlayButton_Click"
             Content="■"
             FontFamily="Arial"
             FontSize="24"
             FontWeight="Bold"
-            Foreground="#FF90FFFF" />
+            Style="{DynamicResource RuladaButtonStyle}" />
         <Button
             x:Name="PlayRenderedButton"
             Grid.Row="1"
@@ -163,18 +201,12 @@
             Height="26"
             Margin="568,0,0,0"
             Padding="0,-5,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
             Click="PlayRenderedButton_Click"
             Content="↺"
             FontFamily="Arial"
             FontSize="24"
             FontWeight="Bold"
-            Foreground="#FF90FFFF" />
+            Style="{DynamicResource RuladaButtonStyle}" />
         <control:PartEditor
             x:Name="PartEditor"
             Grid.Row="2"
