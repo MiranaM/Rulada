@@ -21,7 +21,7 @@ namespace PianoRoll.Control
         public DragMode dragMode;
 
         public enum DragMode
-        { ResizeLeft, ResizeRight, Move, None }
+        { ResizeLeft, ResizeRight, Move, Mutual, None }
 
 
         public Note note;
@@ -79,6 +79,7 @@ namespace PianoRoll.Control
                 Canvas.SetTop(this, top);
                 dragMode = DragMode.None;
             }
+            note.Length = Width / PartEditor.xScale;
         }
 
         public void SetText(string _l)
@@ -103,9 +104,15 @@ namespace PianoRoll.Control
                 deltaHorizontal = Math.Min(e.HorizontalChange, ActualWidth - MinWidth);
                 Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
                 
+                Width -= deltaHorizontal;                
+            }
+            else if (dragMode == DragMode.ResizeRight)
+            {
+                deltaHorizontal = Math.Min(e.HorizontalChange, ActualWidth - MinWidth);
+                Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
+
                 Width -= deltaHorizontal;
             }
-            
 
             e.Handled = true;
         }
