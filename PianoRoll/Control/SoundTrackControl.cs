@@ -1,4 +1,5 @@
 ﻿using PianoRoll.Model;
+using PianoRoll.Themes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace PianoRoll.Control
             {
                 Height = h,
                 Width = w,
-                Fill = Util.Themes.black
+                Fill = Schemes.black
             };
             Content.SetValue(Canvas.TopProperty, y);
             Content.SetValue(Canvas.LeftProperty, 5.0);

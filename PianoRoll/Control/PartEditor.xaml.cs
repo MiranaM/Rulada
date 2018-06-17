@@ -17,6 +17,7 @@ using PianoRoll.Model;
 using PianoRoll.View;
 using PianoRoll.Util;
 using System.Globalization;
+using PianoRoll.Themes;
 
 namespace PianoRoll.Control
 {
@@ -92,10 +93,16 @@ namespace PianoRoll.Control
             foreach (Note note in Part.Notes)
             {
                 NoteThumb noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
+                Label label = new Label()
+                {
+                    Content = note.Lyric,
+                    Padding = new Thickness(0),
+                    Foreground = Schemes.foreBrush
+                };
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
                 if (!note.IsRest)
                 {
-                    noteControl.note = note;
+                    noteControl.Note = note;
                     //noteControl.onUstChanged += DrawNotes;
                     noteControl.SetText(note.Lyric);
                     if (note.HasPhoneme)
@@ -163,7 +170,7 @@ namespace PianoRoll.Control
             var itt = Math.DivRem(i, 2, out int res);
             Path pitchPath = new Path()
             {
-                Stroke = res == 0 ? Themes.pitchBrush : Themes.pitchSecondBrush,
+                Stroke = res == 0 ? Schemes.pitchBrush : Schemes.pitchSecondBrush,
                 StrokeThickness = 1,
                 Data = Geometry.Parse(pitchSource)
             };
@@ -180,7 +187,7 @@ namespace PianoRoll.Control
                 var itt = Math.DivRem(i, 2, out int res);
                 Ellipse ellipse = new Ellipse()
                 {
-                    Fill = res == 0 ? Themes.pitchBrush : Themes.pitchSecondBrush,
+                    Fill = res == 0 ? Schemes.pitchBrush : Schemes.pitchSecondBrush,
                     Width = radius,
                     Height = radius
                 };
@@ -270,7 +277,7 @@ namespace PianoRoll.Control
                     Rectangle rect = new Rectangle();
                     rect.Height = yScale;
                     rect.Width = RootCanvas.Width;
-                    rect.Fill = Themes.blackNoteChannelBrush;
+                    rect.Fill = Schemes.blackNoteChannelBrush;
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     NoteBackgroundCanvas.Children.Add(rect);
                 }
@@ -282,7 +289,7 @@ namespace PianoRoll.Control
                 line.X2 = RootCanvas.Width;
                 line.Y1 = GetNoteYPosition(note);
                 line.Y2 = GetNoteYPosition(note);
-                line.Stroke = Themes.noteSeparatorBrush;
+                line.Stroke = Schemes.noteSeparatorBrush;
                 NoteBackgroundCanvas.Children.Add(line);
             }
         }
@@ -301,12 +308,12 @@ namespace PianoRoll.Control
                 line.Y2 = octaves * 12 * yScale;
                 if (beat % 4 == 0)
                 {
-                    line.Stroke = Themes.measureSeparatorBrush;
+                    line.Stroke = Schemes.measureSeparatorBrush;
                 }
                 else
                 {
                     line.StrokeDashCap = PenLineCap.Flat;
-                    line.Stroke = Themes.beatSeparatorBrush;
+                    line.Stroke = Schemes.beatSeparatorBrush;
                 }
                 GridCanvas.Children.Add(line);
                 beat++;
@@ -357,14 +364,14 @@ namespace PianoRoll.Control
                     Rectangle rect = new Rectangle();
                     rect.Height = yScale;
                     rect.Width = Piano.Width;
-                    rect.Fill = Themes.pianoBlackNote;
+                    rect.Fill = Schemes.pianoBlackNote;
                     rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
                     Piano.Children.Add(rect);
                 }
                 Label label = new Label();
                 string noteName = MusicMath.NoteNum2String(note);
                 label.Content = noteName;
-                label.Foreground = Themes.pianoNoteNames;
+                label.Foreground = Schemes.pianoNoteNames;
                 label.SetValue(Canvas.TopProperty, GetNoteYPosition(note) - 6);
                 Console.WriteLine(label.Content);
                 Piano.Children.Add(label);
@@ -377,7 +384,7 @@ namespace PianoRoll.Control
                 line.X2 = Piano.Width;
                 line.Y1 = GetNoteYPosition(note);
                 line.Y2 = GetNoteYPosition(note);
-                line.Stroke = Themes.pianoBlackNote;
+                line.Stroke = Schemes.pianoBlackNote;
                 Piano.Children.Add(line);
             }
         }

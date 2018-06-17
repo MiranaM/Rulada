@@ -1,4 +1,5 @@
 ﻿using PianoRoll.Model;
+using PianoRoll.Themes;
 using PianoRoll.Util;
 using System;
 using System.Collections.Generic;
@@ -118,12 +119,12 @@ namespace PianoRoll.Control
                 line.Y2 = 20;
                 if (beat % 4 == 0)
                 {
-                    line.Stroke = Themes.foreBrush;
+                    line.Stroke = Schemes.foreBrush;
                 }
                 else
                 {
                     line.StrokeDashCap = PenLineCap.Flat;
-                    line.Stroke = Themes.foreBrush;
+                    line.Stroke = Schemes.foreBrush;
                     line.Y1 = 7;
                 }
                 GridCanvas.Children.Add(line);

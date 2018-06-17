@@ -95,9 +95,9 @@
     <Compile Include="Model\Ust.cs" />
     <Compile Include="Model\Vsq.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="Themes\Schemes.cs" />
     <Compile Include="Util\Base64.cs" />
     <Compile Include="Util\MusicMath.cs" />
-    <Compile Include="Util\Themes.cs" />
     <Compile Include="View\ProjectDialog.xaml.cs">
       <DependentUpon>ProjectDialog.xaml</DependentUpon>
     </Compile>

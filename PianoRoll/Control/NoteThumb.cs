@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls.Primitives;
 using System.Windows.Controls;
 using System.Windows.Input;
+using PianoRoll.Themes;
 
 namespace PianoRoll.Control
 {
@@ -27,7 +28,7 @@ namespace PianoRoll.Control
         { ResizeLeft, ResizeRight, Move, Mutual, None }
 
 
-        public Note note;
+        public Note Note;
 
         public NoteThumb(PartEditor partEditor)
         {
@@ -88,13 +89,13 @@ namespace PianoRoll.Control
                 Canvas.SetTop(this, top);
                 dragMode = DragMode.None;
             }
-            note.Length = Width / PartEditor.xScale;
+            Note.Length = Width / PartEditor.xScale;
         }
 
         public void SetText(string _l)
         {
             Text = _l;
-            note.Lyric = Text;
+            Note.Lyric = Text;
         }
 
         private void NoteThumb_DragDelta(object sender, DragDeltaEventArgs e)
