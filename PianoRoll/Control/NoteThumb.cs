@@ -45,6 +45,14 @@ namespace PianoRoll.Control
             minheight = PartEditor.yScale;
         }
 
+
+        public void SetText(string _l)
+        {
+            Text = _l;
+            Note.Lyric = Text;
+        }
+
+
         private void DragEnter_Thumb(object sender, DragStartedEventArgs e)
         {
             WidthInit = Width;
@@ -90,12 +98,6 @@ namespace PianoRoll.Control
                 dragMode = DragMode.None;
             }
             Note.Length = Width / PartEditor.xScale;
-        }
-
-        public void SetText(string _l)
-        {
-            Text = _l;
-            Note.Lyric = Text;
         }
 
         private void NoteThumb_DragDelta(object sender, DragDeltaEventArgs e)

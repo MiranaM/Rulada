@@ -27,11 +27,30 @@ namespace PianoRoll.Control
 
         public string Text { get; set; }
 
+        double minwidth;
+        double maxwidth;
+        double minheight;
+        double WidthInit;
+        double BorderWidth = 4;
+        public DragMode dragMode;
+        public PartEditor PartEditor;
+
+        public enum DragMode
+        { ResizeLeft, ResizeRight, Move, Mutual, None }
+
+
+
         //public ref UNoteRef;
-        
-        public NoteControl()
+
+        public NoteControl(PartEditor partEditor)
         {
             InitializeComponent();
+
+            minwidth = Settings.Resolution / Project.BeatUnit * PartEditor.xScale;
+            maxwidth = Settings.Resolution * Project.BeatPerBar * 2 * PartEditor.xScale; // 2 такта
+            minheight = PartEditor.yScale;
+
+
         }
 
         public Note note;
@@ -60,9 +79,9 @@ namespace PianoRoll.Control
         {
             if (e.Key == Key.Return)
             {                
-                SetText(this.EditLyric.Text);
-                this.EditLyric.Visibility = Visibility.Hidden;
-                onUstChanged();
+                //SetText(this.EditLyric.Text);
+               // this.EditLyric.Visibility = Visibility.Hidden;
+                //onUstChanged();
             }
         }
 
@@ -84,17 +103,67 @@ namespace PianoRoll.Control
 
         private void UserControl_MouseEnter(object sender, MouseEventArgs e)
         {
-            ResizeArea.Visibility = Visibility.Visible;
+            
         }
 
         private void UserControl_MouseLeave(object sender, MouseEventArgs e)
         {
-            ResizeArea.Visibility = Visibility.Hidden;
+            
         }
 
         private void EditLyric_LostFocus(object sender, RoutedEventArgs e)
         {
             EditLyric.Visibility = Visibility.Hidden;
+        }
+
+
+        private void ThumbResizeLeft_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            double deltaHorizontal;
+            double width;
+
+            deltaHorizontal = e.HorizontalChange;
+            width = WidthInit - deltaHorizontal;
+            if (width > maxwidth) width = maxwidth;
+            if (width < minwidth) width = minwidth;
+            else Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
+            Width = width;
+        }
+
+        private void ThumbResizeLeft_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            note.Length = Width / PartEditor.xScale;
+            Mouse.OverrideCursor = Cursors.Arrow;
+        }
+
+        private void ThumbResizeLeft_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            WidthInit = Width;
+            Mouse.OverrideCursor = Cursors.SizeWE;
+        }
+
+        private void ThumbResizeRight_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            note.Length = Width / PartEditor.xScale;
+            Mouse.OverrideCursor = Cursors.Arrow;
+        }
+
+        private void ThumbResizeRight_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
+        {
+            double deltaHorizontal;
+            double width;
+
+            deltaHorizontal = e.HorizontalChange;
+            width = WidthInit + deltaHorizontal;
+            if (width > maxwidth) width = maxwidth;
+            if (width < minwidth) width = minwidth;
+            Width = width;
+        }
+
+        private void ThumbResizeRight_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            WidthInit = Width;
+            Mouse.OverrideCursor = Cursors.SizeWE;
         }
     }
 }

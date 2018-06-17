@@ -92,7 +92,7 @@ namespace PianoRoll.Control
 
             foreach (Note note in Part.Notes)
             {
-                NoteThumb noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
+                NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
                 Label label = new Label()
                 {
                     Content = note.Lyric,
@@ -102,7 +102,7 @@ namespace PianoRoll.Control
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
                 if (!note.IsRest)
                 {
-                    noteControl.Note = note;
+                    noteControl.note = note;
                     //noteControl.onUstChanged += DrawNotes;
                     noteControl.SetText(note.Lyric);
                     if (note.HasPhoneme)
@@ -241,9 +241,9 @@ namespace PianoRoll.Control
             return pitchSource;
         }
 
-        private NoteThumb MakeNote(int noteNumber, long startTime, int duration, string lyric)
+        private NoteControl MakeNote(int noteNumber, long startTime, int duration, string lyric)
         {
-            NoteThumb noteControl = new NoteThumb(this);
+            NoteControl noteControl = new NoteControl(this);
             var top = GetNoteYPosition(noteNumber);
             var left = GetNoteXPosition(startTime);
             noteControl.Text = lyric;

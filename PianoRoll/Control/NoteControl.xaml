@@ -12,7 +12,6 @@
     d:DesignWidth="60"
     BorderBrush="#FF9BD7DA"
     ClipToBounds="True"
-    Cursor="Hand"
     MouseEnter="UserControl_MouseEnter"
     MouseLeave="UserControl_MouseLeave"
     SnapsToDevicePixels="True"
@@ -24,10 +23,17 @@
         </LinearGradientBrush>
     </UserControl.Background>
     <Grid x:Name="grid">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="4*" />
+            <ColumnDefinition Width="5" />
+        </Grid.ColumnDefinitions>
+
         <Label
             x:Name="Lyric"
+            Grid.ColumnSpan="3"
             Height="28"
-            Margin="0"
+            Margin="0,0,0,-14"
             Padding="2,0,0,0"
             VerticalAlignment="Top"
             BorderBrush="#FF99A0A2"
@@ -37,23 +43,13 @@
             Foreground="#FFC6F2FF"
             MouseDoubleClick="Lyric_MouseDoubleClick"
             MouseRightButtonDown="Lyric_MouseRightButtonDown" />
-        <Button
-            x:Name="ResizeArea"
-            Width="6"
-            Margin="0"
-            HorizontalAlignment="Right"
-            Background="#7FDDDDDD"
-            BorderBrush="#7FDDDDDD"
-            Content=""
-            Cursor="SizeWE"
-            MouseLeftButtonDown="ResizeArea_MouseLeftButtonDown"
-            Opacity="50"
-            Visibility="Hidden" />
+
         <TextBox
             x:Name="EditLyric"
+            Grid.ColumnSpan="3"
             Width="60"
             Height="20"
-            Margin="0,-4,0,-6"
+            Margin="0,-4,0,-2"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
             FontSize="14"
@@ -63,6 +59,29 @@
             Text="TextBox"
             TextWrapping="Wrap"
             Visibility="Hidden" />
-
+        <Thumb
+            x:Name="ThumbResizeLeft"
+            Grid.Column="0"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            DragCompleted="ThumbResizeLeft_DragCompleted"
+            DragDelta="ThumbResizeLeft_DragDelta"
+            DragStarted="ThumbResizeLeft_DragStarted"
+            Opacity="0.5" />
+        <Thumb
+            x:Name="ThumbResizeRight"
+            Grid.Column="2"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            DragCompleted="ThumbResizeRight_DragCompleted"
+            DragDelta="ThumbResizeRight_DragDelta"
+            DragStarted="ThumbResizeRight_DragStarted"
+            Opacity="0.5" />
+        <Thumb
+            x:Name="ThumbMove"
+            Grid.Column="1"
+            HorizontalAlignment="Stretch"
+            VerticalAlignment="Stretch"
+            Opacity="0.5" />
     </Grid>
 </UserControl>
