@@ -46,28 +46,30 @@ namespace PianoRoll.Control
 
             Point point = e.MouseDevice.GetPosition(this);
             point.X -= Canvas.GetLeft(this);
+            double x = -point.X;
 
-            double BorderWidth = 10;
+            double BorderWidth = 20;
             
 
-            if ( point.X < BorderWidth )
-            {
-                dragMode = DragMode.ResizeLeft;
-                Mouse.OverrideCursor = Cursors.SizeWE;
-                PartEditor.DragMode.Content = "Left";
-
-            }
-            else if ( point.X > Width-BorderWidth )
-            {
-                dragMode = DragMode.ResizeRight;
-                Mouse.OverrideCursor = Cursors.SizeWE;
-                PartEditor.DragMode.Content = "Right";
-            }
-            else
+            if ( x < BorderWidth )
             {
                 dragMode = DragMode.Move;
                 Mouse.OverrideCursor = Cursors.Hand;
-                PartEditor.DragMode.Content = "Body";
+                PartEditor.DragMode.Content = $"Body B: {BorderWidth} W: {Width} X: {x}";
+
+
+            }
+            else if ( x > Width-BorderWidth )
+            {
+                dragMode = DragMode.ResizeRight;
+                Mouse.OverrideCursor = Cursors.SizeWE;
+                PartEditor.DragMode.Content = $"Right B: {BorderWidth} W: {Width} X: {x}";
+            }
+            else
+            {
+                dragMode = DragMode.ResizeLeft;
+                Mouse.OverrideCursor = Cursors.SizeWE;
+                PartEditor.DragMode.Content = $"Left B: {BorderWidth} W: {Width} X: {x}";
             }
         }
 
