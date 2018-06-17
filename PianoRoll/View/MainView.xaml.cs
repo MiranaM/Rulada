@@ -52,6 +52,8 @@ namespace PianoRoll.View
             Track track = new Track();
             project.Tracks = new Track[] { track };
             Part part = Ust.Import(dir, out double tempo, out string singerDir);
+            Project.Tempo = tempo;
+            part.Track = track;
             track.Parts = new Part[] { part };
             Singer singer = project.AddSinger(singerDir);
             part.Singer = singer;

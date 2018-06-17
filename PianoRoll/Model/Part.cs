@@ -47,8 +47,8 @@ namespace PianoRoll.Model
         {
             Recalculate();
             foreach (Note note in Notes) if (!note.IsRest) Pitch.BuildPitchData(note);
-            AveragePitch();
-            PitchTrimStart();
+            //AveragePitch();
+            //PitchTrimStart();
             //PitchTrimEnd();
         }
 

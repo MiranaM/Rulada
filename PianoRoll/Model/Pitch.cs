@@ -286,7 +286,7 @@ namespace PianoRoll.Model
             if (pps.Last().X < endMs) pps.Add(new PitchPoint(endMs, pps.Last().Y));
 
             var start = SnapTick(MusicMath.MillisecondToTick(pps.First().X));
-            var end = SnapTick(note.Length);
+            var end = SnapTick(MusicMath.MillisecondToTick(pps.Last().X));
 
             // combine all
             pitchInfo.Start = start;
@@ -330,11 +330,11 @@ namespace PianoRoll.Model
             int interv = Settings.IntervalTick;
             int i = -1;
             double xl = 0; // x local
-            int dir = -222; // up or down
-            double y = -9999; // point value
-            double xk = -9991; // sin width
-            double yk = -9990; // sin height
-            double C = -9990; // normalize to zero
+            int dir = -99; // up or down
+            double y = -99; // point value
+            double xk = -99; // sin width
+            double yk = -99; // sin height
+            double C = -99; // normalize to zero
             bool IsNextPointTime;
             bool IsLastPoint;
             int nextX;
@@ -344,9 +344,9 @@ namespace PianoRoll.Model
                 // only S shape is allowed
                 nextX = (int)(pitchInfo.PitchPoints[i + 1].X);
                 thisX = (int)x;
-                IsNextPointTime = thisX + interv >= nextX;
+                IsNextPointTime = thisX < 0 ? thisX + interv >= nextX : thisX + interv >= nextX;
                 IsLastPoint = (i + 2) == pitchInfo.PitchPoints.Length;
-                while (IsNextPointTime && !IsLastPoint)
+                while (IsNextPointTime && !IsLastPoint || i < 0)
                 {
                     // goto next pitch points pair
                     i++;
@@ -362,6 +362,7 @@ namespace PianoRoll.Model
                     IsNextPointTime = thisX >= nextX;
                     IsLastPoint = (i + 2) == pitchInfo.PitchPoints.Length;
                 }
+                if (dir == -99) throw new Exception();
                 yk = Math.Round(yk, 3);
                 var X = Math.Abs(xk) < 5 ? 0 : (1 / xk) * 10 * xl / Math.PI;
                 y = -yk * (0.5 * Math.Cos(X) + 0.5) + C;
