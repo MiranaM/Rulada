@@ -98,6 +98,7 @@
             <ColumnDefinition Width="15" />
         </Grid.ColumnDefinitions>
         <Image
+            Name="Avatar"
             Grid.Row="0"
             Grid.RowSpan="3"
             Grid.Column="0"
@@ -109,6 +110,7 @@
             MouseLeftButtonUp="Singer_Click"
             Source="../Image/avatar.png" />
         <Label
+            Name="TrackName"
             Grid.Row="0"
             Grid.Column="1"
             Margin="5,0"
@@ -119,6 +121,7 @@
             FontSize="18"
             Foreground="#FF90FFFF" />
         <Label
+            Name="VoicebankName"
             Grid.Row="1"
             Grid.Column="1"
             Margin="5,0"

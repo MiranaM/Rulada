@@ -2,10 +2,12 @@
 using PianoRoll.Util;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace PianoRoll.Control
@@ -31,6 +33,14 @@ namespace PianoRoll.Control
             Track = track;
             CreateHeader(y);
             CreateContent(y, w, Header.Height);
+            Header.TrackName.Content = $"Track {Project.Current.Tracks.Count}";
+            int i = Project.Current.SingerNames.IndexOf(Track.Singer.Name);
+            Header.VoicebankName.Content = $"{i + 1}: {Track.Singer.Name}";
+            if (Track.Singer.Image != null)
+            {
+                string imagepath = System.IO.Path.Combine(Track.Singer.Dir, Track.Singer.Image);
+                if (File.Exists(imagepath)) Header.Avatar.Source = new BitmapImage(new Uri(imagepath));
+            }
             AddParts(Track.Parts);
         }
 
