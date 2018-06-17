@@ -48,16 +48,15 @@ namespace PianoRoll.View
 
         private void ImportUst(string dir)
         {
+            PartEditor.Clear();
+            Playlist.Clear();
             Project project = new Project();
-            Track track = new Track();
             Part part = Ust.Import(dir, out double tempo, out string singerDir);
             Project.Tempo = tempo;
-            part.Track = track;
-            project.AddTrack(part);
-            Playlist.AddTrack(part.Track);
-            Singer singer = project.AddSinger(singerDir);
-            part.Singer = singer;
-            singer.Load();
+            Track track = new Track(singerDir);
+            track.AddPart(part);
+            Playlist.AddTrack(track);
+            project.AddTrack(track);
             part.RefreshPhonemes();
             PartEditor.Part = part;
             PartEditor.Draw();
@@ -70,11 +69,9 @@ namespace PianoRoll.View
             PartEditor.Clear();
             Playlist.Clear();
             Project project = new Project();
-            Part part = new Part();
-            part.Singer = Singer.Load(Settings.DefaultVoicebank);
-            project.AddTrack(part);
-            Playlist.AddTrack(part.Track);
-            PartEditor.Part = part;
+            Track track =  project.AddTrack();
+            Playlist.AddTrack(track);
+            PartEditor.Part = track.Parts[0];
             PartEditor.Draw();
             InitElements();
         }
@@ -87,11 +84,6 @@ namespace PianoRoll.View
         private void InitElements()
         {
             Singer singer = Project.Current.Tracks[0].Parts[0].Singer;
-            PartEditor.SingerName.Content = singer.Name;
-            if (singer.IsEnabled)
-            {
-                PartEditor.SingerName.IsEnabled = true;
-            }
             Tempo.Content = $"{Project.Tempo.ToString("f2")} BPM";
             BeatInfo.Content = $"{Project.BeatPerBar}/4, 1/{Project.BeatPerBar * Project.BeatUnit}";
             PartEditor.Resize();

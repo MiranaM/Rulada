@@ -381,28 +381,5 @@ namespace PianoRoll.Control
                 Piano.Children.Add(line);
             }
         }
-
-        private void SingerName_MouseEnter(object sender, MouseEventArgs e)
-        {
-            SingerName.FontWeight = FontWeights.Bold;
-        }
-
-        private void SingerName_MouseLeave(object sender, MouseEventArgs e)
-        {
-            SingerName.FontWeight = FontWeights.Normal;
-        }
-
-
-        private void ShowSingerDialog()
-        {
-            SingerDialog dialog = new SingerDialog();
-            dialog.Show();
-        }
-
-        private void SingerName_Click(object sender, MouseButtonEventArgs e)
-        {
-            ShowSingerDialog();
-        }
-
     }
 }

@@ -20,21 +20,6 @@
             Height="33"
             Fill="#FF001122"
             Stroke="Black" />
-        <Label
-            x:Name="SingerName"
-            Grid.Row="1"
-            Grid.Column="0"
-            Height="25"
-            Margin="5,0,0,0"
-            Padding="2"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Content="------------------"
-            Foreground="#FF90FFFF"
-            IsEnabled="False"
-            MouseEnter="SingerName_MouseEnter"
-            MouseLeave="SingerName_MouseLeave"
-            MouseLeftButtonUp="SingerName_Click" />
         <ScrollViewer
             Name="scrollViewer"
             Grid.Row="2"

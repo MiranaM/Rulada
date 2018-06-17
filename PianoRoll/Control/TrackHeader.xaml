@@ -106,6 +106,7 @@
             Margin="0"
             HorizontalAlignment="Center"
             VerticalAlignment="Center"
+            MouseLeftButtonUp="Singer_Click"
             Source="../Image/avatar.png" />
         <Label
             Grid.Row="0"

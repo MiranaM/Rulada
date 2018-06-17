@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PianoRoll.View;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,17 @@ namespace PianoRoll.Control
         public TrackHeader()
         {
             InitializeComponent();
-        }        
+        }
+
+        private void ShowSingerDialog()
+        {
+            SingerDialog dialog = new SingerDialog();
+            dialog.Show();
+        }
+
+        private void Singer_Click(object sender, MouseButtonEventArgs e)
+        {
+            ShowSingerDialog();
+        }
     }
 }

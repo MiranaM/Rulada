@@ -44,6 +44,11 @@ namespace PianoRoll.Model
             return track;
         }
 
+        public void AddTrack(Track track)
+        {
+            Tracks.Add(track);
+        }
+
         public Track AddTrack(Part part)
         {
             Track track = new Track();

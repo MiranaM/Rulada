@@ -17,10 +17,10 @@ namespace PianoRoll.Model
     public class Part
     {
         public PartTransform PartTransform;
-        public Singer Singer;
         public string Flags;
         public List<Note> Notes = new List<Note>();
         public Track Track;
+        public Singer Singer { get { return Track.Singer; } }
         public PartControll PartControll;
         public PitchBendExpression PitchBend;
 
