@@ -123,12 +123,22 @@ namespace PianoRoll.Control
             double deltaHorizontal;
             double width;
 
+            double lefttemp2 = Canvas.GetLeft(this);
+
             deltaHorizontal = e.HorizontalChange;
             width = WidthInit - deltaHorizontal;
             if (width > maxwidth) width = maxwidth;
             if (width < minwidth) width = minwidth;
-            else Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
+
+            Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
             Width = width;
+            
+                double lefttemp = Canvas.GetLeft(this);
+            
+            
+
+            //PartEditor.DragMode.Content = $"width: {width} Ltemp: {lefttemp}";
+
         }
 
         private void ThumbResizeLeft_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)

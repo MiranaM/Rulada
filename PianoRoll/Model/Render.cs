@@ -28,8 +28,7 @@ namespace PianoRoll.Model
             if (output != null) output.Close();
             if (File.Exists(Settings.Output)) File.Delete(Settings.Output);
             if (File.Exists(Settings.Output + ".dat")) File.Delete(Settings.Output + ".dat");
-            if (File.Exists(Settings.Output + ".whd")) File.Delete(Settings.Output + ".whd");
-            
+            if (File.Exists(Settings.Output + ".whd")) File.Delete(Settings.Output + ".whd");            
 
             if (!File.Exists(Settings.Bat)) File.Create(Settings.Bat);
             string delcommand = $"del \"{ Settings.CacheFolder }\\*.wav\"\r\n";

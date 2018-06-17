@@ -72,7 +72,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Control\NoteThumb.cs" />
     <Compile Include="Control\PartControll.cs" />
     <Compile Include="Control\Playlist.xaml.cs">
       <DependentUpon>Playlist.xaml</DependentUpon>
