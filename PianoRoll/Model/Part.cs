@@ -20,6 +20,7 @@ namespace PianoRoll.Model
         public string Flags;
         public List<Note> Notes = new List<Note>();
         public Track Track;
+        public PitchBendExpression PitchBend;
 
         public void Recalculate() { foreach (Note note in Notes) note.Recalculate(); }
         public List<Note> GetSortedNotes() { return Notes.OrderBy(n => n.AbsoluteTime).ToList(); }
@@ -44,62 +45,63 @@ namespace PianoRoll.Model
 
         public void BuildPitch()
         {
+            Recalculate();
+            foreach (Note note in Notes) if (!note.IsRest) Pitch.BuildPitchData(note);
+            AveragePitch();
+            PitchTrimStart();
+            //PitchTrimEnd();
+        }
 
+        void AveragePitch()
+        {
+            for (int i = 0; i < Notes.Count - 1; i++)
+            {
+                Note note = Notes[i];
+                Note noteNext = Notes[i + 1];
+                if (note.PitchBend == null || noteNext.PitchBend == null) continue;
+                if (!note.IsRest) Pitch.AveragePitch(note, noteNext);
+            }
+        }
+
+        void PitchTrimStart()
+        {
             foreach (Note note in Notes)
             {
-                if (!note.IsRest)
+                if (note.PitchBend == null || note.PitchBend.Array == null) continue;
+                var lenms = MusicMath.TickToMillisecond(note.Length) + note.pre;
+                var lentick = MusicMath.MillisecondToTick(lenms);
+                var len = lentick / Settings.IntervalTick;
+                if (note.PitchBend.Array.Length > len)
                 {
-                    Pitch.BuildPitchData2(note);
+                    int tokick = note.PitchBend.Array.Length - len;
+                    note.PitchBend.Array = note.PitchBend.Array.Skip(tokick).ToArray();
                 }
             }
-            for (int i = 0; i < Notes.Count-1; i++)
+        }
+
+        void PitchTrimEnd()
+        {
+            for (int i = 0; i < Notes.Count - 1; i++)
             {
-                Recalculate();
                 Note note = Notes[i];
-                Note noteNext = GetNextNote(note);
-                Note notePrev = GetPrevNote(note);
-                if (note.IsRest) continue;
-
-                if (note.PitchBend == null || note.IsRest) continue;
-
-
-                if (noteNext.PitchBend == null || noteNext.IsRest) continue;
-
-                // average pitch
-                if (!note.IsRest)
+                Note noteNext = Notes[i + 1];
+                if (note.PitchBend == null || note.PitchBend.Array == null) continue;
+                if (noteNext.PitchBend == null || noteNext.PitchBend.Array == null) continue;
+                if (noteNext.ovl >= noteNext.pre) continue;
+                var lenms = noteNext.pre - noteNext.ovl;
+                var lentick = MusicMath.MillisecondToTick(lenms);
+                var len = lentick / Settings.IntervalTick;
+                if (note.PitchBend.Array.Length > len)
                 {
-                    AveragePitch(note, noteNext);
-                }
-
-                //remove excess pitch
-                if (notePrev == null || notePrev.IsRest)
-                {
-                    var xPre = MusicMath.TickToMillisecond((long)note.PitchBend.Points[0].X);
-                    if (xPre < -note.pre)
-                    {
-                        int tokick = (int)Math.Round(-(note.pre + xPre) / Settings.IntervalMs);
-                        note.PitchBend.Array = note.PitchBend.Array.Skip(tokick).ToArray();
-                    }
+                    int tokick = len;
+                    note.PitchBend.Array = note.PitchBend.Array.Skip(tokick).ToArray();
                 }
             }
         }
 
         public void BuildPartPitch()
         {
-
-        }
-
-        void AveragePitch(Note note, Note noteNext)
-        {
-            int[] thisPitch = note.PitchBend.Array;
-            int[] nextPitch = noteNext.PitchBend.Array;
-            int length = (int)(noteNext.pre / Settings.IntervalMs);
-            int start = thisPitch.Length - length;
-            int C = (note.NoteNum - noteNext.NoteNum) * 100;
-            for (int k = 0; k < length; k++)
-            {
-                thisPitch[k + start] = nextPitch[k] - C;
-            }
+            //Pitch.BuildPitchData(PitchBend);
         }
 
         public void RefreshPhonemes()

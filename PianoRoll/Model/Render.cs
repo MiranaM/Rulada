@@ -91,10 +91,21 @@ namespace PianoRoll.Model
             if (output != null) output.Close();
         }
 
+        public static int[] TakeEach(int[] array, int each)
+        {
+            List<int> list = new List<int>();
+            for (int i = 0; i < array.Length; i++)
+            {
+                if (i % each == 0) list.Add(array[i]);
+            }
+            return list.ToArray();
+        }
+
         public static void SendToResampler(Note note, string tempfilename)
         {
             Part part = Project.Current.Tracks[0].Parts[0];
-            string pitchBase64 = Base64.Base64EncodeInt12(note.PitchBend.Array);
+
+            string pitchBase64 = Base64.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.SkipOnRender));
             string request = string.Format
             (
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n",
@@ -102,7 +113,7 @@ namespace PianoRoll.Model
                 Path.Combine(part.Singer.Dir, note.Phoneme.File),
                 tempfilename,
                 MusicMath.NoteNum2String(note.NoteNum), 
-                note.Intensity,
+                note.Velocity,
                 part.Flags + note.Flags,
                 note.Phoneme.Offset, // + note.Phoneme.Preutter - note.Phoneme.Overlap, // offset
                 (int)note.RequiredLength,

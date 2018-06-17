@@ -30,7 +30,7 @@ namespace PianoRoll.View
             InitializeComponent();
             Settings.Read();
             Singer.FindSingers();
-            if (Settings.LastFile != null) Open(Settings.LastFile);
+            if (Settings.LastFile != null) ImportUst(Settings.LastFile);
             else New();
             SetPosition();
         }

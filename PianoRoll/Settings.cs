@@ -29,10 +29,11 @@ namespace PianoRoll
         public static string Bat;
         public static string Output;
 
-        //public static int IntervalTick { get { return (int) Ust.MillisecondToTick(IntervalMs); } }
-        //public static double IntervalMs = 50;
-        public static int IntervalTick = 5;
-        public static double IntervalMs { get { return (int)MusicMath.TickToMillisecond(IntervalTick); } }
+        public static int IntervalTick { get { return (int)MusicMath.MillisecondToTick(IntervalMs); } }
+        public static double IntervalMs = 3;
+        //public static int IntervalTick = 5;
+        //public static double IntervalMs { get { return (int)MusicMath.TickToMillisecond(IntervalTick); } }
+        public static int SkipOnRender = 5;
 
         public static int Resolution = 480;
 

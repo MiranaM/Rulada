@@ -84,7 +84,7 @@ namespace PianoRoll.Model
                 v3 = double.Parse(ops[5]),
                 v4 = double.Parse(ops[6]),
                 // 7 -- %
-                p4 = double.Parse(ops[8]),
+                p4 = ops.Length > 7 ? double.Parse(ops[8]) : 0,
                 p5 = ops.Length > 9 ? double.Parse(ops[9]) : 0,
                 v5 = ops.Length > 9 ? double.Parse(ops[10]) : 100
             };
@@ -131,6 +131,13 @@ namespace PianoRoll.Model
             if (lyric == "") IsRest = true;
             _lyric = lyric;
             if (Part != null) Phoneme = Part.Singer.FindPhoneme(lyric);
+        }
+
+        public Note()
+        {
+            Modulation = 0;
+            Intensity = 100;
+            Velocity = 100;
         }
         
         public void Recalculate()

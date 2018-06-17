@@ -35,6 +35,7 @@ namespace PianoRoll.Control
         public int octaves = 7;
         private int minBars = 4;
         private double minWidth;
+        public PitchBendExpression PitchBend;
 
         #endregion
 
@@ -122,30 +123,34 @@ namespace PianoRoll.Control
                 if (!note.HasPhoneme || note.IsRest) continue;
                 double x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
                 double y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
-                DrawPitchPath(note, x0, y0, i);
+                if (note.PitchBend.Points.Count == 0) continue;
+                string pitchSource = GetPitchSource(note, x0, y0);
+                DrawPitchPath(pitchSource, x0, y0, i);
+                foreach (Ellipse ellipse in GetPitchPoints(note.PitchBend.Points, x0, y0, i))
+                    PitchPointCanvas.Children.Add(ellipse);
                 i++;
             }
         }
 
         public void DrawPartPitch()
         {
+            PitchOff();
             Part.BuildPartPitch();
-            int i = 0;
-            foreach (Note note in Part.Notes)
+            int i = -1;
+            do
             {
-                //if (!note.HasPhoneme || note.IsRest) continue;
-                //double x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
-                //double y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
-                //DrawPitchPath(note, x0, y0, i);
-                //i++;
-            }
+                i++;
+            } while (!Part.Notes[i].IsRest);
+            double x0 = (double)Part.Notes[i].NoteControl.GetValue(Canvas.LeftProperty);
+            double y0 = (double)Part.Notes[i].NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+            string pitchSource = GetPitchSource(Part, x0, y0);
+            DrawPitchPath(pitchSource, x0, y0);
+            foreach (Ellipse ellipse in GetPitchPoints(Part.PitchBend.Points, x0, y0))
+                PitchPointCanvas.Children.Add(ellipse);
         }
 
-        private void DrawPitchPath(Note note, double x0, double y0, int i = 0)
+        private void DrawPitchPath(string pitchSource, double x0, double y0, int i = 0)
         {
-            if (note.PitchBend.Points.Count == 0) return;
-            string pitchSource = PitchDataToPath(note, x0, y0);
-
             var itt = Math.DivRem(i, 2, out int res);
             Path pitchPath = new Path()
             {
@@ -153,20 +158,15 @@ namespace PianoRoll.Control
                 StrokeThickness = 1,
                 Data = Geometry.Parse(pitchSource)
             };
-
             PitchCanvas.Children.Add(pitchPath);
-            foreach (Ellipse ellipse in GetPitchPoints(note, x0, y0, i))
-            {
-                PitchPointCanvas.Children.Add(ellipse);
-            }
         }
 
-        public Ellipse[] GetPitchPoints(Note note, double x0, double y0, int i = 0)
+        public Ellipse[] GetPitchPoints(List<PitchPoint> PitchPoints, double x0, double y0, int i = 0)
         {
             double radius = 5;
             double m = 22.6;
             List<Ellipse> ellipses = new List<Ellipse>();
-            foreach (PitchPoint point in note.PitchBend.Points)
+            foreach (PitchPoint point in PitchPoints)
             {
                 var itt = Math.DivRem(i, 2, out int res);
                 Ellipse ellipse = new Ellipse()
@@ -182,17 +182,39 @@ namespace PianoRoll.Control
             return ellipses.ToArray();
         }
 
-        public string PitchDataToPath(Note note, double x0, double y0)
+        public string GetPitchSource(Part part, double x0, double y0)
         {
             double c = (yScale);
-            int[] pitchData = note.PitchBend.Array;
+            int[] pitchData = Part.PitchBend.Array;
             //double val = -note.Oto.Preutter < note.PitchBend.Points.First().X ? -note.Oto.Preutter : note.PitchBend.Points.First().X;
-            double val = -note.Phoneme.Preutter;
+            double val = 0;
             double xP = MusicMath.MillisecondToTick(val) * xScale;
             double y1 = pitchData[0] / c;
             double x1 = 0;
             double m = 2.26;
             string f = "f2";
+            string pitchSource = $"M {(x0 + xP).ToString(f)} {(y0 - y1 * m).ToString(f)} ";
+            for (int i = 0; i < pitchData.Length - 1; i++)
+            {
+                y1 = pitchData[i] / c;
+                x1 += Settings.IntervalTick * xScale;
+                pitchSource += $"L {(x0 + xP + x1).ToString(f)} {(y0 - y1 * m).ToString(f)} ";
+            }
+            return pitchSource;
+        }
+
+        public string GetPitchSource(Note note, double x0, double y0)
+        {
+            double c = (yScale);
+            int[] pitchData = note.PitchBend.Array;
+            Pitch.BuildPitchInfo(note, out PitchInfo pitchInfo);
+            // double val = pitchInfo.Start;
+            double val = -note.Phoneme.Preutter;
+            double xP = MusicMath.MillisecondToTick(val) * xScale;
+            double y1 = pitchData[0] / c;
+            double x1 = 0;
+            double m = 2.26;
+            string f = "f4";
             string pitchSource = $"M {(x0 + xP).ToString(f)} {(y0 - y1 * m).ToString(f)} ";
             for (int i = 0; i < pitchData.Length - 1; i++)
             {

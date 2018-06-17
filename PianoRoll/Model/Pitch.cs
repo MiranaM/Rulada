@@ -8,6 +8,27 @@ using PianoRoll.Util;
 
 namespace PianoRoll.Model
 {
+    public struct PitchInfo
+    {
+        public PitchPoint[] PitchPoints;
+        // pitch start tick
+        public int Start;
+        // pitch end tick
+        public int End;
+    }
+
+    public struct VibratoInfo
+    {
+        // vibrato start ms
+        public double Start;
+        // vibrato end ms
+        public double End;
+        // note length tick
+        public long Length;
+        // vibrato
+        public VibratoExpression Vibrato;
+    }
+
     public abstract class UExpression
     {
         public UExpression(string name, string abbr) { _name = name; _abbr = abbr; }
@@ -211,109 +232,205 @@ namespace PianoRoll.Model
             return value;
         }
 
-        public static void BuildPitchData2(Note note)
+        public static void BuildPitchData(Note note)
         {
-            string lyric = note.Lyric;
-            Phoneme phoneme = note.Phoneme;
-            List<int> pitches = new List<int>();
-            List<PitchPoint> pps = new List<PitchPoint>();
+            BuildVibratoInfo(note, out VibratoInfo vibratoInfo, out VibratoInfo vibratoPrevInfo);
+            int[] pitches = BuildVibrato(vibratoInfo, vibratoPrevInfo);
+            if (note.PitchBend.Points.Count > 0)
+            {
+                BuildPitchInfo(note, out PitchInfo pitchInfo);
+                int[] pitchesP = BuildPitch(pitchInfo);
+                if (pitchInfo.Start > 0) throw new Exception();
+                int offset = -pitchInfo.Start / Settings.IntervalTick;
+                pitches = Interpolate(pitchesP, pitches, offset);
+            }
+            note.PitchBend.Array = pitches;
+        }
 
+        public static int SnapTick(int tick)
+        {
+            tick =  ((int)(tick + Settings.IntervalTick * 0.25) / Settings.IntervalTick * Settings.IntervalTick);
+            if (tick % Settings.IntervalTick != 0)
+                throw new Exception();
+            return tick;
+        }
+
+        public static double SnapMs(double ms)
+        {
+            var tick = MusicMath.MillisecondToTick(ms);
+            tick = SnapTick(tick);
+            return MusicMath.MillisecondToTick(tick);
+
+        }
+
+        public static void BuildPitchInfo(Note note, out PitchInfo pitchInfo)
+        {
+            Phoneme phoneme = note.Phoneme;
+            List<PitchPoint> pps = new List<PitchPoint>();
             foreach (PitchPoint pp in note.PitchBend.Points) pps.Add(pp);
 
-            // end and start points
+            // end and start ms
             double startMs = pps.First().X < -phoneme.Preutter ? pps.First().X : -phoneme.Preutter;
             double endMs = MusicMath.TickToMillisecond(note.Length);
 
             // if there is notePrev, I change first point Y
             Note prevNote = note.Part.GetPrevNote(note);
             Note nextNote = note.Part.GetNextNote(note);
+
             // 1 halftone value
             int val = 10;
             if (prevNote != null && !prevNote.IsRest) pps.First().Y = (prevNote.NoteNum - note.NoteNum) * val;
 
+            // if not all the length involved, add end and/or start pitch points
+            if (pps.First().X > startMs) pps.Insert(0, new PitchPoint(startMs, pps.First().Y));
+            if (pps.Last().X < endMs) pps.Add(new PitchPoint(endMs, pps.Last().Y));
 
-            // if not all the length involved, add end and/or start pitch point
-            if (pps.Count > 0)
-            {
-                if (pps.First().X > startMs) pps.Insert(0, new PitchPoint(startMs, pps.First().Y));
-                if (pps.Last().X < endMs) pps.Add(new PitchPoint(endMs, pps.Last().Y));
-            }
-            else
-            {
-                throw new Exception("Zero pitch points.");
-            }
+            var start = SnapTick(MusicMath.MillisecondToTick(pps.First().X));
+            var end = SnapTick(note.Length);
 
-            double prevVibratoStartMs = 0;
-            double prevVibratoEndMs = 0;
-            double vibratoStartMs = 0;
-            double vibratoEndMs = 0;
+            // combine all
+            pitchInfo.Start = start;
+            pitchInfo.End = end;
+            pitchInfo.PitchPoints = pps.ToArray();
+        }
+
+        public static void BuildVibratoInfo(Note note, out VibratoInfo vibratoInfo, out VibratoInfo vibratoPrevInfo)
+        {
+            Note prevNote = note.Part.GetPrevNote(note);
+            Note nextNote = note.Part.GetNextNote(note);
+            vibratoInfo = new VibratoInfo()
+            {
+                Start = 0,
+                End = 0,
+                Vibrato = note.Vibrato,
+                Length = note.Length
+            };
+            vibratoPrevInfo = new VibratoInfo()
+            {
+                Start = 0,
+                End = 0,
+                Vibrato = prevNote.Vibrato,
+                Length = prevNote.Length
+            };
             if (note.Vibrato != null && note.Vibrato.Depth != 0)
             {
-                vibratoEndMs = MusicMath.TickToMillisecond(note.Length);
-                vibratoStartMs = vibratoEndMs * (1 - note.Vibrato.Length / 100);
+                vibratoInfo.End = MusicMath.TickToMillisecond(note.Length);
+                vibratoInfo.Start = vibratoInfo.End * (1 - note.Vibrato.Length / 100);
             }
             if (prevNote != null && prevNote.Vibrato != null && prevNote.Vibrato.Depth != 0)
             {
-                prevVibratoStartMs = -MusicMath.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
-                prevVibratoEndMs = 0;
+                vibratoPrevInfo.Start = -MusicMath.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
+                vibratoPrevInfo.End = 0;
             }
+        }
 
-            // Interpolation
-
-            // up or down
-            int dir = -222;
-            // point value
-            double y = -9999;
-            // sin width
-            double xk = -9991;
-            // sin height
-            double yk = -9990;
-            // normalize to zero
-            double C = -9990;
-
-            int startTick = (int)MusicMath.MillisecondToTick(startMs);
-            int endTick = (int)MusicMath.MillisecondToTick(endMs);
+        public static int[] BuildPitch(PitchInfo pitchInfo)
+        {
+            List<int> pitches = new List<int>();
             int interv = Settings.IntervalTick;
-
             int i = -1;
-            for (int x = (int)pps[0].X; x <= endTick; x += interv)
+            double xl = 0; // x local
+            int dir = -222; // up or down
+            double y = -9999; // point value
+            double xk = -9991; // sin width
+            double yk = -9990; // sin height
+            double C = -9990; // normalize to zero
+            bool IsNextPointTime;
+            bool IsLastPoint;
+            int nextX;
+            int thisX;
+            for (int x = pitchInfo.Start; x <= pitchInfo.End; x += interv)
             {
                 // only S shape is allowed
-                int nextX = (int) Math.Ceiling(pps[i + 1].X / interv);
-                int thisX = (int) Math.Ceiling((double)x / interv);
-                bool IsNextPointTime = thisX >= nextX;
-                bool IsLastPoint = (i + 2) == pps.Count;
-                if (IsNextPointTime && !IsLastPoint)
+                nextX = (int)(pitchInfo.PitchPoints[i + 1].X);
+                thisX = (int)x;
+                IsNextPointTime = thisX + interv >= nextX;
+                IsLastPoint = (i + 2) == pitchInfo.PitchPoints.Length;
+                while (IsNextPointTime && !IsLastPoint)
                 {
                     // goto next pitch points pair
                     i++;
-                    xk = pps[i + 1].X - pps[i].X;
-                    yk = pps[i + 1].Y - pps[i].Y;
-                    dir = pps[i + 1].Y > pps[i].Y ? 1 : -1;
-                    dir = pps[i + 1].Y == pps[i].Y ? 0 : dir;
-                    C = pps[i + 1].Y;
+                    xk = pitchInfo.PitchPoints[i + 1].X - pitchInfo.PitchPoints[i].X;
+                    yk = pitchInfo.PitchPoints[i + 1].Y - pitchInfo.PitchPoints[i].Y;
+                    dir = pitchInfo.PitchPoints[i + 1].Y > pitchInfo.PitchPoints[i].Y ? 1 : -1;
+                    dir = pitchInfo.PitchPoints[i + 1].Y == pitchInfo.PitchPoints[i].Y ? 0 : dir;
+                    C = pitchInfo.PitchPoints[i + 1].Y;
+                    xl = 0;
+                    nextX = (int)(pitchInfo.PitchPoints[i + 1].X / interv - 0.5 * Settings.IntervalMs);
+                    nextX -= (int)(nextX % Settings.IntervalMs);
+                    thisX = (int)Math.Ceiling((double)x / interv);
+                    IsNextPointTime = thisX >= nextX;
+                    IsLastPoint = (i + 2) == pitchInfo.PitchPoints.Length;
                 }
-                // local x
-                double xl = x - pps[i].X;
-                // y
                 yk = Math.Round(yk, 3);
                 var X = Math.Abs(xk) < 5 ? 0 : (1 / xk) * 10 * xl / Math.PI;
-                y = -yk * ( 0.5 * Math.Cos(X) + 0.5) + C;
-
+                y = -yk * (0.5 * Math.Cos(X) + 0.5) + C;
                 y *= 10;
+                pitches.Add((int)Math.Round(y));
+                xl += interv;
+            }
+            //if (i < pitchInfo.PitchPoints.Length - 2)
+            //    throw new Exception("Some points was not processed");
+            return pitches.ToArray();
+        }
 
-                // Apply vibratos
-                //if (Ust.TickToMillisecond(x) < prevVibratoEndMs && Ust.TickToMillisecond(x) >= prevVibratoStartMs)
-                //    y += InterpolateVibrato(prevNote.Vibrato, Ust.TickToMillisecond(x) - prevVibratoStartMs, prevNote.Length);
+        public static int[] BuildVibrato(VibratoInfo vibratoInfo, VibratoInfo vibratoPrevInfo)
+        {
+            List<int> pitches = new List<int>();
+            int interv = Settings.IntervalTick;
+            for (int x = 0; x <= vibratoInfo.Length; x += interv)
+            {
+                double y = 0;
+                //Apply vibratos
+                if (MusicMath.TickToMillisecond(x) < vibratoPrevInfo.End && MusicMath.TickToMillisecond(x) >= vibratoPrevInfo.Start)
+                    y += InterpolateVibrato(vibratoPrevInfo.Vibrato, MusicMath.TickToMillisecond(x) - vibratoPrevInfo.Start, vibratoPrevInfo.Length);
 
-                //if (Ust.TickToMillisecond(x) < vibratoEndMs && Ust.TickToMillisecond(x) >= vibratoStartMs)
-                //    y += InterpolateVibrato(note.Vibrato, Ust.TickToMillisecond(x) - vibratoStartMs, note.Length);
+                if (MusicMath.TickToMillisecond(x) < vibratoInfo.End && MusicMath.TickToMillisecond(x) >= vibratoInfo.Start)
+                    y += InterpolateVibrato(vibratoInfo.Vibrato, MusicMath.TickToMillisecond(x) - vibratoInfo.Start, vibratoInfo.Length);
 
                 pitches.Add((int)Math.Round(y));
             }
+            return pitches.ToArray();
+        }
 
-            if (pitches == null) throw new Exception("Так блет а где питч");
-            note.PitchBend.Array = pitches.ToArray();
+        public static int[] Interpolate(int[] pitches1, int[] pitches2, int offset = 0)
+        {
+            List<int> pitches = new List<int>();
+            int len = pitches1.Length > pitches2.Length + offset ? pitches1.Length : pitches2.Length;
+            for (int i = -offset; i < len; i++)
+            {
+                int y1 = 0;
+                int y2 = 0;
+                if (pitches1.Length > i + offset && i + offset >= 0) y1 = pitches1[i + offset]; 
+                if (pitches2.Length > i && i >= 0) y2 = pitches2[i];
+                int z = y1 + y2;
+                pitches.Add(z);
+            }
+            return pitches.ToArray();
+        }
+
+        public static void AveragePitch(Note note, Note noteNext)
+        {
+            BuildPitchInfo(note, out PitchInfo pitchInfo);
+            BuildPitchInfo(noteNext, out PitchInfo pitchNextInfo);
+            int[] thisPitch = note.PitchBend.Array;
+            int[] nextPitch = noteNext.PitchBend.Array;
+            int length = (int) SnapTick(-pitchNextInfo.Start / Settings.IntervalTick);
+            int start = thisPitch.Length - length;
+            if (start <= 0) return;
+            int C = (note.NoteNum - noteNext.NoteNum) * 100;
+            for (int k = 0; k < length; k++)
+            {
+                int x1 = k + start;
+                int x2 = k;
+                if (k + start >= thisPitch.Length) x1 = thisPitch.Length - 1;
+                if (k >= nextPitch.Length) x2 = nextPitch.Length - 1;
+                int y1 = thisPitch[x1];
+                int y2 = nextPitch[x2];
+                int z = y1 + y2;
+                thisPitch[x1] = z - C;
+                nextPitch[x2] = z;
+            }
         }
     }
 }
