@@ -14,15 +14,16 @@ using NAudio;
 using NAudio.Midi;
 using PianoRoll.Control;
 using PianoRoll.Model;
+using PianoRoll.View;
 using PianoRoll.Util;
 using System.Globalization;
 
 namespace PianoRoll.Control
 {
     /// <summary>
-    /// Логика взаимодействия для PianoRollControl.xaml
+    /// Логика взаимодействия для PartEditor.xaml
     /// </summary>
-    public partial class PianoRollControl : UserControl
+    public partial class PartEditor : UserControl
     {
 
         #region variables
@@ -39,7 +40,7 @@ namespace PianoRoll.Control
 
         #endregion
 
-        public PianoRollControl()
+        public PartEditor()
         {
             xScale = (80.0 / Settings.Resolution);
             minWidth = minBars * Project.BeatPerBar * Settings.Resolution;
@@ -370,6 +371,28 @@ namespace PianoRoll.Control
                 line.Stroke = Themes.pianoBlackNote;
                 Piano.Children.Add(line);
             }
+        }
+
+        private void SingerName_MouseEnter(object sender, MouseEventArgs e)
+        {
+            SingerName.FontWeight = FontWeights.Bold;
+        }
+
+        private void SingerName_MouseLeave(object sender, MouseEventArgs e)
+        {
+            SingerName.FontWeight = FontWeights.Normal;
+        }
+
+
+        private void ShowSingerDialog()
+        {
+            SingerDialog dialog = new SingerDialog();
+            dialog.Show();
+        }
+
+        private void SingerName_Click(object sender, MouseButtonEventArgs e)
+        {
+            ShowSingerDialog();
         }
 
     }

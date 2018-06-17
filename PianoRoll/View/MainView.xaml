@@ -12,20 +12,182 @@
     WindowStartupLocation="CenterScreen"
     WindowState="Maximized"
     mc:Ignorable="d">
-    <Grid Background="#FFDADADA">
+    <Grid Background="#FFA6B4B9">
         <Grid.RowDefinitions>
-            <RowDefinition Height="10*" />
+            <RowDefinition Height="20" />
             <RowDefinition Height="33" />
-            <RowDefinition Height="203*" />
-            <RowDefinition Height="60" />
+            <RowDefinition Height="310*" />
         </Grid.RowDefinitions>
-
-        <control:PianoRollControl
-            x:Name="PianoRollControl"
+        <Rectangle
+            Grid.Row="1"
+            Height="33"
+            Fill="#FF001122"
+            Stroke="Black" />
+        <Button
+            x:Name="ProjectButton"
+            Grid.Row="1"
+            Width="60"
+            Height="27"
+            Margin="5,0,0,0"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="ProjectButton_Click"
+            Content="PROJECT"
+            Foreground="#FF90FFFF"
+            IsEnabled="True"
+            Visibility="Visible" />
+        <Button
+            x:Name="PlaylistButton"
+            Grid.Row="1"
+            Width="60"
+            Height="27"
+            Margin="70,0,0,0"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="PlaylistButton_Click"
+            Content="PLAYLIST"
+            Foreground="#FF90FFFF"
+            Visibility="Visible" />
+        <Button
+            x:Name="PartButton"
+            Grid.Row="1"
+            Width="60"
+            Height="27"
+            Margin="135,0,0,0"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="PartButton_Click"
+            Content="PART"
+            Foreground="#FF90FFFF"
+            Visibility="Visible" />
+        <Label
+            x:Name="CursorTrack"
+            Grid.Row="1"
+            Width="120"
+            Height="33"
+            Margin="320,0,0,0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Content="[0.00 0.00]"
+            Foreground="#FF90FFFF"
+            Visibility="Visible" />
+        <Label
+            x:Name="Tempo"
+            Grid.Row="1"
+            Width="60"
+            Height="13"
+            Margin="230,-14,0,0"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Content="120.00 BPM"
+            Foreground="#FF90FFFF"
+            MouseLeftButtonUp="Tempo_Click"
+            Visibility="Visible" />
+        <Label
+            x:Name="BeatInfo"
+            Grid.Row="1"
+            Width="60"
+            Height="13"
+            Margin="230,14,0,0"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalContentAlignment="Center"
+            Content="4/4, 1/64"
+            Foreground="#FF90FFFF"
+            Visibility="Visible" />
+        <Button
+            x:Name="PlayButton"
+            Grid.Row="1"
+            Width="30"
+            Height="26"
+            Margin="462,3,0,4"
+            Padding="3,0,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="PlayButton_Click"
+            Content="►"
+            FontFamily="Arial"
+            FontSize="17"
+            Foreground="#FF90FFFF" />
+        <Button
+            x:Name="PauseButton"
+            Grid.Row="1"
+            Width="31"
+            Height="26"
+            Margin="497,4,0,3"
+            Padding="0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="PausePlayButton_Click"
+            Content="❚❚"
+            FontFamily="Arial"
+            FontSize="17"
+            Foreground="#FF90FFFF" />
+        <Button
+            x:Name="StopButton"
+            Grid.Row="1"
+            Width="30"
+            Height="26"
+            Margin="533,3,0,4"
+            Padding="0,-5,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="StopPlayButton_Click"
+            Content="■"
+            FontFamily="Arial"
+            FontSize="24"
+            FontWeight="Bold"
+            Foreground="#FF90FFFF" />
+        <Button
+            x:Name="PlayRenderedButton"
+            Grid.Row="1"
+            Width="30"
+            Height="26"
+            Margin="568,0,0,0"
+            Padding="0,-5,0,0"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            HorizontalContentAlignment="Center"
+            VerticalContentAlignment="Center"
+            Background="#00DDDDDD"
+            BorderBrush="#FF90FFFF"
+            Click="PlayRenderedButton_Click"
+            Content="↺"
+            FontFamily="Arial"
+            FontSize="24"
+            FontWeight="Bold"
+            Foreground="#FF90FFFF" />
+        <control:PartEditor
+            x:Name="PartEditor"
             Grid.Row="2"
-            Margin="5"
+            Margin="0,1,0,1"
             Background="#FF001122"
-            MouseMove="PianoRollControl_MouseMove" />
+            MouseMove="PartEditor_MouseMove"
+            Visibility="Visible" />
+        <control:Playlist
+            x:Name="Playlist"
+            Grid.Row="2"
+            Margin="0,1,0,1"
+            Background="#FF001122"
+            Visibility="Hidden" />
         <Menu
             Height="20"
             HorizontalAlignment="Left"
@@ -46,18 +208,12 @@
                     <MenuItem Click="MenuItemExportUst_Click" Header="_UST (.ust)" />
                     <MenuItem Click="MenuItemExportMidi_Click" Header="_MIDI (.midi)" />
                     <MenuItem Click="MenuItemExportVsq_Click" Header="_VSQ (.vsq, vsqx)" />
+                    <MenuItem Click="MenuItemExportAudio_Click" Header="_Audio (.mp3, .wav, .ogg)" />
                 </MenuItem>
                 <MenuItem Click="MenuItemSettings_Click" Header="_Настройки..." />
                 <MenuItem Click="MenuItemExit_Click" Header="_Выход" />
             </MenuItem>
-            <MenuItem
-                Name="RenderMenu"
-                Header="_Рендер"
-                IsEnabled="False">
-                <MenuItem Click="MenuItemPlay_Click" Header="_Воспроизвести" />
-                <MenuItem Click="MenuItemStop_Click" Header="_Остановить" />
-            </MenuItem>
-            <MenuItem Header="_Рисовать питч">
+            <MenuItem Header="_Кривая высоты">
                 <MenuItem
                     Name="PitchOff"
                     Click="MenuItemPitchOff_Click"
@@ -72,136 +228,5 @@
                     Header="_Питч партии" />
             </MenuItem>
         </Menu>
-        <Rectangle
-            Grid.Row="1"
-            Height="33"
-            Fill="#FF001122"
-            Stroke="Black" />
-        <Label
-            x:Name="SingerName"
-            Grid.Row="1"
-            Grid.Column="0"
-            Height="25"
-            Margin="5,5,0,3"
-            HorizontalAlignment="Left"
-            Content="------------------"
-            Foreground="#FF90FFFF"
-            IsEnabled="False"
-            MouseEnter="SingerName_MouseEnter"
-            MouseLeave="SingerName_MouseLeave"
-            MouseLeftButtonUp="SingerName_Click" />
-        <Label
-            x:Name="CursorTrack"
-            Grid.Row="1"
-            Width="120"
-            Height="33"
-            Margin="380,0,0,0"
-            HorizontalAlignment="Left"
-            VerticalContentAlignment="Center"
-            Content="[0.00 0.00]"
-            Foreground="#FF90FFFF"
-            Visibility="Visible" />
-        <Label
-            x:Name="Tempo"
-            Grid.Row="1"
-            Width="60"
-            Height="13"
-            Margin="320,-14,0,0"
-            Padding="0"
-            HorizontalAlignment="Left"
-            VerticalContentAlignment="Center"
-            Content="120.00 BPM"
-            Foreground="#FF90FFFF"
-            MouseLeftButtonUp="Tempo_Click"
-            Visibility="Visible" />
-        <Label
-            x:Name="BeatInfo"
-            Grid.Row="1"
-            Width="60"
-            Height="13"
-            Margin="320,14,0,0"
-            Padding="0"
-            HorizontalAlignment="Left"
-            VerticalContentAlignment="Center"
-            Content="4/4, 1/64"
-            Foreground="#FF90FFFF"
-            Visibility="Visible" />
-        <Button
-            x:Name="PlayButton"
-            Grid.Row="1"
-            Width="30"
-            Height="26"
-            Margin="162,3,0,4"
-            Padding="3,0,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
-            Click="PlayButton_Click"
-            Content="►"
-            FontFamily="Arial"
-            FontSize="17"
-            Foreground="#FF90FFFF" />
-        <Button
-            x:Name="PauseButton"
-            Grid.Row="1"
-            Width="31"
-            Height="26"
-            Margin="197,4,0,3"
-            Padding="0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
-            Click="PausePlayButton_Click"
-            Content="❚❚"
-            FontFamily="Arial"
-            FontSize="17"
-            Foreground="#FF90FFFF" />
-        <Button
-            x:Name="StopButton"
-            Grid.Row="1"
-            Width="30"
-            Height="26"
-            Margin="233,3,0,4"
-            Padding="0,-5,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
-            Click="StopPlayButton_Click"
-            Content="■"
-            FontFamily="Arial"
-            FontSize="24"
-            FontWeight="Bold"
-            Foreground="#FF90FFFF" />
-
-        <Rectangle
-            Grid.Row="3"
-            Width="Auto"
-            Margin="0"
-            Fill="#FF001122"
-            Stroke="Black" />
-        <Button
-            x:Name="PlayRenderedButton"
-            Grid.Row="1"
-            Width="30"
-            Height="26"
-            Margin="268,0,0,0"
-            Padding="0,-5,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            HorizontalContentAlignment="Center"
-            VerticalContentAlignment="Center"
-            Background="#00DDDDDD"
-            BorderBrush="#FF90FFFF"
-            Click="PlayRenderedButton_Click"
-            Content="↺"
-            FontFamily="Arial"
-            FontSize="24"
-            FontWeight="Bold"
-            Foreground="#FF90FFFF" />
     </Grid>
 </Window>

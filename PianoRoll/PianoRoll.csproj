@@ -72,6 +72,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Control\Playlist.xaml.cs">
+      <DependentUpon>Playlist.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ModelView\NoteControlModelView.cs" />
     <Compile Include="Model\Midi.cs" />
     <Compile Include="Model\Render.cs" />
@@ -85,6 +88,9 @@
     <Compile Include="Util\Base64.cs" />
     <Compile Include="Util\MusicMath.cs" />
     <Compile Include="Util\Themes.cs" />
+    <Compile Include="View\ProjectDialog.xaml.cs">
+      <DependentUpon>ProjectDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\SingerDialog.xaml.cs">
       <DependentUpon>SingerDialog.xaml</DependentUpon>
     </Compile>
@@ -98,7 +104,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Control\PianoRollControl.xaml">
+    <Page Include="Control\PartEditor.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\Playlist.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -113,8 +123,8 @@
     <Compile Include="Control\NoteControl.xaml.cs">
       <DependentUpon>NoteControl.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Control\PianoRollControl.xaml.cs">
-      <DependentUpon>PianoRollControl.xaml</DependentUpon>
+    <Compile Include="Control\PartEditor.xaml.cs">
+      <DependentUpon>PartEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Ini.cs" />
     <Compile Include="Model\Pitch.cs" />
@@ -126,6 +136,10 @@
       <DependentUpon>MainView.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\ProjectDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\SingerDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

@@ -37,8 +37,8 @@ namespace PianoRoll.View
 
         void SetPosition()
         {
-            PianoRollControl.scrollViewer.ScrollToVerticalOffset(Settings.LastV);
-            PianoRollControl.scrollViewer.ScrollToHorizontalOffset(Settings.LastV);
+            PartEditor.scrollViewer.ScrollToVerticalOffset(Settings.LastV);
+            PartEditor.scrollViewer.ScrollToHorizontalOffset(Settings.LastV);
         }
 
         private void Open(string path)
@@ -59,8 +59,8 @@ namespace PianoRoll.View
             part.Singer = singer;
             singer.Load();
             part.RefreshPhonemes();
-            PianoRollControl.Part = part;
-            PianoRollControl.Draw();
+            PartEditor.Part = part;
+            PartEditor.Draw();
             Settings.LastFile = dir;
             InitElements();
         }
@@ -78,15 +78,14 @@ namespace PianoRoll.View
         private void InitElements()
         {
             Singer singer = Project.Current.Tracks[0].Parts[0].Singer;
-            SingerName.Content = singer.Name;
+            PartEditor.SingerName.Content = singer.Name;
             if (singer.IsEnabled)
             {
-                SingerName.IsEnabled = true;
+                PartEditor.SingerName.IsEnabled = true;
             }
-            RenderMenu.IsEnabled = true;
             Tempo.Content = $"{Project.Tempo.ToString("f2")} BPM";
             BeatInfo.Content = $"{Project.BeatPerBar}/4, 1/{Project.BeatPerBar * Project.BeatUnit}";
-            PianoRollControl.Resize();
+            PartEditor.Resize();
         }
 
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
@@ -109,12 +108,7 @@ namespace PianoRoll.View
         {
             Exit();
         }
-
-        private void MenuItemSinger_Click(object sender, RoutedEventArgs e)
-        {
-            ShowSingerDialog();
-        }
-
+        
         private void MenuItemPlay_Click(object sender, RoutedEventArgs e)
         {
             Render.Play();
@@ -132,17 +126,11 @@ namespace PianoRoll.View
 
         protected override void OnClosed(EventArgs e)
         {
-            Settings.LastV = PianoRollControl.scrollViewer.VerticalOffset;
-            Settings.LastH = PianoRollControl.scrollViewer.HorizontalOffset;
+            Settings.LastV = PartEditor.scrollViewer.VerticalOffset;
+            Settings.LastH = PartEditor.scrollViewer.HorizontalOffset;
             Settings.Save();
             base.OnClosed(e);
             App.Current.Shutdown();
-        }
-
-        private void ShowSingerDialog()
-        {
-            SingerDialog dialog = new SingerDialog();
-            dialog.Show();
         }
 
         void ShowTempoDialog()
@@ -152,9 +140,9 @@ namespace PianoRoll.View
             Tempo.Content = Project.Tempo.ToString("f2");
         }
 
-        private void PianoRollControl_MouseMove(object sender, MouseEventArgs e)
+        private void PartEditor_MouseMove(object sender, MouseEventArgs e)
         {
-            Point p = e.GetPosition(this.PianoRollControl);
+            Point p = e.GetPosition(this.PartEditor);
             this.CursorTrack.Content = $"[{p.X.ToString("F2")} {p.Y.ToString("F2")}]";
         }
 
@@ -169,20 +157,6 @@ namespace PianoRoll.View
             Render.Stop();
         }
 
-        private void SingerName_Click(object sender, MouseButtonEventArgs e)
-        {
-            ShowSingerDialog();
-        }
-
-        private void SingerName_MouseEnter(object sender, MouseEventArgs e)
-        {
-            SingerName.FontWeight = FontWeights.Bold;
-        }
-
-        private void SingerName_MouseLeave(object sender, MouseEventArgs e)
-        {
-            SingerName.FontWeight = FontWeights.Normal;
-        }
 
         private void PausePlayButton_Click(object sender, RoutedEventArgs e)
         {
@@ -201,17 +175,17 @@ namespace PianoRoll.View
 
         private void MenuItemPitchOff_Click(object sender, RoutedEventArgs e)
         {
-            PianoRollControl.PitchOff();
+            PartEditor.PitchOff();
         }
 
         private void MenuItemDrawPitch_Click(object sender, RoutedEventArgs e)
         {
-            PianoRollControl.DrawPitch();
+            PartEditor.DrawPitch();
         }
 
         private void MenuItemDrawPartPitch_Click(object sender, RoutedEventArgs e)
         {
-            PianoRollControl.DrawPartPitch();
+            PartEditor.DrawPartPitch();
         }
 
         private void LoadUST()
@@ -271,5 +245,29 @@ namespace PianoRoll.View
         {
 
         }
+
+        private void ProjectButton_Click(object sender, RoutedEventArgs e)
+        {
+            ProjectDialog projectDialog = new ProjectDialog();
+            projectDialog.ShowDialog();
+        }
+
+        private void PartButton_Click(object sender, RoutedEventArgs e)
+        {
+            PartEditor.Visibility = Visibility.Visible;
+            Playlist.Visibility = Visibility.Hidden;
+        }
+
+        private void PlaylistButton_Click(object sender, RoutedEventArgs e)
+        {
+            Playlist.Visibility = Visibility.Visible;
+            PartEditor.Visibility = Visibility.Hidden;
+        }
+
+        private void MenuItemExportAudio_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
     }
 }

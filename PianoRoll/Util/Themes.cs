@@ -18,6 +18,7 @@ namespace PianoRoll.Util
         public static SolidColorBrush unknownBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#772211"));
         public static SolidColorBrush pianoBlackNote = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#556064"));
         public static SolidColorBrush pianoNoteNames = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#b5b5b5"));
+        public static SolidColorBrush foreBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#90FFFF"));
 
 
 
