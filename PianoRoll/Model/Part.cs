@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using PianoRoll.Util;
 using System.Globalization;
+using PianoRoll.Control;
 
 namespace PianoRoll.Model
 {
@@ -20,6 +21,7 @@ namespace PianoRoll.Model
         public string Flags;
         public List<Note> Notes = new List<Note>();
         public Track Track;
+        public PartControll PartControll;
         public PitchBendExpression PitchBend;
 
         public void Recalculate() { foreach (Note note in Notes) note.Recalculate(); }
@@ -47,9 +49,9 @@ namespace PianoRoll.Model
         {
             Recalculate();
             foreach (Note note in Notes) if (!note.IsRest) Pitch.BuildPitchData(note);
-            //AveragePitch();
-            //PitchTrimStart();
-            //PitchTrimEnd();
+            AveragePitch();
+            PitchTrimStart();
+            PitchTrimEnd();
         }
 
         void AveragePitch()

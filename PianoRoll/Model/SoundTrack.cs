@@ -13,10 +13,23 @@ namespace PianoRoll.Model
         double Length; // change length
     }
 
-    class SoundTrack
+    public class SoundTrack
     {
-        public SoundPart[] SoundParts;
+        public List<SoundPart> Parts;
         public double Pan;
         public double Volume;
+
+
+        public SoundPart AddPart()
+        {
+            SoundPart part = new SoundPart();
+            Parts.Add(part);
+            return part;
+        }
+
+        public void AddPart(SoundPart part)
+        {
+            Parts.Add(part);
+        }
     }
 }

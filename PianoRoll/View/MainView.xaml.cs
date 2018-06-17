@@ -50,11 +50,11 @@ namespace PianoRoll.View
         {
             Project project = new Project();
             Track track = new Track();
-            project.Tracks = new Track[] { track };
             Part part = Ust.Import(dir, out double tempo, out string singerDir);
             Project.Tempo = tempo;
             part.Track = track;
-            track.Parts = new Part[] { part };
+            project.AddTrack(part);
+            Playlist.AddTrack(part.Track);
             Singer singer = project.AddSinger(singerDir);
             part.Singer = singer;
             singer.Load();
@@ -67,6 +67,15 @@ namespace PianoRoll.View
 
         private void New()
         {
+            PartEditor.Clear();
+            Playlist.Clear();
+            Project project = new Project();
+            Part part = new Part();
+            part.Singer = Singer.Load(Settings.DefaultVoicebank);
+            project.AddTrack(part);
+            Playlist.AddTrack(part.Track);
+            PartEditor.Part = part;
+            PartEditor.Draw();
             InitElements();
         }
 
@@ -228,7 +237,7 @@ namespace PianoRoll.View
 
         private void MenuItemNew_Click(object sender, RoutedEventArgs e)
         {
-
+            New();
         }
 
         private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e)

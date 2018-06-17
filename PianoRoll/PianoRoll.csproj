@@ -72,8 +72,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Control\PartControll.cs" />
     <Compile Include="Control\Playlist.xaml.cs">
       <DependentUpon>Playlist.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\SoundTrackControl.cs" />
+    <Compile Include="Control\SoundTrackHeader.xaml.cs">
+      <DependentUpon>SoundTrackHeader.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\TrackControl.cs" />
+    <Compile Include="Control\TrackHeader.xaml.cs">
+      <DependentUpon>TrackHeader.xaml</DependentUpon>
     </Compile>
     <Compile Include="ModelView\NoteControlModelView.cs" />
     <Compile Include="Model\Midi.cs" />
@@ -109,6 +118,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\Playlist.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\SoundTrackHeader.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Control\TrackHeader.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

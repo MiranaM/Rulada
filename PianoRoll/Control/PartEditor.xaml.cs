@@ -62,6 +62,14 @@ namespace PianoRoll.Control
             RootCanvas.Height = octaves * 12 * yScale;
         }
 
+        public void Clear()
+        {
+            GridCanvas.Children.Clear();
+            NoteCanvas.Children.Clear();
+            NoteBackgroundCanvas.Children.Clear();
+            DrawInit();
+        }
+
         public void DrawInit()
         {
             lastPosition = Settings.Resolution * Project.BeatPerBar * minBars;
@@ -325,6 +333,7 @@ namespace PianoRoll.Control
                 note.Lyric = Lyric;
                 note.Length = duration;
                 note.AbsoluteTime = startTime;
+                note.Part = Part;
                 Part.Notes.Add(note);
                 if (Part.Singer.IsEnabled)
                 {

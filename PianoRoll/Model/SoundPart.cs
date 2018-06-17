@@ -8,9 +8,10 @@ using NAudio.Wave;
 
 namespace PianoRoll.Model
 {
-    class SoundPart
+    public class SoundPart
     {
         public WaveStream WaveStream;
         public PartTransform PartTransform;
+        public SoundTrack SoundTrack;
     }
 }
