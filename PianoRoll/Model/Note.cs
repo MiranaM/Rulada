@@ -49,7 +49,7 @@ namespace PianoRoll.Model
         public int Modulation { get; set; }
         public string Flags { get; set; }
         public PitchBendExpression PitchBend { get; set; }
-        public NoteControl NoteControl { get; set; }
+        public NoteThumb NoteControl { get; set; }
         public Phoneme Phoneme { get { if (HasPhoneme) return _oto; else return Model.Phoneme.GetDefault(Lyric); } set { _oto = value; } }
 
         public double STP { get; set; }

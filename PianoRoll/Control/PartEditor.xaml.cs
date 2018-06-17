@@ -28,8 +28,8 @@ namespace PianoRoll.Control
 
         #region variables
         public Part Part;
-        double xScale = 1.0 / 15;
-        double yScale = 15;
+        public static double xScale = 1.0 / 15;
+        public static double yScale = 15;
         private long lastPosition;
         public int MaxDivider = 4;
         public bool doSnap = true;
@@ -91,12 +91,12 @@ namespace PianoRoll.Control
 
             foreach (Note note in Part.Notes)
             {
-                NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
+                NoteThumb noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
                 if (!note.IsRest)
                 {
                     noteControl.note = note;
-                    noteControl.onUstChanged += DrawNotes;
+                    //noteControl.onUstChanged += DrawNotes;
                     noteControl.SetText(note.Lyric);
                     if (note.HasPhoneme)
                     {
@@ -234,9 +234,9 @@ namespace PianoRoll.Control
             return pitchSource;
         }
 
-        private NoteControl MakeNote(int noteNumber, long startTime, int duration, string lyric)
+        private NoteThumb MakeNote(int noteNumber, long startTime, int duration, string lyric)
         {
-            NoteControl noteControl = new NoteControl();
+            NoteThumb noteControl = new NoteThumb();
             var top = GetNoteYPosition(noteNumber);
             var left = GetNoteXPosition(startTime);
             noteControl.Text = lyric;
