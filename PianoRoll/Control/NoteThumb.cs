@@ -16,8 +16,10 @@ namespace PianoRoll.Control
         //public string Lyric = "a";
         public string Text = "a";
         double minwidth;
+        double maxwidth;
         double minheight;
-        double Speed;
+        double WidthInit;
+        double BorderWidth = 4;
         public DragMode dragMode;
         public PartEditor PartEditor;
 
@@ -30,46 +32,46 @@ namespace PianoRoll.Control
         public NoteThumb(PartEditor partEditor)
         {
             PartEditor = partEditor;
-            this.DragDelta += new DragDeltaEventHandler(this.NoteThumb_DragDelta);
+            DragStarted += new DragStartedEventHandler(DragEnter_Thumb);
+            DragDelta += new DragDeltaEventHandler(this.NoteThumb_DragDelta);
             DragCompleted += new DragCompletedEventHandler(DragCompleted_Thumb);
             MouseLeave += (s, e) => Mouse.OverrideCursor = Cursors.Arrow;
-            MouseEnter += new MouseEventHandler(MouseMove_Thumb);
+            // MouseEnter += new MouseEventHandler(MouseMove_Thumb);
+            MouseMove += new MouseEventHandler(MouseMove_Thumb);
 
-            minwidth = Settings.Resolution / Project.BeatUnit;
+            minwidth = Settings.Resolution / Project.BeatUnit * PartEditor.xScale;
+            maxwidth = Settings.Resolution * Project.BeatPerBar * 2 * PartEditor.xScale; // 2 такта
             minheight = PartEditor.yScale;
         }
 
-
+        private void DragEnter_Thumb(object sender, DragStartedEventArgs e)
+        {
+            WidthInit = Width;
+        }
 
         private void MouseMove_Thumb(object sender, MouseEventArgs e)
         {
 
             Point point = e.MouseDevice.GetPosition(this);
-            point.X -= Canvas.GetLeft(this);
-            double x = -point.X;
-
-            double BorderWidth = 20;
-            
+            double x = point.X;
 
             if ( x < BorderWidth )
             {
-                dragMode = DragMode.Move;
-                Mouse.OverrideCursor = Cursors.Hand;
-                PartEditor.DragMode.Content = $"Body B: {BorderWidth} W: {Width} X: {x}";
-
-
+                dragMode = DragMode.ResizeLeft;
+                Mouse.OverrideCursor = Cursors.SizeWE;
+                PartEditor.DragMode.Content = $"Left B: {BorderWidth} W: {Width} X: {x} maxW: {maxwidth} minW: {minwidth}";
             }
             else if ( x > Width-BorderWidth )
             {
                 dragMode = DragMode.ResizeRight;
                 Mouse.OverrideCursor = Cursors.SizeWE;
-                PartEditor.DragMode.Content = $"Right B: {BorderWidth} W: {Width} X: {x}";
+                PartEditor.DragMode.Content = $"Right B: {BorderWidth} W: {Width} X: {x} maxW: {maxwidth} minW: {minwidth}";
             }
             else
             {
-                dragMode = DragMode.ResizeLeft;
-                Mouse.OverrideCursor = Cursors.SizeWE;
-                PartEditor.DragMode.Content = $"Left B: {BorderWidth} W: {Width} X: {x}";
+                dragMode = DragMode.Move;
+                Mouse.OverrideCursor = Cursors.Hand;
+                PartEditor.DragMode.Content = $"Body B: {BorderWidth} W: {Width} X: {x} maxW: {maxwidth} minW: {minwidth}";
             }
         }
 
@@ -98,6 +100,8 @@ namespace PianoRoll.Control
         private void NoteThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
             double deltaHorizontal;
+            double width;
+            PartEditor.DragModeAdd.Content = $"hc: {e.HorizontalChange}";
 
             if (dragMode == DragMode.Move)
             {            
@@ -108,17 +112,21 @@ namespace PianoRoll.Control
             }
             else if(dragMode == DragMode.ResizeLeft)
             {
-                deltaHorizontal = Math.Min(e.HorizontalChange, ActualWidth - MinWidth);
-                Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
-                
-                Width -= deltaHorizontal;                
+                deltaHorizontal = e.HorizontalChange;
+                width = Width - deltaHorizontal;
+                if (width > maxwidth) width = maxwidth;
+                if (width < minwidth) width = minwidth;
+                else Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
+                Width = width;
             }
             else if (dragMode == DragMode.ResizeRight)
             {
-                deltaHorizontal = Math.Min(e.HorizontalChange, ActualWidth - MinWidth);
-                Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
-
-                Width -= deltaHorizontal;
+                deltaHorizontal = e.HorizontalChange;
+                width = WidthInit + deltaHorizontal;
+                if (width > maxwidth) width = maxwidth;
+                if (width < minwidth) width = minwidth;
+                Width = width;
+                PartEditor.DragModeAdd.Content += $" dh: {deltaHorizontal} w: {width} wInit: {WidthInit}";
             }
 
             e.Handled = true;

@@ -27,6 +27,14 @@
             VerticalContentAlignment="Center"
             Content="DragMode"
             Foreground="#FF90FFFF" />
+        <Label
+            Name="DragModeAdd"
+            Grid.Row="1"
+            Margin="500,0,0,0"
+            Padding="0"
+            VerticalContentAlignment="Center"
+            Content="DragModeAdd"
+            Foreground="#FF90FFFF" />
         <ScrollViewer
             Name="scrollViewer"
             Grid.Row="2"
