@@ -236,7 +236,7 @@ namespace PianoRoll.Control
 
         private NoteThumb MakeNote(int noteNumber, long startTime, int duration, string lyric)
         {
-            NoteThumb noteControl = new NoteThumb();
+            NoteThumb noteControl = new NoteThumb(this);
             var top = GetNoteYPosition(noteNumber);
             var left = GetNoteXPosition(startTime);
             noteControl.Text = lyric;
@@ -381,5 +381,6 @@ namespace PianoRoll.Control
                 Piano.Children.Add(line);
             }
         }
+
     }
 }

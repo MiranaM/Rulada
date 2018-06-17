@@ -19,6 +19,7 @@ namespace PianoRoll.Control
         double minheight;
         double Speed;
         public DragMode dragMode;
+        public PartEditor PartEditor;
 
         public enum DragMode
         { ResizeLeft, ResizeRight, Move, Mutual, None }
@@ -26,8 +27,9 @@ namespace PianoRoll.Control
 
         public Note note;
 
-        public NoteThumb()
+        public NoteThumb(PartEditor partEditor)
         {
+            PartEditor = partEditor;
             this.DragDelta += new DragDeltaEventHandler(this.NoteThumb_DragDelta);
             DragCompleted += new DragCompletedEventHandler(DragCompleted_Thumb);
             MouseLeave += (s, e) => Mouse.OverrideCursor = Cursors.Arrow;
@@ -52,17 +54,20 @@ namespace PianoRoll.Control
             {
                 dragMode = DragMode.ResizeLeft;
                 Mouse.OverrideCursor = Cursors.SizeWE;
+                PartEditor.DragMode.Content = "Left";
 
             }
             else if ( point.X > Width-BorderWidth )
             {
                 dragMode = DragMode.ResizeRight;
                 Mouse.OverrideCursor = Cursors.SizeWE;
+                PartEditor.DragMode.Content = "Right";
             }
             else
             {
                 dragMode = DragMode.Move;
                 Mouse.OverrideCursor = Cursors.Hand;
+                PartEditor.DragMode.Content = "Body";
             }
         }
 

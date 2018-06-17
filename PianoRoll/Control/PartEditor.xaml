@@ -20,6 +20,13 @@
             Height="33"
             Fill="#FF001122"
             Stroke="Black" />
+        <Label
+            Name="DragMode"
+            Grid.Row="1"
+            Padding="0"
+            VerticalContentAlignment="Center"
+            Content="DragMode"
+            Foreground="#FF90FFFF" />
         <ScrollViewer
             Name="scrollViewer"
             Grid.Row="2"
