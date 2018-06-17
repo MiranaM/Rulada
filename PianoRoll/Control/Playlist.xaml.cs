@@ -134,12 +134,12 @@ namespace PianoRoll.Control
 
         private void AddSoundTrack_Click(object sender, RoutedEventArgs e)
         {
-            AddSoundTrack();
+            AddSoundTrack(Project.Current.AddSoundTrack());
         }
 
         private void AddTrackButton_Click(object sender, RoutedEventArgs e)
         {
-            AddTrack();
+            AddTrack(Project.Current.AddTrack());
         }
     }
 }
