@@ -115,19 +115,20 @@ namespace PianoRoll.Model
             Part part = Project.Current.Tracks[0].Parts[0];
 
             string pitchBase64 = Base64.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.SkipOnRender));
+            Phoneme phoneme = note.Phoneme;
             string request = string.Format
             (
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n",
                 Settings.Resampler,
-                Path.Combine(part.Track.Singer.Dir, note.Phoneme.File),
+                Path.Combine(part.Track.Singer.Dir, phoneme.File),
                 tempfilename,
                 MusicMath.NoteNum2String(note.NoteNum), 
                 note.Velocity,
                 part.Flags + note.Flags,
-                note.Phoneme.Offset,
+                phoneme.Offset,
                 (int)note.RequiredLength,
-                note.Phoneme.Consonant,
-                note.Phoneme.Cutoff,
+                phoneme.Consonant,
+                phoneme.Cutoff,
                 note.Intensity,
                 note.Modulation,
                 note.NoteNum,
@@ -169,7 +170,7 @@ namespace PianoRoll.Model
                 note.Envelope.p5,
                 note.Envelope.v5
             );
-            string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{filename}\" {ops} \r\n";
+            string request = $"\"{Settings.AppendTool}\" \"{Settings.Output}\" \"{filename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);
         }
 
@@ -182,7 +183,7 @@ namespace PianoRoll.Model
             Part part = Project.Current.Tracks[0].Parts[0];
             string length = $"{duration}@{Project.Tempo}+0";
             string ops = $"0 {length} 0 0";
-            string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{filename}\" {ops}\r\n";
+            string request = $"\"{Settings.AppendTool}\" \"{Settings.Output}\" \"{filename}\" {ops}\r\n";
             File.AppendAllText(Settings.Bat, request);
         }
 

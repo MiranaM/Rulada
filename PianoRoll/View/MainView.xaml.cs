@@ -89,6 +89,7 @@ namespace PianoRoll.View
         private void New()
         {
             Clear();
+            TransitionTool.Load(Settings.TransitionTool);
             Project project = new Project();
             Track track =  project.AddTrack();
             Playlist.AddTrack(track);

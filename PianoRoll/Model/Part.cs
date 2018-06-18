@@ -57,7 +57,7 @@ namespace PianoRoll.Model
         {
             List<Note> notes = GetSortedNotes();
             int i = notes.IndexOf(note);
-            if (i == 0) return null;
+            if (i <= 0) return null;
             return Notes[i - 1];
         }
 
@@ -143,5 +143,6 @@ namespace PianoRoll.Model
             note.Part = this;
             Notes.Add(note);
         }
+
     }
 }

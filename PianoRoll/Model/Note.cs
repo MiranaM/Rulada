@@ -69,7 +69,7 @@ namespace PianoRoll.Model
         public PitchBendExpression PitchBend { get; set; }
         public NoteControl NoteControl { get => _noteControl; set => SetNoteControl(value); }
         public Phoneme Phoneme { get => _phoneme; set => _phoneme = value; }
-        public Phoneme DefaultPhoneme { get { return Phoneme.GetDefault(Lyric); } }
+        public Phoneme DefaultPhoneme { get { return Model.Phoneme.GetDefault(Lyric); } }
 
 
         public double STP { get; set; }
@@ -150,12 +150,11 @@ namespace PianoRoll.Model
         private void SetLyric(string lyric)
         {
             _lyric = lyric;
-            Phoneme = Part.Track.Singer.FindPhoneme(lyric);
+            Phoneme = Part.Track.Singer.FindPhoneme(TransitionTool.Process(this));
         }
 
         private void SetNoteControl(NoteControl noteControl)
         {
-
             noteControl.note = this;
             _noteControl = noteControl;
             NewLyric(Lyric);
@@ -181,7 +180,7 @@ namespace PianoRoll.Model
         public void NewLyric(string lyric)
         {
             Lyric = lyric;
-            if (HasPhoneme) NoteControl.SetText(Lyric, Phoneme);
+            if (HasPhoneme) NoteControl.SetText(Lyric, Phoneme.Alias);
             else NoteControl.SetText(Lyric);
         }
 

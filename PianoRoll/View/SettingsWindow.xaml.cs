@@ -65,7 +65,7 @@ namespace PianoRoll.View
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             Settings.Resampler = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Settings.Resampler), Resamplers.SelectedItem.ToString() + ".exe");
-            Settings.WavTool = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Settings.Resampler), WavTools.SelectedItem.ToString() + ".exe");
+            Settings.AppendTool = System.IO.Path.Combine(System.IO.Path.GetDirectoryName(Settings.Resampler), WavTools.SelectedItem.ToString() + ".exe");
             this.Close();
         }
 

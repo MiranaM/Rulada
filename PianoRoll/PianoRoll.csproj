@@ -92,6 +92,7 @@
     <Compile Include="Model\SoundTrack.cs" />
     <Compile Include="Model\Srnx.cs" />
     <Compile Include="Model\Track.cs" />
+    <Compile Include="Model\TransitionTool.cs" />
     <Compile Include="Model\Ust.cs" />
     <Compile Include="Model\Vsq.cs" />
     <Compile Include="Settings.cs" />

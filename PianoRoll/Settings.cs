@@ -18,12 +18,13 @@ namespace PianoRoll
         public static string VoicebankDirectory;
         public static string DefaultVoicebank;
         public static string DefaultVoicebankType;
-        public static string WavTool;
+        public static string AppendTool;
+        public static string TransitionTool;
         public static string Resampler;
         public static string LastFile;
         public static double LastV;
         public static double LastH;
-        public static string DefaultLyric = "a";
+        public static string DefaultLyric;
 
         // in local folder
         public static string CacheFolder;
@@ -54,8 +55,10 @@ namespace PianoRoll
                     DefaultVoicebank = line.Substring("DefaultVoicebank=".Length).Replace("%Local%", Local);
                 if (line.StartsWith("DefaultVoicebankType="))
                     DefaultVoicebankType = line.Substring("DefaultVoicebankType=".Length);
-                if (line.StartsWith("WavTool="))
-                    WavTool = line.Substring("WavTool=".Length).Replace("%Local%", Local);
+                if (line.StartsWith("AppendTool="))
+                    AppendTool = line.Substring("AppendTool=".Length).Replace("%Local%", Local);
+                if (line.StartsWith("TransitionTool="))
+                    TransitionTool = line.Substring("TransitionTool=".Length).Replace("%Local%", Local);
                 if (line.StartsWith("Resampler="))
                     Resampler = line.Substring("Resampler=".Length).Replace("%Local%", Local);
                 if (line.StartsWith("LastFile="))
@@ -85,7 +88,8 @@ namespace PianoRoll
                 $"VoicebankDirectory=" + VoicebankDirectory.Replace(Local, "%Local%"),
                 $"DefaultVoicebank=" + DefaultVoicebank.Replace(Local, "%Local%"),
                 $"DefaultVoicebankType=" + DefaultVoicebankType,
-                $"WavTool=" + WavTool.Replace(Local, "%Local%"),
+                $"AppendTool=" + AppendTool.Replace(Local, "%Local%"),
+                $"TransitionTool=" + TransitionTool.Replace(Local, "%Local%"),
                 $"Resampler=" + Resampler.Replace(Local, "%Local%"),
                 $"LastFile=" + LastFile.Replace(Local, "%Local%"),
                 $"LastV=" + LastV,

@@ -66,17 +66,14 @@ namespace PianoRoll.Control
         {
             this.Lyric.Content = lyric;
             this.EditLyric.Text = lyric;
-            note.Lyric = lyric;
             Background = Schemes.unknownBrush;
             ToolTip = "can't found source file";
         }
 
-        public void SetText(string lyric, Phoneme phoneme)
+        public void SetText(string lyric, string phoneme)
         {
-            this.Lyric.Content = $"{lyric} [{phoneme.Alias}]";
+            this.Lyric.Content = $"{lyric} [{phoneme}]";
             this.EditLyric.Text = lyric;
-            note.Lyric = lyric;
-            ToolTip = phoneme.File;
             Background = Schemes.noteBrush;
         }
         

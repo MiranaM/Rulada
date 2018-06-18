@@ -165,58 +165,6 @@ namespace PianoRoll.Model
 
     public static class Pitch
     {
-        public static void PitchFromUst(USTPitchData data, ref Note note)
-        {
-            if (data.PBS == "")
-            {
-                data.PBS = "-25";
-                data.PBS = "50";
-            }
-            string pbs = "";
-            note.PitchBend = new PitchBendExpression();
-            var pts = note.PitchBend.Data as List<PitchPoint>;
-            pts.Clear();
-            pbs = data.PBS;
-            // PBS
-            if (pbs.Contains(';'))
-            {
-                var v1 = double.Parse(pbs.Split(new[] { ';' })[0], new CultureInfo("ja-JP"));
-                var v2 = double.Parse(pbs.Split(new[] { ';' })[1], new CultureInfo("ja-JP"));
-                pts.Add(new PitchPoint(v1, v2));
-                note.PitchBend.SnapFirst = false;
-            }
-            else
-            {
-                pts.Add(new PitchPoint(double.Parse(pbs), 0));
-                note.PitchBend.SnapFirst = true;
-            }
-
-            double x = pts.First().X;
-            if (data.PBW != "")
-            {
-                string[] w  = data.PBW.Split(new[] { ',' });
-                string[] y = null;
-                if (w.Count() > 1) y = data.PBY.Split(new[] { ',' });
-                for (int l = 0; l < w.Count() - 1; l++)
-                {
-                    x += w[l] == "" ? 0 : float.Parse(w[l]);
-                    pts.Add(new PitchPoint(x, y[l] == "" ? 0 : double.Parse(y[l])));
-                }
-                pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
-
-                if (data.PBM != "")
-                {
-                    string[] m = data.PBM.Split(new[] { ',' });
-                    for (int l = 0; l < m.Count() - 1; l++)
-                    {
-                        pts[l].Shape = m[l] == "r" ? PitchPointShape.o :
-                                        m[l] == "s" ? PitchPointShape.l :
-                                        m[l] == "j" ? PitchPointShape.l : PitchPointShape.io;
-                    }
-                }
-            }
-        }
-
         private static double InterpolateVibrato(VibratoExpression vibrato, double posMs, long noteLength)
         {
             double lengthMs = vibrato.Length / 100 * MusicMath.TickToMillisecond(noteLength);
@@ -261,8 +209,8 @@ namespace PianoRoll.Model
 
         public static void BuildPitchInfo(Note note, out PitchInfo pitchInfo)
         {
-            Note prevNote = note.GetPrev();
-            Note nextNote = note.GetNext();
+            Note prevNote = note.IsConnectedLeft() ? note.GetPrev() : null;
+            Note nextNote = note.IsConnectedRight() ? note.GetNext() : null;
             Phoneme phoneme = note.HasPhoneme ? note.Phoneme : note.DefaultPhoneme;
             List<PitchPoint> pps = new List<PitchPoint>();
             foreach (PitchPoint pp in note.PitchBend.Points) pps.Add(pp);
@@ -425,6 +373,7 @@ namespace PianoRoll.Model
 
         public static void AveragePitch(Note note, Note noteNext)
         {
+            if (!note.IsConnectedRight()) return;
             BuildPitchInfo(note, out PitchInfo pitchInfo);
             BuildPitchInfo(noteNext, out PitchInfo pitchNextInfo);
             int[] thisPitch = note.PitchBend.Array;

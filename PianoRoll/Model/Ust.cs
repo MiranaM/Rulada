@@ -120,10 +120,63 @@ namespace PianoRoll.Model
                 }
                 note.AbsoluteTime = absoluteTime;
                 absoluteTime += (long)note.Length;
-                Pitch.PitchFromUst(pitchData, ref note);
+                PitchFromUst(pitchData, ref note);
                 part.Notes.Add(note);
             }
             return part;
+        }
+
+
+        public static void PitchFromUst(USTPitchData data, ref Note note)
+        {
+            if (data.PBS == "")
+            {
+                data.PBS = "-25";
+                data.PBS = "50";
+            }
+            string pbs = "";
+            note.PitchBend = new PitchBendExpression();
+            var pts = note.PitchBend.Data as List<PitchPoint>;
+            pts.Clear();
+            pbs = data.PBS;
+            // PBS
+            if (pbs.Contains(';'))
+            {
+                var v1 = double.Parse(pbs.Split(new[] { ';' })[0], new CultureInfo("ja-JP"));
+                var v2 = double.Parse(pbs.Split(new[] { ';' })[1], new CultureInfo("ja-JP"));
+                pts.Add(new PitchPoint(v1, v2));
+                note.PitchBend.SnapFirst = false;
+            }
+            else
+            {
+                pts.Add(new PitchPoint(double.Parse(pbs), 0));
+                note.PitchBend.SnapFirst = true;
+            }
+
+            double x = pts.First().X;
+            if (data.PBW != "")
+            {
+                string[] w = data.PBW.Split(new[] { ',' });
+                string[] y = null;
+                if (w.Count() > 1) y = data.PBY.Split(new[] { ',' });
+                for (int l = 0; l < w.Count() - 1; l++)
+                {
+                    x += w[l] == "" ? 0 : float.Parse(w[l]);
+                    pts.Add(new PitchPoint(x, y[l] == "" ? 0 : double.Parse(y[l])));
+                }
+                pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
+
+                if (data.PBM != "")
+                {
+                    string[] m = data.PBM.Split(new[] { ',' });
+                    for (int l = 0; l < m.Count() - 1; l++)
+                    {
+                        pts[l].Shape = m[l] == "r" ? PitchPointShape.o :
+                                        m[l] == "s" ? PitchPointShape.l :
+                                        m[l] == "j" ? PitchPointShape.l : PitchPointShape.io;
+                    }
+                }
+            }
         }
     }
 }
