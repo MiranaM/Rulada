@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using PianoRoll.Model;
 using System.IO;
+using System.Xml;
 
 namespace PianoRoll.View
 {
@@ -41,15 +42,35 @@ namespace PianoRoll.View
             PartEditor.scrollViewer.ScrollToHorizontalOffset(Settings.LastV);
         }
 
-        private void Open(string path)
+        void Clear()
         {
+            PartEditor.Clear();
+            Playlist.Clear();
+        }
 
+        private void Open(string dir)
+        {
+            Clear();
+            XmlReader xmlReader = XmlReader.Create(new StringReader(dir));
+            File.ReadAllText(dir);
+            Project Project = new Project();
+            Project.Dir = dir;
+            Project.Current.IsNew = false;
+
+            // temp
+            Track track = Project.AddTrack();
+            Playlist.AddTrack(track);
+            PartEditor.Part = track.Parts[0];
+            // endtemp
+
+            // Settings.LastFile = dir;
+            PartEditor.Draw();
+            InitElements();
         }
 
         private void ImportUst(string dir)
         {
-            PartEditor.Clear();
-            Playlist.Clear();
+            Clear();
             Project project = new Project();
             Part part = Ust.Import(dir, out double tempo, out string singerDir);
             Project.Tempo = tempo;
@@ -59,26 +80,20 @@ namespace PianoRoll.View
             project.AddTrack(track);
             part.RefreshPhonemes();
             PartEditor.Part = part;
-            PartEditor.Draw();
             Settings.LastFile = dir;
+            PartEditor.Draw();
             InitElements();
         }
 
         private void New()
         {
-            PartEditor.Clear();
-            Playlist.Clear();
+            Clear();
             Project project = new Project();
             Track track =  project.AddTrack();
             Playlist.AddTrack(track);
             PartEditor.Part = track.Parts[0];
             PartEditor.Draw();
             InitElements();
-        }
-
-        private void Save()
-        {
-
         }
 
         private void InitElements()
@@ -89,35 +104,33 @@ namespace PianoRoll.View
             PartEditor.Resize();
         }
 
-        private void MenuItemSave_Click(object sender, RoutedEventArgs e)
+        private void Save(string dir)
         {
-            Save();
+            XmlTextWriter textWritter = new XmlTextWriter(dir, Encoding.UTF8);
+            textWritter.WriteStartDocument();
+            textWritter.WriteStartElement("srnx");
+            textWritter.WriteEndElement();
+            textWritter.Close();
+            Project.Current.Dir = dir;
+            Project.Current.IsNew = false;
         }
 
-        private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
+        private string ShowOpenFileDialog(string filter)
         {
-            //SettingsWindow settings = new SettingsWindow();            
-            //if(settings.ShowDialog().Value == true)
-            //{
-            //    Singer.Load(Part.uSettings["VoiceDir"]);                
-            //    SingerName.Content = new DirectoryInfo(Part.uSettings["VoiceDir"]).Name;
-
-            //}
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = filter;
+            openFileDialog.FilterIndex = 1;
+            if (openFileDialog.ShowDialog().Value) return openFileDialog.FileName;
+            else return "";
         }
 
-        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
+        private string ShowSaveFileDialog(string filter)
         {
-            Exit();
-        }
-        
-        private void MenuItemPlay_Click(object sender, RoutedEventArgs e)
-        {
-            Render.Play();
-        }
-
-        private void MenuItemStop_Click(object sender, RoutedEventArgs e)
-        {
-            Render.Stop();
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = filter;
+            saveFileDialog.FilterIndex = 1;
+            if (saveFileDialog.ShowDialog().Value) return saveFileDialog.FileName;
+            else return null;
         }
 
         private void Exit()
@@ -158,7 +171,6 @@ namespace PianoRoll.View
             Render.Stop();
         }
 
-
         private void PausePlayButton_Click(object sender, RoutedEventArgs e)
         {
             Render.Pause();
@@ -189,27 +201,21 @@ namespace PianoRoll.View
             PartEditor.DrawPartPitch();
         }
 
-        private void LoadUST()
+
+        private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "UST Files (*.ust)|*.ust|All Files (*.*)|*.*";
-            openFileDialog.FilterIndex = 1;
-            if (openFileDialog.ShowDialog().Value) ImportUst(openFileDialog.FileName);
+            //SettingsWindow settings = new SettingsWindow();            
+            //if(settings.ShowDialog().Value == true)
+            //{
+            //    Singer.Load(Part.uSettings["VoiceDir"]);                
+            //    SingerName.Content = new DirectoryInfo(Part.uSettings["VoiceDir"]).Name;
+
+            //}
         }
 
-        private void MenuItemImportUst_Click(object sender, RoutedEventArgs e)
+        private void MenuItemExit_Click(object sender, RoutedEventArgs e)
         {
-            LoadUST();
-        }
-
-        private void MenuItemImportMidi_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void MenuItemImportVsq_Click(object sender, RoutedEventArgs e)
-        {
-
+            Exit();
         }
 
         private void MenuItemExportUst_Click(object sender, RoutedEventArgs e)
@@ -232,17 +238,49 @@ namespace PianoRoll.View
             New();
         }
 
+        private void MenuItemOpen_Click(object sender, RoutedEventArgs e)
+        {
+            string dir = ShowOpenFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
+            if (dir == "") return;
+            else Open(dir);
+        }
+
+        private void MenuItemSave_Click(object sender, RoutedEventArgs e)
+        {
+            if (Project.Current.IsNew)
+            {
+                string dir = ShowSaveFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
+                if (dir == "") return;
+                else Save(dir);
+            }
+            else Save(Project.Current.Dir);
+        }
+
         private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e)
+        {
+            string dir = ShowSaveFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
+            if (dir == "") return;
+            else Save(dir);
+        }
+
+        private void MenuItemImportUst_Click(object sender, RoutedEventArgs e)
+        {
+            string dir = ShowOpenFileDialog("UST Files (*.ust)|*.ust|All Files (*.*)|*.*");
+            if (dir == "") return;
+            else ImportUst(dir);
+        }
+
+        private void MenuItemImportMidi_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void MenuItemImportVsq_Click(object sender, RoutedEventArgs e)
         {
 
         }
 
         private void MenuItemImportAudio_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void MenuItemOpen_Click(object sender, RoutedEventArgs e)
         {
 
         }

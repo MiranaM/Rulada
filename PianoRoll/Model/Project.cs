@@ -16,6 +16,8 @@ namespace PianoRoll.Model
         public static double Tempo = 120;
         public static int BeatPerBar = 4;
         public static int BeatUnit = 4;
+        public string Dir;
+        public bool IsNew = true;
 
         public Project()
         {
