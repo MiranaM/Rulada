@@ -26,15 +26,15 @@ namespace PianoRoll.Model
 
         public Envelope(Note note)
         {
-            p1 = 0;
-            p2 = note.ovl;
-            p3 = 0;
+            p1 = note.ovl;
+            p2 = note.pre;
+            p3 = 30;
             p4 = 0;
             p5 = 0;
-            v1 = 100;
+            v1 = 60;
             v2 = 100;
-            v3 = 100;
-            v4 = 100;
+            v3 = 60;
+            v4 = 0;
             v5 = 100;
             Note next = note.GetNext();
             if (next != null) p3 = next.ovl;
