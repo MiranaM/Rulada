@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PianoRoll.Control;
 using PianoRoll.Model;
 using PianoRoll.View;
 
@@ -185,6 +186,32 @@ namespace PianoRoll.Util
                     break;
             }
             return $"{note}{octave}";
+        }
+
+        public static double GetNoteYPosition(int noteNumber)
+        {
+            return (double)(Settings.Octaves * 12 - 1 - noteNumber) * PartEditor.yScale;
+        }
+
+        public static int GetNoteNum(double y)
+        {
+            return (int)(Settings.Octaves * 12 - y / PartEditor.yScale);
+        }
+
+        public static long GetStartTime(double x)
+        {
+            return (long)(x / PartEditor.xScale);
+        }
+
+        public static double GetNoteXPosition(long startTime)
+        {
+            return (double)startTime * PartEditor.xScale;
+        }
+
+
+        public static int GetYOffset(Note source, Note subject)
+        {
+            return (source.NoteNum - subject.NoteNum) * 100;
         }
     }
 }

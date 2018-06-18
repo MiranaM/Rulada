@@ -54,7 +54,8 @@ namespace PianoRoll.Model
         public static Part Import(string dir, out double tempo, out string singerDir)
         {
 
-            Part part = new Part();
+            Track track = Project.Current.AddTrack();
+            Part part = track.AddPart();
             string[] lines = File.ReadAllLines(dir);
             double version;
             tempo = -1;
@@ -87,7 +88,7 @@ namespace PianoRoll.Model
             part.Notes = new List<Note>();
             while (i + 1 < lines.Length)
             {
-                Note note = new Note();
+                Note note = new Note(part);
                 // skip number
                 i++;
                 USTPitchData pitchData = new USTPitchData(true);
@@ -118,7 +119,6 @@ namespace PianoRoll.Model
                     if (i == lines.Length) break;
                 }
                 note.AbsoluteTime = absoluteTime;
-                note.Part = part;
                 absoluteTime += (long)note.Length;
                 Pitch.PitchFromUst(pitchData, ref note);
                 part.Notes.Add(note);

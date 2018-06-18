@@ -34,13 +34,12 @@ namespace PianoRoll.Control
         private long lastPosition;
         public int MaxDivider = 4;
         public bool doSnap = true;
-        public int octaves = 7;
         private int minBars = 4;
         private double minWidth;
         public PitchBendExpression PitchBend;
 
-        public delegate void RedrawPart();
-        public event RedrawPart OnPartChanged;
+        public delegate void PartChangedEvent();
+        public event PartChangedEvent OnPartChanged;
 
         #endregion
 
@@ -50,6 +49,14 @@ namespace PianoRoll.Control
             minWidth = minBars * Project.BeatPerBar * Settings.Resolution;
             InitializeComponent();
             DrawInit();
+            OnPartChanged += OnPartChanged_Part;
+        }
+
+        public void OnPartChanged_Part()
+        {
+            Part.SortNotes();
+            Part.TrimNotes();
+            DrawNotes();
         }
 
         public void Draw()
@@ -63,7 +70,7 @@ namespace PianoRoll.Control
         public void Resize()
         {
             RootCanvas.Width = lastPosition > minWidth ? lastPosition * xScale : minWidth * xScale;
-            RootCanvas.Height = octaves * 12 * yScale;
+            RootCanvas.Height = Settings.Octaves * 12 * yScale;
         }
 
         public void Clear()
@@ -96,11 +103,8 @@ namespace PianoRoll.Control
             {
                 NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
-                if (!note.IsRest)
-                {
-                    note.NoteControl = noteControl;
-                    NoteCanvas.Children.Add(noteControl);
-                }
+                note.NoteControl = noteControl;
+                NoteCanvas.Children.Add(noteControl);
             }
         }
 
@@ -117,10 +121,10 @@ namespace PianoRoll.Control
             int i = 0;
             foreach (Note note in Part.Notes)
             {
-                if (!note.HasPhoneme || note.IsRest) continue;
+                if (!note.HasPhoneme) continue;
                 double x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
                 double y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
-                if (note.PitchBend.Points.Count == 0) continue;
+                // if (note.PitchBend.Points.Count == 0) continue;
                 string pitchSource = GetPitchSource(note, x0, y0);
                 DrawPitchPath(pitchSource, x0, y0, i);
                 foreach (Ellipse ellipse in GetPitchPoints(note.PitchBend.Points, x0, y0, i))
@@ -133,11 +137,7 @@ namespace PianoRoll.Control
         {
             PitchOff();
             Part.BuildPartPitch();
-            int i = -1;
-            do
-            {
-                i++;
-            } while (!Part.Notes[i].IsRest);
+            int i = 0;
             double x0 = (double)Part.Notes[i].NoteControl.GetValue(Canvas.LeftProperty);
             double y0 = (double)Part.Notes[i].NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
             string pitchSource = GetPitchSource(Part, x0, y0);
@@ -225,8 +225,8 @@ namespace PianoRoll.Control
         private NoteControl MakeNote(int noteNumber, long startTime, int duration)
         {
             NoteControl noteControl = new NoteControl(this);
-            var top = GetNoteYPosition(noteNumber);
-            var left = GetNoteXPosition(startTime);
+            var top = MusicMath.GetNoteYPosition(noteNumber);
+            var left = MusicMath.GetNoteXPosition(startTime);
             noteControl.Width = (double)duration * xScale;
             noteControl.Height = yScale;
             noteControl.SetValue(Canvas.TopProperty, top);
@@ -234,29 +234,9 @@ namespace PianoRoll.Control
             return noteControl;
         }
 
-        private double GetNoteYPosition(int noteNumber)
-        {
-            return (double)(octaves * 12 - 1 - noteNumber) * yScale;
-        }
-
-        private int GetNoteNum(double y)
-        {
-            return (int) (octaves * 12 - y / yScale);
-        }
-
-        private long GetStartTime(double x)
-        {
-            return (long) (x / xScale);
-        }
-
-        private double GetNoteXPosition(long startTime)
-        {
-            return (double)startTime * xScale;
-        }
-
         private void CreateBackgroundCanvas()
         {
-            for (int note = 0; note < octaves * 12; note++)
+            for (int note = 0; note < Settings.Octaves * 12; note++)
             {
                 if ((note % 12 == 1) // C#
                  || (note % 12 == 3) // E#
@@ -268,17 +248,17 @@ namespace PianoRoll.Control
                     rect.Height = yScale;
                     rect.Width = RootCanvas.Width;
                     rect.Fill = Schemes.blackNoteChannelBrush;
-                    rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
+                    rect.SetValue(Canvas.TopProperty, MusicMath.GetNoteYPosition(note));
                     NoteBackgroundCanvas.Children.Add(rect);
                 }
             }
-            for (int note = 0; note < octaves * 12 - 1; note++)
+            for (int note = 0; note < Settings.Octaves * 12 - 1; note++)
             {
                 Line line = new Line();
                 line.X1 = 0;
                 line.X2 = RootCanvas.Width;
-                line.Y1 = GetNoteYPosition(note);
-                line.Y2 = GetNoteYPosition(note);
+                line.Y1 = MusicMath.GetNoteYPosition(note);
+                line.Y2 = MusicMath.GetNoteYPosition(note);
                 line.Stroke = Schemes.noteSeparatorBrush;
                 NoteBackgroundCanvas.Children.Add(line);
             }
@@ -295,7 +275,7 @@ namespace PianoRoll.Control
                 line.X1 = n * xScale;
                 line.X2 = n * xScale;
                 line.Y1 = 0;
-                line.Y2 = octaves * 12 * yScale;
+                line.Y2 = Settings.Octaves * 12 * yScale;
                 if (beat % 4 == 0)
                 {
                     line.Stroke = Schemes.measureSeparatorBrush;
@@ -310,37 +290,28 @@ namespace PianoRoll.Control
             }
         }
 
-        void AddNote(long startTime, int noteNum)
-        {
-            Note note = new Note();
-            note.NoteNum = noteNum;
-            note.AbsoluteTime = startTime;
-            note.Part = Part;
-            Part.Notes.Add(note);
-            DrawNotes();
-        }
-
         private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
                 Point currentMousePosition = e.GetPosition(RootCanvas);
-                Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
+                // Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
                 int MinLength = Settings.Resolution / MaxDivider;
                 double x = currentMousePosition.X;
                 double y = currentMousePosition.Y;
-                long startTime = GetStartTime(x);
-                int noteNum = GetNoteNum(y);
+                long startTime = MusicMath.GetStartTime(x);
+                int noteNum = MusicMath.GetNoteNum(y);
                 startTime += (long) (MinLength * 0.5);
                 startTime -= (long) ((double)startTime % MinLength);
-                AddNote(startTime, noteNum);
+                Part.AddNote(startTime, noteNum);
+                OnPartChanged();
             }
         }
 
         private void CreatePiano()
         {
 
-            for (int note = 0; note < octaves * 12; note++)
+            for (int note = 0; note < Settings.Octaves * 12; note++)
             {
                 if ((note % 12 == 1) // C#
                  || (note % 12 == 3) // E#
@@ -352,25 +323,25 @@ namespace PianoRoll.Control
                     rect.Height = yScale;
                     rect.Width = Piano.Width;
                     rect.Fill = Schemes.pianoBlackNote;
-                    rect.SetValue(Canvas.TopProperty, GetNoteYPosition(note));
+                    rect.SetValue(Canvas.TopProperty, MusicMath.GetNoteYPosition(note));
                     Piano.Children.Add(rect);
                 }
                 Label label = new Label();
                 string noteName = MusicMath.NoteNum2String(note);
                 label.Content = noteName;
                 label.Foreground = Schemes.pianoNoteNames;
-                label.SetValue(Canvas.TopProperty, GetNoteYPosition(note) - 6);
+                label.SetValue(Canvas.TopProperty, MusicMath.GetNoteYPosition(note) - 6);
                 Console.WriteLine(label.Content);
                 Piano.Children.Add(label);
                 // label.SetValue(Canvas.LeftProperty, 12);
             }
-            for (int note = 0; note < octaves * 12 - 1; note++)
+            for (int note = 0; note < Settings.Octaves * 12 - 1; note++)
             {
                 Line line = new Line();
                 line.X1 = 0;
                 line.X2 = Piano.Width;
-                line.Y1 = GetNoteYPosition(note);
-                line.Y2 = GetNoteYPosition(note);
+                line.Y1 = MusicMath.GetNoteYPosition(note);
+                line.Y2 = MusicMath.GetNoteYPosition(note);
                 line.Stroke = Schemes.pianoBlackNote;
                 Piano.Children.Add(line);
             }

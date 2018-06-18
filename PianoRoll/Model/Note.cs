@@ -7,10 +7,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 
 namespace PianoRoll.Model
 {
-    public struct UEnvelope
+    public struct Envelope
     {
         public double p1;
         public double p2;
@@ -22,15 +23,32 @@ namespace PianoRoll.Model
         public double v3;
         public double v4;
         public double v5;
+
+        public Envelope(Note note)
+        {
+            p1 = 0;
+            p2 = note.ovl;
+            p3 = 0;
+            p4 = 0;
+            p5 = 0;
+            v1 = 100;
+            v2 = 100;
+            v3 = 100;
+            v4 = 100;
+            v5 = 100;
+            Note next = note.GetNext();
+            if (next != null) p3 = next.ovl;
+        }
     }
 
     public class Note
     {
+        #region variables
         private int _length;
         private string _lyric;
         private int _noteNum;
         private long _absoluteTime;
-        private UEnvelope _envelope;
+        private Envelope _envelope;
         private VibratoExpression _vibrato;
         private Phoneme _oto;
 
@@ -59,10 +77,11 @@ namespace PianoRoll.Model
         public double stp { get; private set; }
         public double lengthAdd { get; private set; }
 
-        public bool IsRest = false;
-        public bool HasPhoneme = false;
+        public bool HasPhoneme { get; private set; }
         private NoteControl _noteControl;
+        #endregion
 
+        #region Setters
         private void SetLength(int value) { _length = value; }
         private void SetLength(double value) { _length = (int)value; }
         private void SetLength(float value) { _length = (int)value; }
@@ -71,11 +90,11 @@ namespace PianoRoll.Model
         private void SetNoteNum(double value) { _noteNum = (int)value; }
         private void SetNoteNum(float value) { _noteNum = (int)value; }
 
-        private void SetEnvelope(UEnvelope value) { _envelope = value; }
+        private void SetEnvelope(Envelope value) { _envelope = value; }
         private void SetEnvelope(string value)
         {
             string[] ops = value.Split(',');
-            _envelope = new UEnvelope
+            _envelope = new Envelope
             {
                 p1 = double.Parse(ops[0]),
                 p2 = double.Parse(ops[1]),
@@ -92,7 +111,7 @@ namespace PianoRoll.Model
         }
         private void SetEnvelope(string[] value)
         {
-            _envelope = new UEnvelope
+            _envelope = new Envelope
             {
                 p1 = double.Parse(value[0], new CultureInfo("ja-JP").NumberFormat),
                 p2 = double.Parse(value[1], new CultureInfo("ja-JP").NumberFormat),
@@ -128,11 +147,9 @@ namespace PianoRoll.Model
 
         private void SetLyric(string lyric)
         {
-            if (lyric == "R") lyric = "";
-            if (lyric == "") IsRest = true;
             _lyric = lyric;
-            if (Part != null) Phoneme = Part.Track.Singer.FindPhoneme(lyric);
-            HasPhoneme = Phoneme != null;
+            Phoneme = Part.Track.Singer.FindPhoneme(lyric);
+            HasPhoneme = (Phoneme != null);
         }
 
         private void SetNoteControl(NoteControl noteControl)
@@ -142,15 +159,23 @@ namespace PianoRoll.Model
             _noteControl = noteControl;
             NewLyric(Lyric);
         }
+        #endregion
 
-        public Note()
+        public Note GetNext() { return Part.GetNextNote(this); }
+        public Note GetPrev() { return Part.GetPrevNote(this); }
+
+        public Note(Part part)
         {
+            Part = part;
             Modulation = 0;
             Intensity = 100;
             Velocity = 100;
             Length = Settings.Resolution;
-            Lyric = "a";
+            Lyric = Settings.DefaultLyric;
             HasPhoneme = false;
+            PitchBend = new PitchBendExpression();
+            Vibrato = new VibratoExpression();
+            Envelope = new Envelope(this);
         }
 
         public void NewLyric(string lyric)
@@ -158,14 +183,16 @@ namespace PianoRoll.Model
             Lyric = lyric;
             if (HasPhoneme) NoteControl.SetText(Lyric, Phoneme);
             else NoteControl.SetText(Lyric);
-
         }
 
         public void Recalculate()
         {
+            AbsoluteTime = MusicMath.GetStartTime(Canvas.GetLeft(NoteControl));
+            NoteNum = MusicMath.GetNoteNum(Canvas.GetTop(NoteControl)) - 1;
+            
             Note notePrev = Part.GetPrevNote(this);
-            pre = IsRest ? 30 : Phoneme.Preutter;
-            ovl = IsRest ? 30 : Phoneme.Overlap;
+            pre = HasPhoneme ? Phoneme.Preutter : 30;
+            ovl = HasPhoneme ? Phoneme.Overlap : 30;
             stp = 0;
             double length = MusicMath.TickToMillisecond(Length);
             if (notePrev != null && MusicMath.TickToMillisecond(Length) / 2 < pre - ovl)
@@ -176,6 +203,7 @@ namespace PianoRoll.Model
                 if (pre > Phoneme.Preutter || ovl > Phoneme.Overlap)
                     throw new Exception("Да еб вашу мать");
             }
+            Envelope = new Envelope(this);
         }
 
         public double GetRequiredLength()
@@ -183,25 +211,31 @@ namespace PianoRoll.Model
             double requiredLength;
             Note next = Part.GetNextNote(this);
             Note prev = Part.GetPrevNote(this);
-
-            //var ConsonantStretch = Math.Pow(2, 1 - Velocity / 100 );
-            //var ConsonantModified = Phoneme.Consonant * ConsonantStretch;
-            //var stpModified = stp * ConsonantStretch;
-            //var PreutterModified = pre * ConsonantStretch;
-            //var OverlapModified = ovl * ConsonantStretch;
-            //var SpokenLength = Ust.TickToMillisecond(Length) + PreutterModified - next.pre + next.ovl;
-            //requiredLength = Math.Ceiling((SpokenLength + stpModified + 25) / 50) * 50;
-
             var len = MusicMath.TickToMillisecond(Length);
             requiredLength = len + pre;
-            if (next != null && !next.IsRest)
+            if (next != null && next.HasPhoneme)
             {
                 requiredLength -= next.Phoneme.Preutter;
                 requiredLength += next.Phoneme.Overlap;
             }
             requiredLength = Math.Ceiling((requiredLength + stp + 25) / 50) * 50;
-
             return requiredLength;
+        }
+
+        public bool IsConnectedLeft()
+        {
+            // true если нет паузы после предыдущей ноты
+            Note prev = GetPrev();
+            if (prev == null) return false;
+            else return prev.AbsoluteTime + prev.Length == AbsoluteTime;
+        }
+
+        public bool IsConnectedRight()
+        {
+            // true если нет паузы перед следующей нотой
+            Note next = GetNext();
+            if (next == null) return false;
+            else return AbsoluteTime + Length == next.AbsoluteTime;
         }
     }
 }

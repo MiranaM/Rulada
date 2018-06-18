@@ -9,7 +9,7 @@ using PianoRoll.Util;
 
 namespace PianoRoll
 {
-    class Settings
+    public static class Settings
     {
         public static string SettingsFile = @"settings";
 
@@ -23,6 +23,7 @@ namespace PianoRoll
         public static string LastFile;
         public static double LastV;
         public static double LastH;
+        public static string DefaultLyric = "a";
 
         // in local folder
         public static string CacheFolder;
@@ -36,6 +37,7 @@ namespace PianoRoll
         public static int SkipOnRender = 5;
 
         public static int Resolution = 480;
+        public static int Octaves = 7;
 
 
         public static void Read()
@@ -64,6 +66,8 @@ namespace PianoRoll
                 if (line.StartsWith("LastH="))
                     if (double.TryParse(line.Substring("LastH=".Length), out double result))
                         LastH = result;
+                if (line.StartsWith("DefaultLyric="))
+                    DefaultLyric = line.Substring("DefaultLyric=".Length);
             }
             if (!File.Exists(LastFile)) LastFile = null;
             CacheFolder = Path.Combine(Local, @"Cache\");
@@ -85,7 +89,8 @@ namespace PianoRoll
                 $"Resampler=" + Resampler.Replace(Local, "%Local%"),
                 $"LastFile=" + LastFile.Replace(Local, "%Local%"),
                 $"LastV=" + LastV,
-                $"LastH=" + LastH
+                $"LastH=" + LastH,
+                $"DefaultLyric=" + DefaultLyric
             };
             File.WriteAllLines(SettingsFile, lines);
         }

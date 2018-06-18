@@ -34,12 +34,22 @@ namespace PianoRoll.Model
             string delcommand = $"del \"{ Settings.CacheFolder }\\*.wav\"\r\n";
             File.WriteAllText(Settings.Bat, delcommand);
             int i = 1;
+            long renderPosition = 0;
             foreach (Note note in part.Notes)
             {
                 string tempfilename = Path.Combine(Settings.CacheFolder, $"{i}");
                 tempfilename += $"_{note.Lyric}_{note.NoteNum}_{note.Length}.wav";
-                if (!note.IsRest) SendToResampler(note, tempfilename);
+                // Send Rest
+                if (note.AbsoluteTime > renderPosition)
+                {
+                    long resttime = note.AbsoluteTime - renderPosition;
+                    SendToWavtool(resttime, $"{i}_Rest.wav");
+                    renderPosition += resttime;
+                }
+                // Send
+                SendToResampler(note, tempfilename);
                 SendToWavtool(note, tempfilename);
+                renderPosition += note.Length;
                 i++;
             }
             File.AppendAllText(Settings.Bat, $"@if not exist \"{Settings.Output}.whd\" goto E \r\n" +
@@ -114,7 +124,7 @@ namespace PianoRoll.Model
                 MusicMath.NoteNum2String(note.NoteNum), 
                 note.Velocity,
                 part.Flags + note.Flags,
-                note.Phoneme.Offset, // + note.Phoneme.Preutter - note.Phoneme.Overlap, // offset
+                note.Phoneme.Offset,
                 (int)note.RequiredLength,
                 note.Phoneme.Consonant,
                 note.Phoneme.Cutoff,
@@ -126,57 +136,53 @@ namespace PianoRoll.Model
             File.AppendAllText(Settings.Bat, request);
         }
         
-        public static void SendToWavtool(Note note, string tempfilename)
+        public static void SendToWavtool(Note note, string filename)
         {
+            /// <summary>
+            /// Отправляет вавтулу ноту
+            /// </summary>
             Part part = Project.Current.Tracks[0].Parts[0];
             string lyric = note.Lyric;
-            //double length = Ust.TickToMillisecond(note.Length) + note.pre;
             Note next = part.GetNextNote(note);
-            //if (next != null)
-            //{
-            //    length -= next.pre;
-            //    length += next.ovl;
-            //}
-
             double offset = note.pre;
             if (next != null)
             {
                 offset -= next.pre;
                 offset += next.ovl;
             }
-            
             string sign = offset >= 0 ? "+" : "-";
-
             string length = $"{note.Length}@{Project.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
-
             string ops = string.Format
             (
-                "{0} {1} {2} {3}",
+                "{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11}",
                 note.stp, // STP,
                 length, //note.RequiredLength, 
                 note.Envelope.p1,
-                note.Envelope.p2
+                note.Envelope.p2,
+                note.Envelope.p3,
+                note.Envelope.v1,
+                note.Envelope.v2,
+                note.Envelope.v3,
+                note.Envelope.v4,
+                note.ovl, //note.Phoneme.Overlap,
+                note.Envelope.p4,
+                note.Envelope.p5,
+                note.Envelope.v5
             );
-            string opsNote;
-            //if (note.IsRest) opsNote = "";
-            if (false) opsNote = "";
-            else
-            {
-                opsNote = string.Format
-                (
-                    "{0} {1} {2} {3} {4} {5} {6} {7} {8}",
-                    note.Envelope.p3,
-                    note.Envelope.v1,
-                    note.Envelope.v2,
-                    note.Envelope.v3,
-                    note.Envelope.v4,
-                    note.ovl, //note.Phoneme.Overlap,
-                    note.Envelope.p4,
-                    note.Envelope.p5,
-                    note.Envelope.v5
-                );
-            }
-            string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{tempfilename}\" {ops} {opsNote} \r\n";
+            string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{filename}\" {ops} \r\n";
+            File.AppendAllText(Settings.Bat, request);
+        }
+
+        
+        public static void SendToWavtool(long duration, string filename)
+        {
+            /// <summary>
+            /// Отправляет вавтулу паузу
+            /// </summary>
+            Part part = Project.Current.Tracks[0].Parts[0];
+            string length = $"{duration}@{Project.Tempo}+0";
+            string ops = $"0 {length} 0 0";
+            string request = $"\"{Settings.WavTool}\" \"{Settings.Output}\" \"{filename}\" {ops}\r\n";
             File.AppendAllText(Settings.Bat, request);
         }
 

@@ -34,8 +34,8 @@ namespace PianoRoll.Control
         public enum DragMode
         { ResizeLeft, ResizeRight, Move, Mutual, None }
 
-        public delegate void RedrawNote();
-        public event RedrawNote OnNoteChanged;
+        public delegate void NoteChangedEvent();
+        public event NoteChangedEvent OnNoteChanged;
 
 
         //public ref UNoteRef;
@@ -48,6 +48,13 @@ namespace PianoRoll.Control
             minwidth = Settings.Resolution / Project.BeatUnit * PartEditor.xScale;
             maxwidth = Settings.Resolution * Project.BeatPerBar * 2 * PartEditor.xScale; // 2 такта
             minheight = PartEditor.yScale;
+            OnNoteChanged += OnNoteChanged_Note;
+        }
+
+        public void OnNoteChanged_Note()
+        {
+            note.Recalculate();
+            PartEditor.OnPartChanged_Part();
         }
 
         public Note note;
@@ -72,29 +79,22 @@ namespace PianoRoll.Control
             ToolTip = phoneme.File;
             Background = Schemes.noteBrush;
         }
-
-        private void Lyric_MouseDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            this.EditLyric.Visibility = Visibility.Visible;
-        }
-
+        
         void ComfirmLyric()
         {
             EditLyric.Visibility = Visibility.Hidden;
             note.NewLyric(EditLyric.Text);
+            OnNoteChanged();
         }
 
         private void EditLyric_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return)
-            {
-                ComfirmLyric();
-            }
+            if (e.Key == Key.Return) ComfirmLyric();
         }
 
         private void Lyric_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Keyboard.IsKeyDown(Key.LeftCtrl)) 
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
                 Part part = Project.Current.Tracks[0].Parts[0];
                 part.Notes.Remove(note);
@@ -126,8 +126,16 @@ namespace PianoRoll.Control
 
         private void ThumbResizeLeft_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
+            var right = note.AbsoluteTime + note.Length;
+            var minnote = Settings.Resolution / Project.BeatUnit;
+            note.Length = Width / PartEditor.xScale;
+            note.Length += minnote * 0.5;
+            note.Length -= note.Length % minnote;
+            note.AbsoluteTime = right - note.Length;
+
             note.Length = Width / PartEditor.xScale;
             Mouse.OverrideCursor = Cursors.Arrow;
+            OnNoteChanged();
         }
 
         private void ThumbResizeLeft_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
@@ -138,8 +146,12 @@ namespace PianoRoll.Control
 
         private void ThumbResizeRight_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
+            var minnote = Settings.Resolution / Project.BeatUnit;
             note.Length = Width / PartEditor.xScale;
+            note.Length += minnote * 0.5;
+            note.Length -= note.Length % minnote;
             Mouse.OverrideCursor = Cursors.Arrow;
+            OnNoteChanged();
         }
 
         private void ThumbResizeRight_DragDelta(object sender, System.Windows.Controls.Primitives.DragDeltaEventArgs e)
@@ -180,11 +192,18 @@ namespace PianoRoll.Control
             top -= (top) % minheight;
             Canvas.SetTop(this, top);
             dragMode = DragMode.None;
+
+            OnNoteChanged();
         }
 
         private void ThumbMove_DragStarted(object sender, DragStartedEventArgs e)
         {
             WidthInit = Width;
+        }
+
+        private void ThumbMove_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            this.EditLyric.Visibility = Visibility.Visible;
         }
     }
 }

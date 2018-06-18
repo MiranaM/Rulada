@@ -18,15 +18,40 @@ namespace PianoRoll.Model
     {
         public PartTransform PartTransform;
         public string Flags;
-        public List<Note> Notes = new List<Note>();
+        public List<Note> Notes;
         public Track Track;
         public PartControll PartControll;
         public PitchBendExpression PitchBend;
+        private List<Note> _notes;
 
         public void Recalculate() { foreach (Note note in Notes) note.Recalculate(); }
         public List<Note> GetSortedNotes() { return Notes.OrderBy(n => n.AbsoluteTime).ToList(); }
 
-        public Part() { }
+        public Part()
+        {
+            Notes = new List<Note>();
+        }
+
+        void AddNote(Note note)
+        {
+            Notes.Add(note);
+            SortNotes();
+        }
+
+        public void SortNotes()
+        {
+            Notes = Notes.OrderBy(n => n.AbsoluteTime).ToList();
+        }
+        
+        public void TrimNotes()
+        {
+            foreach (Note note in Notes)
+            {
+                Note next = note.GetNext();
+                if (next != null && note.Length > next.AbsoluteTime - note.AbsoluteTime)
+                    note.Length = next.AbsoluteTime - note.AbsoluteTime;
+            }
+        }
 
         public Note GetPrevNote(Note note)
         {
@@ -47,7 +72,7 @@ namespace PianoRoll.Model
         public void BuildPitch()
         {
             Recalculate();
-            foreach (Note note in Notes) if (!note.IsRest) Pitch.BuildPitchData(note);
+            foreach (Note note in Notes) Pitch.BuildPitchData(note);
             AveragePitch();
             PitchTrimStart();
             PitchTrimEnd();
@@ -60,7 +85,7 @@ namespace PianoRoll.Model
                 Note note = Notes[i];
                 Note noteNext = Notes[i + 1];
                 if (note.PitchBend == null || noteNext.PitchBend == null) continue;
-                if (!note.IsRest) Pitch.AveragePitch(note, noteNext);
+                Pitch.AveragePitch(note, noteNext);
             }
         }
 
@@ -107,14 +132,16 @@ namespace PianoRoll.Model
 
         public void RefreshPhonemes()
         {
-            foreach(Note note in Notes)
-            {
-                note.Lyric = note.Lyric;
-                if (note.Lyric == "" || note.IsRest)
-                note.Phoneme = Track.Singer.FindPhoneme(note.Lyric);
-                if (note.Phoneme != null) note.HasPhoneme = true;
-                else note.HasPhoneme = false;
-            }
+            // foreach (Note note in Notes) note.Lyric = note.Lyric;
+        }
+
+        public void AddNote(long startTime, int noteNum)
+        {
+            Note note = new Note(this);
+            note.NoteNum = noteNum;
+            note.AbsoluteTime = startTime;
+            note.Part = this;
+            Notes.Add(note);
         }
     }
 }

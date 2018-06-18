@@ -31,8 +31,9 @@ namespace PianoRoll.View
             InitializeComponent();
             Settings.Read();
             Singer.FindSingers();
-            if (Settings.LastFile != null) ImportUst(Settings.LastFile);
-            else New();
+            // if (Settings.LastFile != null) ImportUst(Settings.LastFile);
+            // else New();
+            New();
             SetPosition();
         }
 
