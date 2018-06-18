@@ -82,6 +82,7 @@
             Grid.Column="1"
             HorizontalAlignment="Stretch"
             VerticalAlignment="Stretch"
-            Opacity="0.5" />
+            DragDelta="ThumbMove_DragDelta"
+            Opacity="0.5" DragCompleted="ThumbMove_DragCompleted" DragStarted="ThumbMove_DragStarted" />
     </Grid>
 </UserControl>

@@ -133,12 +133,8 @@ namespace PianoRoll.Control
             Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
             Width = width;
             
-                double lefttemp = Canvas.GetLeft(this);
+            double lefttemp = Canvas.GetLeft(this);           
             
-            
-
-            //PartEditor.DragMode.Content = $"width: {width} Ltemp: {lefttemp}";
-
         }
 
         private void ThumbResizeLeft_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
@@ -176,6 +172,31 @@ namespace PianoRoll.Control
         {
             WidthInit = Width;
             Mouse.OverrideCursor = Cursors.SizeWE;
+        }
+
+        private void ThumbMove_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            double deltaHorizontal = Math.Min(e.HorizontalChange, ActualWidth - MinWidth);
+            double deltaVertical = Math.Min(e.VerticalChange, ActualWidth - MinWidth);
+            Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
+            Canvas.SetTop(this, Canvas.GetTop(this) + deltaVertical);
+        }
+
+        private void ThumbMove_DragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            double left = Canvas.GetLeft(this);
+            left -= left % minwidth;
+            Canvas.SetLeft(this, left);
+
+            double top = Canvas.GetTop(this);
+            top -= top % minheight;
+            Canvas.SetTop(this, top);
+            dragMode = DragMode.None;
+        }
+
+        private void ThumbMove_DragStarted(object sender, DragStartedEventArgs e)
+        {
+            WidthInit = Width;
         }
     }
 }
