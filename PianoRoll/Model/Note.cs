@@ -50,7 +50,7 @@ namespace PianoRoll.Model
         private long _absoluteTime;
         private Envelope _envelope;
         private VibratoExpression _vibrato;
-        private Phoneme _oto;
+        private Phoneme _phoneme;
 
         public Part Part;
 
@@ -68,7 +68,9 @@ namespace PianoRoll.Model
         public string Flags { get; set; }
         public PitchBendExpression PitchBend { get; set; }
         public NoteControl NoteControl { get => _noteControl; set => SetNoteControl(value); }
-        public Phoneme Phoneme { get { if (HasPhoneme) return _oto; else return Model.Phoneme.GetDefault(Lyric); } set { _oto = value; } }
+        public Phoneme Phoneme { get => _phoneme; set => _phoneme = value; }
+        public Phoneme DefaultPhoneme { get { return Phoneme.GetDefault(Lyric); } }
+
 
         public double STP { get; set; }
 
@@ -77,7 +79,7 @@ namespace PianoRoll.Model
         public double stp { get; private set; }
         public double lengthAdd { get; private set; }
 
-        public bool HasPhoneme { get; private set; }
+        public bool HasPhoneme { get { return Phoneme != null; } }
         private NoteControl _noteControl;
         #endregion
 
@@ -149,7 +151,6 @@ namespace PianoRoll.Model
         {
             _lyric = lyric;
             Phoneme = Part.Track.Singer.FindPhoneme(lyric);
-            HasPhoneme = (Phoneme != null);
         }
 
         private void SetNoteControl(NoteControl noteControl)
@@ -172,7 +173,6 @@ namespace PianoRoll.Model
             Velocity = 100;
             Length = Settings.Resolution;
             Lyric = Settings.DefaultLyric;
-            HasPhoneme = false;
             PitchBend = new PitchBendExpression();
             Vibrato = new VibratoExpression();
             Envelope = new Envelope(this);

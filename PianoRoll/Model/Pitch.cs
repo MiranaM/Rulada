@@ -263,7 +263,7 @@ namespace PianoRoll.Model
         {
             Note prevNote = note.GetPrev();
             Note nextNote = note.GetNext();
-            Phoneme phoneme = note.Phoneme;
+            Phoneme phoneme = note.HasPhoneme ? note.Phoneme : note.DefaultPhoneme;
             List<PitchPoint> pps = new List<PitchPoint>();
             foreach (PitchPoint pp in note.PitchBend.Points) pps.Add(pp);
             if (pps.Count == 0)
