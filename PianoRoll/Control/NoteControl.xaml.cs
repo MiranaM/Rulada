@@ -126,7 +126,7 @@ namespace PianoRoll.Control
             double lefttemp2 = Canvas.GetLeft(this);
 
             deltaHorizontal = e.HorizontalChange;
-            width = WidthInit - deltaHorizontal;
+            width = Width - deltaHorizontal;
             if (width > maxwidth) width = maxwidth;
             if (width < minwidth) width = minwidth;
 
@@ -159,10 +159,9 @@ namespace PianoRoll.Control
         {
             double deltaHorizontal;
             double width;
-            Thumb temp = (Thumb)sender;
             
-            deltaHorizontal = e.HorizontalChange + temp.ActualWidth; //потому что thumb width = 5
-            width = WidthInit + deltaHorizontal;
+            deltaHorizontal = e.HorizontalChange;
+            width = Width + deltaHorizontal;
             if (width > maxwidth) width = maxwidth;
             if (width < minwidth) width = minwidth;
             Width = width;
