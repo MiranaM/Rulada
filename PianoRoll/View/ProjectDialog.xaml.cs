@@ -20,7 +20,6 @@ namespace PianoRoll.View
     /// </summary>
     public partial class ProjectDialog : Window
     {
-        Project project;
 
         public ProjectDialog()
         {
@@ -35,7 +34,7 @@ namespace PianoRoll.View
         public void InitSingers()
         {
             SingersList.Items.Clear();
-            foreach (string sing in project.SingerNames)
+            foreach (string sing in Project.Current.SingerNames)
             {                
                 ListViewItem item = new ListViewItem();
                 item.Content = sing;
