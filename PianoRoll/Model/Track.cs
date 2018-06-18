@@ -32,6 +32,7 @@ namespace PianoRoll.Model
         {
             Part part = new Part();
             Parts.Add(part);
+            part.Track = this;
             return part;
         }
 

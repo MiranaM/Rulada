@@ -109,7 +109,7 @@ namespace PianoRoll.Model
             (
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n",
                 Settings.Resampler,
-                Path.Combine(part.Singer.Dir, note.Phoneme.File),
+                Path.Combine(part.Track.Singer.Dir, note.Phoneme.File),
                 tempfilename,
                 MusicMath.NoteNum2String(note.NoteNum), 
                 note.Velocity,

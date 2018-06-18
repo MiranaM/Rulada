@@ -22,6 +22,16 @@ namespace PianoRoll.Themes
         public static SolidColorBrush partBackgroundBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#334444"));
         public static SolidColorBrush partNoteBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#60AAAA"));
         public static SolidColorBrush black = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#000000"));
+        public static LinearGradientBrush noteBrush = new LinearGradientBrush()
+        {
+            StartPoint = new System.Windows.Point(0.5, 0),
+            EndPoint = new System.Windows.Point(0.5, 1),
+            GradientStops = new GradientStopCollection()
+            {
+                new GradientStop((Color)ColorConverter.ConvertFromString("#FF434E5D"), 1),
+                new GradientStop((Color)ColorConverter.ConvertFromString("#FF5D6E76"), 0)
+            }
+        };
 
 
 

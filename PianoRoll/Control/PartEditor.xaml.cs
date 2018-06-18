@@ -39,6 +39,9 @@ namespace PianoRoll.Control
         private double minWidth;
         public PitchBendExpression PitchBend;
 
+        public delegate void RedrawPart();
+        public event RedrawPart OnPartChanged;
+
         #endregion
 
         public PartEditor()
@@ -68,6 +71,8 @@ namespace PianoRoll.Control
             GridCanvas.Children.Clear();
             NoteCanvas.Children.Clear();
             NoteBackgroundCanvas.Children.Clear();
+            PitchCanvas.Children.Clear();
+            PitchPointCanvas.Children.Clear();
             DrawInit();
         }
 
@@ -78,49 +83,25 @@ namespace PianoRoll.Control
             DrawGrid();
             CreatePiano();
             CreateBackgroundCanvas();
+            lastPosition = 0;
         }
 
         public void DrawNotes()
         {
             if (Part == null) return;
-
             Part.RefreshPhonemes();
-            NoteCanvas.Children.Clear();
-            PitchCanvas.Children.Clear();
-            PitchPointCanvas.Children.Clear();
-            lastPosition = 0;
+            Clear();
 
             foreach (Note note in Part.Notes)
             {
-                NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length, note.Lyric);
-                Label label = new Label()
-                {
-                    Content = note.Lyric,
-                    Padding = new Thickness(0),
-                    Foreground = Schemes.foreBrush
-                };
+                NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
                 if (!note.IsRest)
                 {
-                    noteControl.note = note;
-                    //noteControl.onUstChanged += DrawNotes;
-                    noteControl.SetText(note.Lyric);
-                    if (note.HasPhoneme)
-                    {
-                        noteControl.ToolTip = note.Phoneme.File;
-                    }
-                    else
-                    {
-                        noteControl.Background = new SolidColorBrush(System.Windows.Media.Colors.DarkOrange);
-                        noteControl.ToolTip = "can't found source file";
-                    }
                     note.NoteControl = noteControl;
                     NoteCanvas.Children.Add(noteControl);
                 }
-
-
             }
-            //scrollViewer.ScrollToVerticalOffset(540);
         }
 
         public void PitchOff()
@@ -241,12 +222,11 @@ namespace PianoRoll.Control
             return pitchSource;
         }
 
-        private NoteControl MakeNote(int noteNumber, long startTime, int duration, string lyric)
+        private NoteControl MakeNote(int noteNumber, long startTime, int duration)
         {
             NoteControl noteControl = new NoteControl(this);
             var top = GetNoteYPosition(noteNumber);
             var left = GetNoteXPosition(startTime);
-            noteControl.Text = lyric;
             noteControl.Width = (double)duration * xScale;
             noteControl.Height = yScale;
             noteControl.SetValue(Canvas.TopProperty, top);
@@ -257,6 +237,16 @@ namespace PianoRoll.Control
         private double GetNoteYPosition(int noteNumber)
         {
             return (double)(octaves * 12 - 1 - noteNumber) * yScale;
+        }
+
+        private int GetNoteNum(double y)
+        {
+            return (int) (octaves * 12 - y / yScale);
+        }
+
+        private long GetStartTime(double x)
+        {
+            return (long) (x / xScale);
         }
 
         private double GetNoteXPosition(long startTime)
@@ -320,33 +310,30 @@ namespace PianoRoll.Control
             }
         }
 
+        void AddNote(long startTime, int noteNum)
+        {
+            Note note = new Note();
+            note.NoteNum = noteNum;
+            note.AbsoluteTime = startTime;
+            note.Part = Part;
+            Part.Notes.Add(note);
+            DrawNotes();
+        }
+
         private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
                 Point currentMousePosition = e.GetPosition(RootCanvas);
                 Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
-
-                long startTime = Convert.ToInt64((currentMousePosition.X + scrollViewer.HorizontalOffset) / xScale);
                 int MinLength = Settings.Resolution / MaxDivider;
-                startTime = (long)Math.Round((double)(startTime / MinLength), 0, MidpointRounding.AwayFromZero) * MinLength;
-                int noteNumber = (int)(octaves * 12 - 1 - Math.Round((currentMousePosition.Y + scrollViewer.VerticalOffset) / yScale, 0, MidpointRounding.AwayFromZero));
-
-                int duration = (int)(Settings.Resolution);
-                string Lyric = "a";
-
-                Note note = new Note();
-                note.NoteNum = noteNumber;
-                note.Lyric = Lyric;
-                note.Length = duration;
-                note.AbsoluteTime = startTime;
-                note.Part = Part;
-                Part.Notes.Add(note);
-                if (Part.Singer.IsEnabled)
-                {
-                    Part.RefreshPhonemes();
-                }                
-                DrawNotes();
+                double x = currentMousePosition.X;
+                double y = currentMousePosition.Y;
+                long startTime = GetStartTime(x);
+                int noteNum = GetNoteNum(y);
+                startTime += (long) (MinLength * 0.5);
+                startTime -= (long) ((double)startTime % MinLength);
+                AddNote(startTime, noteNum);
             }
         }
 
@@ -389,5 +376,10 @@ namespace PianoRoll.Control
             }
         }
 
+
+        public void Remove(NoteControl note)
+        {
+            NoteCanvas.Children.Remove(note);
+        }
     }
 }

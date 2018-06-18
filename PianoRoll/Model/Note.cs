@@ -40,7 +40,7 @@ namespace PianoRoll.Model
         public dynamic Lyric { get => _lyric; set { SetLyric(value); } }
         public dynamic NoteNum { get => _noteNum; set { SetNoteNum(value); } }
         public dynamic Envelope { get => _envelope; set { SetEnvelope(value); } }
-        public dynamic AbsoluteTime { get => _absoluteTime; set { _absoluteTime = (long) value; } }
+        public dynamic AbsoluteTime { get => _absoluteTime; set { _absoluteTime = (long)value; } }
         public dynamic Vibrato { get => _vibrato; set { SetVibrato(value); } }
 
         public double RequiredLength { get { return GetRequiredLength(); } }
@@ -49,7 +49,7 @@ namespace PianoRoll.Model
         public int Modulation { get; set; }
         public string Flags { get; set; }
         public PitchBendExpression PitchBend { get; set; }
-        public NoteControl NoteControl { get; set; }
+        public NoteControl NoteControl { get => _noteControl; set => SetNoteControl(value); }
         public Phoneme Phoneme { get { if (HasPhoneme) return _oto; else return Model.Phoneme.GetDefault(Lyric); } set { _oto = value; } }
 
         public double STP { get; set; }
@@ -61,14 +61,15 @@ namespace PianoRoll.Model
 
         public bool IsRest = false;
         public bool HasPhoneme = false;
+        private NoteControl _noteControl;
 
         private void SetLength(int value) { _length = value; }
-        private void SetLength(double value) { _length = (int) value; }
-        private void SetLength(float value) { _length = (int) value; }
+        private void SetLength(double value) { _length = (int)value; }
+        private void SetLength(float value) { _length = (int)value; }
 
         private void SetNoteNum(int value) { _noteNum = value; }
-        private void SetNoteNum(double value) { _noteNum = (int) value; }
-        private void SetNoteNum(float value) { _noteNum = (int) value; }
+        private void SetNoteNum(double value) { _noteNum = (int)value; }
+        private void SetNoteNum(float value) { _noteNum = (int)value; }
 
         private void SetEnvelope(UEnvelope value) { _envelope = value; }
         private void SetEnvelope(string value)
@@ -130,7 +131,16 @@ namespace PianoRoll.Model
             if (lyric == "R") lyric = "";
             if (lyric == "") IsRest = true;
             _lyric = lyric;
-            if (Part != null) Phoneme = Part.Singer.FindPhoneme(lyric);
+            if (Part != null) Phoneme = Part.Track.Singer.FindPhoneme(lyric);
+            HasPhoneme = Phoneme != null;
+        }
+
+        private void SetNoteControl(NoteControl noteControl)
+        {
+
+            noteControl.note = this;
+            _noteControl = noteControl;
+            NewLyric(Lyric);
         }
 
         public Note()
@@ -138,8 +148,19 @@ namespace PianoRoll.Model
             Modulation = 0;
             Intensity = 100;
             Velocity = 100;
+            Length = Settings.Resolution;
+            Lyric = "a";
+            HasPhoneme = false;
         }
-        
+
+        public void NewLyric(string lyric)
+        {
+            Lyric = lyric;
+            if (HasPhoneme) NoteControl.SetText(Lyric, Phoneme);
+            else NoteControl.SetText(Lyric);
+
+        }
+
         public void Recalculate()
         {
             Note notePrev = Part.GetPrevNote(this);
@@ -178,7 +199,7 @@ namespace PianoRoll.Model
                 requiredLength -= next.Phoneme.Preutter;
                 requiredLength += next.Phoneme.Overlap;
             }
-            requiredLength = Math.Ceiling((requiredLength + stp + 25) / 50 ) * 50;
+            requiredLength = Math.Ceiling((requiredLength + stp + 25) / 50) * 50;
 
             return requiredLength;
         }

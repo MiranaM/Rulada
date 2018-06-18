@@ -1,4 +1,5 @@
 ﻿using PianoRoll.Model;
+using PianoRoll.Themes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,12 +23,6 @@ namespace PianoRoll.Control
     /// </summary>
     public partial class NoteControl : UserControl
     {
-        public delegate void RedrawUst();
-
-        public event RedrawUst onUstChanged;
-
-        public string Text { get; set; }
-
         double minwidth;
         double maxwidth;
         double minheight;
@@ -39,36 +34,43 @@ namespace PianoRoll.Control
         public enum DragMode
         { ResizeLeft, ResizeRight, Move, Mutual, None }
 
+        public delegate void RedrawNote();
+        public event RedrawNote OnNoteChanged;
 
 
         //public ref UNoteRef;
 
         public NoteControl(PartEditor partEditor)
         {
+            PartEditor = partEditor;
             InitializeComponent();
 
             minwidth = Settings.Resolution / Project.BeatUnit * PartEditor.xScale;
             maxwidth = Settings.Resolution * Project.BeatPerBar * 2 * PartEditor.xScale; // 2 такта
             minheight = PartEditor.yScale;
-
-
         }
 
         public Note note;
 
-
-        //зафиксить текст _l
-        public void SetText (string _l)
+        //зафиксить текст lyric, вызывается из Note
+        // чтобы отправить на изменение, нужно Note.NewLyric(lyric),
+        // чтобы также обработать текст
+        public void SetText (string lyric)
         {
-            Text = _l;
-            this.Lyric.Content = Text;
-            this.EditLyric.Text = Text;
-            note.Lyric = Text;          
+            this.Lyric.Content = lyric;
+            this.EditLyric.Text = lyric;
+            note.Lyric = lyric;
+            Background = Schemes.unknownBrush;
+            ToolTip = "can't found source file";
         }
 
-        private void DrawUstAgain(object sender)
+        public void SetText(string lyric, Phoneme phoneme)
         {
-
+            this.Lyric.Content = $"{lyric} [{phoneme.Alias}]";
+            this.EditLyric.Text = lyric;
+            note.Lyric = lyric;
+            ToolTip = phoneme.File;
+            Background = Schemes.noteBrush;
         }
 
         private void Lyric_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -76,45 +78,34 @@ namespace PianoRoll.Control
             this.EditLyric.Visibility = Visibility.Visible;
         }
 
+        void ComfirmLyric()
+        {
+            EditLyric.Visibility = Visibility.Hidden;
+            note.NewLyric(EditLyric.Text);
+        }
+
         private void EditLyric_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Return)
-            {                
-                //SetText(this.EditLyric.Text);
-               // this.EditLyric.Visibility = Visibility.Hidden;
-                //onUstChanged();
+            {
+                ComfirmLyric();
             }
         }
 
         private void Lyric_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            if (Keyboard.IsKeyDown(Key.LeftCtrl)) 
             {
                 Part part = Project.Current.Tracks[0].Parts[0];
                 part.Notes.Remove(note);
-                onUstChanged();
+                PartEditor.Remove(this);
+                // OnNoteChanged();
             }
-
         }
-
-        private void ResizeArea_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            
-        }
-
-        private void UserControl_MouseEnter(object sender, MouseEventArgs e)
-        {
-            
-        }
-
-        private void UserControl_MouseLeave(object sender, MouseEventArgs e)
-        {
-            
-        }
-
+        
         private void EditLyric_LostFocus(object sender, RoutedEventArgs e)
         {
-            EditLyric.Visibility = Visibility.Hidden;
+            ComfirmLyric();
         }
 
 
@@ -123,17 +114,13 @@ namespace PianoRoll.Control
             double deltaHorizontal;
             double width;
 
-            double lefttemp2 = Canvas.GetLeft(this);
-
             deltaHorizontal = e.HorizontalChange;
             width = Width - deltaHorizontal;
             if (width > maxwidth) width = maxwidth;
             if (width < minwidth) width = minwidth;
 
             Canvas.SetLeft(this, Canvas.GetLeft(this) + deltaHorizontal);
-            Width = width;
-            
-            double lefttemp = Canvas.GetLeft(this);           
+            Width = width;         
             
         }
 
@@ -184,11 +171,13 @@ namespace PianoRoll.Control
         private void ThumbMove_DragCompleted(object sender, DragCompletedEventArgs e)
         {
             double left = Canvas.GetLeft(this);
+            left += minwidth * 0.5;
             left -= left % minwidth;
             Canvas.SetLeft(this, left);
 
             double top = Canvas.GetTop(this);
-            top -= top % minheight;
+            top += minheight * 0.5;
+            top -= (top) % minheight;
             Canvas.SetTop(this, top);
             dragMode = DragMode.None;
         }

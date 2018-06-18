@@ -21,19 +21,19 @@
             Fill="#FF001122"
             Stroke="Black" />
         <Label
-            Name="DragMode"
+            Name="Debug1"
             Grid.Row="1"
             Padding="0"
             VerticalContentAlignment="Center"
-            Content="DragMode"
+            Content=""
             Foreground="#FF90FFFF" />
         <Label
-            Name="DragModeAdd"
+            Name="Debug2"
             Grid.Row="1"
             Margin="500,0,0,0"
             Padding="0"
             VerticalContentAlignment="Center"
-            Content="DragModeAdd"
+            Content=""
             Foreground="#FF90FFFF" />
         <ScrollViewer
             Name="scrollViewer"

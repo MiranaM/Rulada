@@ -20,7 +20,6 @@ namespace PianoRoll.Model
         public string Flags;
         public List<Note> Notes = new List<Note>();
         public Track Track;
-        public Singer Singer { get { return Track.Singer; } }
         public PartControll PartControll;
         public PitchBendExpression PitchBend;
 
@@ -112,7 +111,7 @@ namespace PianoRoll.Model
             {
                 note.Lyric = note.Lyric;
                 if (note.Lyric == "" || note.IsRest)
-                note.Phoneme = Singer.FindPhoneme(note.Lyric);
+                note.Phoneme = Track.Singer.FindPhoneme(note.Lyric);
                 if (note.Phoneme != null) note.HasPhoneme = true;
                 else note.HasPhoneme = false;
             }

@@ -98,7 +98,6 @@ namespace PianoRoll.View
 
         private void InitElements()
         {
-            Singer singer = Project.Current.Tracks[0].Parts[0].Singer;
             Tempo.Content = $"{Project.Tempo.ToString("f2")} BPM";
             BeatInfo.Content = $"{Project.BeatPerBar}/4, 1/{Project.BeatPerBar * Project.BeatUnit}";
             PartEditor.Resize();
