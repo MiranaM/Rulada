@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PianoRoll.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,44 @@ namespace PianoRoll.View
     /// </summary>
     public partial class ProjectDialog : Window
     {
+        Project project;
+
         public ProjectDialog()
         {
             InitializeComponent();
+
+            InitSingers();
+
+
+
+        }
+
+        public void InitSingers()
+        {
+            SingersList.Items.Clear();
+            foreach (string sing in project.SingerNames)
+            {                
+                ListViewItem item = new ListViewItem();
+                item.Content = sing;
+                SingersList.Items.Add(sing);
+            }
+        }
+
+        public void InitTools()
+        {
+            WavToolList.Items.Clear();
+
+
+        }
+
+        public void InitSounds()
+        {
+
+        }
+
+        public void InitNames()
+        {
+
         }
     }
 }
