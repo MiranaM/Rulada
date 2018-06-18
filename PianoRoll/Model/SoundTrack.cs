@@ -18,6 +18,7 @@ namespace PianoRoll.Model
         public List<SoundPart> Parts;
         public double Pan;
         public double Volume;
+        
 
 
         public SoundPart AddPart()

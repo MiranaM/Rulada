@@ -157,45 +157,14 @@
                 </TabItem>
                 <TabItem Header="Тулы">
                     <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200" />
-                            <ColumnDefinition Width="200" />
-                        </Grid.ColumnDefinitions>
-
-                        <Label
-                            Grid.Column="0"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Content="WavTool" />
                         <ListView
                             Name="WavToolList"
                             Grid.Column="0"
-                            Margin="0,25,0,0">
+                            Margin="0,0,0,0">
                             <ListView.View>
                                 <GridView>
-                                    <GridViewColumn
-                                        Width="195px"
-                                        DisplayMemberBinding="{Binding Path=VBType}"
-                                        Header="Название" />
-                                </GridView>
-                            </ListView.View>
-                        </ListView>
-
-                        <Label
-                            Grid.Column="1"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Top"
-                            Content="Resampler" />
-                        <ListView
-                            Name="ResamplerList"
-                            Grid.Column="1"
-                            Margin="0,25,0,0">
-                            <ListView.View>
-                                <GridView>
-                                    <GridViewColumn
-                                        Width="195px"
-                                        DisplayMemberBinding="{Binding Path=VBType}"
-                                        Header="Название" />
+                                    <GridViewColumn Width="320px" Header="Название" />
+                                    <GridViewColumn Width="80px" Header="Ссылка" />
                                 </GridView>
                             </ListView.View>
                         </ListView>

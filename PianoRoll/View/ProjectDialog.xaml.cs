@@ -26,7 +26,7 @@ namespace PianoRoll.View
             InitializeComponent();
 
             InitSingers();
-
+            InitTitle();
 
 
         }
@@ -48,15 +48,25 @@ namespace PianoRoll.View
 
 
         }
-
-        public void InitSounds()
+            
+        public void InitSounds()                                        //ДОДЕЛАЙ МЕНЯ
         {
+            
+            //SoundList.Items.Clear();
+
+            //foreach (SoundTrack st in Project.Current.SoundTracks)
+            //{
+            //    ListViewItem item = new ListViewItem();
+            //    item.Content =
+            //}
 
         }
 
-        public void InitNames()
+        public void InitTitle()
         {
-
+            //CoverAuthor.Content = Project.Current.Title;
+            //SongAuthor;
+            SongName.Content = Project.Current.Title;
         }
     }
 }
