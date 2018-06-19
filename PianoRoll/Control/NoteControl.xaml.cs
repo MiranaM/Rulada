@@ -1,5 +1,6 @@
 ﻿using PianoRoll.Model;
 using PianoRoll.Themes;
+using PianoRoll.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -193,14 +194,42 @@ namespace PianoRoll.Control
             OnNoteChanged();
         }
 
+        void AddNote(Point currentMousePosition)
+        {
+            int deltaL = note.Length;
+            double x = Canvas.GetLeft(this) + currentMousePosition.X;
+            double y = Canvas.GetTop(this) + currentMousePosition.Y;
+            double startX = MusicMath.GetNoteXPosition(note.AbsoluteTime);
+            double lenX = x - startX;
+            note.Length = MusicMath.GetStartTime(lenX);
+            note.Length = Pitch.SnapX(note.Length);
+            deltaL -= note.Length;
+            PartEditor.AddNote(x - MusicMath.GetNoteXPosition(deltaL), y);
+            OnNoteChanged();
+        }
+
         private void ThumbMove_DragStarted(object sender, DragStartedEventArgs e)
         {
             WidthInit = Width;
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                Point currentMousePosition = Mouse.GetPosition(this);
+                AddNote(currentMousePosition);
+            }
         }
 
         private void ThumbMove_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             this.EditLyric.Visibility = Visibility.Visible;
+        }
+
+        private void ThumbMove_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                Point currentMousePosition = e.GetPosition(this);
+                AddNote(currentMousePosition);
+            }
         }
     }
 }

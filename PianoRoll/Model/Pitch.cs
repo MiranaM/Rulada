@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PianoRoll.Control;
 using PianoRoll.Util;
 
 namespace PianoRoll.Model
@@ -191,9 +192,14 @@ namespace PianoRoll.Model
             note.PitchBend.Array = pitches;
         }
 
-        public static int SnapTick(int tick)
+        public static double SnapX(double x)
         {
-            tick =  ((int)(tick + Settings.IntervalTick * 0.25) / Settings.IntervalTick * Settings.IntervalTick);
+            return SnapTick((long)(x / PartEditor.xScale)) * PartEditor.xScale;
+        }
+
+        public static long SnapTick(long tick)
+        {
+            tick =  ((long)(tick + Settings.IntervalTick * 0.25) / Settings.IntervalTick * Settings.IntervalTick);
             if (tick % Settings.IntervalTick != 0)
                 throw new Exception();
             return tick;
@@ -202,7 +208,7 @@ namespace PianoRoll.Model
         public static double SnapMs(double ms)
         {
             var tick = MusicMath.MillisecondToTick(ms);
-            tick = SnapTick(tick);
+            tick = (int) SnapTick(tick);
             return MusicMath.MillisecondToTick(tick);
 
         }
@@ -233,8 +239,8 @@ namespace PianoRoll.Model
             if (pps.First().X > startMs) pps.Insert(0, new PitchPoint(startMs, pps.First().Y));
             if (pps.Last().X < endMs) pps.Add(new PitchPoint(endMs, pps.Last().Y));
 
-            var start = SnapTick(MusicMath.MillisecondToTick(pps.First().X));
-            var end = SnapTick(MusicMath.MillisecondToTick(pps.Last().X));
+            int start = (int) SnapTick(MusicMath.MillisecondToTick(pps.First().X));
+            int end = (int) SnapTick(MusicMath.MillisecondToTick(pps.Last().X));
 
             // combine all
             pitchInfo.Start = start;

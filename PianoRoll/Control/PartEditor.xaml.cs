@@ -290,21 +290,24 @@ namespace PianoRoll.Control
             }
         }
 
+        public void AddNote(double x, double y)
+        {
+            // Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
+            int MinLength = Settings.Resolution / MaxDivider;
+            long startTime = MusicMath.GetStartTime(x);
+            int noteNum = MusicMath.GetNoteNum(y);
+            startTime += (long)(MinLength * 0.5);
+            startTime -= (long)((double)startTime % MinLength);
+            Part.AddNote(startTime, noteNum);
+            OnPartChanged();
+        }
+
         private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
                 Point currentMousePosition = e.GetPosition(RootCanvas);
-                // Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
-                int MinLength = Settings.Resolution / MaxDivider;
-                double x = currentMousePosition.X;
-                double y = currentMousePosition.Y;
-                long startTime = MusicMath.GetStartTime(x);
-                int noteNum = MusicMath.GetNoteNum(y);
-                startTime += (long) (MinLength * 0.5);
-                startTime -= (long) ((double)startTime % MinLength);
-                Part.AddNote(startTime, noteNum);
-                OnPartChanged();
+                AddNote(currentMousePosition.X, currentMousePosition.Y);
             }
         }
 

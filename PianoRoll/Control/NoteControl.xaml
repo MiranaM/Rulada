@@ -64,6 +64,7 @@
             DragCompleted="ThumbMove_DragCompleted"
             DragDelta="ThumbMove_DragDelta"
             DragStarted="ThumbMove_DragStarted"
+            MouseLeftButtonUp="ThumbMove_MouseLeftButtonUp"
             MouseRightButtonDown="Lyric_MouseRightButtonDown"
             MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
             Opacity="0" />

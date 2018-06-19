@@ -43,12 +43,12 @@ namespace PianoRoll.Model
                 if (note.AbsoluteTime > renderPosition)
                 {
                     long resttime = note.AbsoluteTime - renderPosition;
-                    SendToWavtool(resttime, $"{i}_Rest.wav");
+                    SendToAppendTool(resttime, $"{i}_Rest.wav");
                     renderPosition += resttime;
                 }
                 // Send
                 SendToResampler(note, tempfilename);
-                SendToWavtool(note, tempfilename);
+                SendToAppendTool(note, tempfilename);
                 renderPosition += note.Length;
                 i++;
             }
@@ -136,12 +136,12 @@ namespace PianoRoll.Model
             );
             File.AppendAllText(Settings.Bat, request);
         }
-        
-        public static void SendToWavtool(Note note, string filename)
+
+        /// <summary>
+        /// Send Note to AppendTool
+        /// </summary>
+        public static void SendToAppendTool(Note note, string filename)
         {
-            /// <summary>
-            /// Отправляет вавтулу ноту
-            /// </summary>
             Part part = Project.Current.Tracks[0].Parts[0];
             string lyric = note.Lyric;
             Note next = part.GetNextNote(note);
@@ -174,12 +174,12 @@ namespace PianoRoll.Model
             File.AppendAllText(Settings.Bat, request);
         }
 
-        
-        public static void SendToWavtool(long duration, string filename)
+
+        /// <summary>
+        /// Send Pause to AppendTool
+        /// </summary>
+        public static void SendToAppendTool(long duration, string filename)
         {
-            /// <summary>
-            /// Отправляет вавтулу паузу
-            /// </summary>
             Part part = Project.Current.Tracks[0].Parts[0];
             string length = $"{duration}@{Project.Tempo}+0";
             string ops = $"0 {length} 0 0";

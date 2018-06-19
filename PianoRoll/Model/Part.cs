@@ -144,5 +144,15 @@ namespace PianoRoll.Model
             Notes.Add(note);
         }
 
+        public void AddNote(long startTime, int noteNum, int length)
+        {
+            Note note = new Note(this);
+            note.NoteNum = noteNum;
+            note.AbsoluteTime = startTime;
+            note.Part = this;
+            note.Length = length;
+            Notes.Add(note);
+        }
+
     }
 }
