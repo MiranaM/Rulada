@@ -25,12 +25,14 @@ namespace PianoRoll.Model
         {
             SoundPart part = new SoundPart();
             Parts.Add(part);
+            part.SoundTrack = this;
             return part;
         }
 
         public void AddPart(SoundPart part)
         {
             Parts.Add(part);
+            part.SoundTrack = this;
         }
     }
 }

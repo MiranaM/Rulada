@@ -69,21 +69,26 @@ namespace PianoRoll.View
             InitElements();
         }
 
-        private void ImportUst(string dir)
+        private void ImportTrack(Track track)
         {
             Clear();
-            Project project = new Project();
+            Playlist.AddTrack(track);
+            Project.Current.AddTrack(track);
+            PartEditor.Draw();
+            InitElements();
+        }
+
+        private void ImportUst(string dir, bool IsNewProject = true)
+        {
+            if (IsNewProject) Project.Current = new Project();
             Part part = Ust.Import(dir, out double tempo, out string singerDir);
             Project.Tempo = tempo;
             Track track = new Track(singerDir);
-            track.AddPart(part);
-            Playlist.AddTrack(track);
-            project.AddTrack(track);
             part.RefreshPhonemes();
+            track.AddPart(part);
             PartEditor.Part = part;
             Settings.LastFile = dir;
-            PartEditor.Draw();
-            InitElements();
+            ImportTrack(track);
         }
 
         private void New()
@@ -92,8 +97,9 @@ namespace PianoRoll.View
             TransitionTool.Load(Settings.TransitionTool);
             Project project = new Project();
             Track track =  project.AddTrack();
+            Part part = track.AddPart();
             Playlist.AddTrack(track);
-            PartEditor.Part = track.Parts[0];
+            PartEditor.Part = part;
             PartEditor.Draw();
             InitElements();
         }
