@@ -65,7 +65,8 @@
             DragDelta="ThumbMove_DragDelta"
             DragStarted="ThumbMove_DragStarted"
             MouseRightButtonDown="Lyric_MouseRightButtonDown"
-            Opacity="0" MouseRightButtonUp="ThumbMove_MouseRightButtonUp" />
+            MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
+            Opacity="0" />
         <TextBox
             x:Name="EditLyric"
             Grid.Column="1"
