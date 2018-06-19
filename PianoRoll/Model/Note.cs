@@ -57,7 +57,7 @@ namespace PianoRoll.Model
         public dynamic Length { get => _length; set { SetLength(value); } }
         public dynamic Lyric { get => _lyric; set { SetLyric(value); } }
         public dynamic NoteNum { get => _noteNum; set { SetNoteNum(value); } }
-        public dynamic Envelope { get => _envelope; set { SetEnvelope(value); } }
+        public dynamic Envelope { get => GetEnvelope(); set { SetEnvelope(value); } }
         public dynamic AbsoluteTime { get => _absoluteTime; set { _absoluteTime = (long)value; } }
         public dynamic Vibrato { get => _vibrato; set { SetVibrato(value); } }
 
@@ -71,7 +71,6 @@ namespace PianoRoll.Model
         public Phoneme Phoneme { get => _phoneme; set => _phoneme = value; }
         public Phoneme DefaultPhoneme { get { return Model.Phoneme.GetDefault(Lyric); } }
 
-
         public double STP { get; set; }
 
         public double pre { get; private set; }
@@ -79,8 +78,14 @@ namespace PianoRoll.Model
         public double stp { get; private set; }
         public double lengthAdd { get; private set; }
 
+        public Envelope GetEnvelope()
+        {
+            return hasEnvelope ? _envelope : new Envelope(this);
+        }
+
         public bool HasPhoneme { get { return Phoneme != null; } }
         private NoteControl _noteControl;
+        bool hasEnvelope = false;
         #endregion
 
         #region Setters
@@ -92,7 +97,7 @@ namespace PianoRoll.Model
         private void SetNoteNum(double value) { _noteNum = (int)value; }
         private void SetNoteNum(float value) { _noteNum = (int)value; }
 
-        private void SetEnvelope(Envelope value) { _envelope = value; }
+        private void SetEnvelope(Envelope value) { _envelope = value; hasEnvelope = true; }
         private void SetEnvelope(string value)
         {
             string[] ops = value.Split(',');
@@ -110,6 +115,7 @@ namespace PianoRoll.Model
                 p5 = ops.Length > 9 ? double.Parse(ops[9]) : 0,
                 v5 = ops.Length > 9 ? double.Parse(ops[10]) : 100
             };
+            hasEnvelope = true;
         }
         private void SetEnvelope(string[] value)
         {
@@ -127,6 +133,7 @@ namespace PianoRoll.Model
                 p5 = value.Length > 9 ? double.Parse(value[9], new CultureInfo("ja-JP").NumberFormat) : 0,
                 v5 = value.Length > 9 ? double.Parse(value[10], new CultureInfo("ja-JP").NumberFormat) : 100
             };
+            hasEnvelope = true;
         }
 
         private void SetVibrato(VibratoExpression value) { _vibrato = value; }
@@ -150,9 +157,10 @@ namespace PianoRoll.Model
         private void SetLyric(string lyric)
         {
             _lyric = lyric;
-            string trans = TransitionTool.Process(this);
-            string dict = Part.Track.Singer.SingerDictionary.Process(trans);
-            Phoneme = Part.Track.Singer.FindPhoneme(dict);
+            var temp = lyric;
+            if (true) temp = TransitionTool.Process(this);
+            if (true) temp = Part.Track.Singer.SingerDictionary.Process(temp);
+            Phoneme = Part.Track.Singer.FindPhoneme(temp);
         }
 
         private void SetNoteControl(NoteControl noteControl)
@@ -175,8 +183,6 @@ namespace PianoRoll.Model
             Length = Settings.Resolution;
             Lyric = Settings.DefaultLyric;
             PitchBend = new PitchBendExpression();
-            Vibrato = new VibratoExpression();
-            Envelope = new Envelope(this);
         }
 
         public void NewLyric(string lyric)
@@ -204,7 +210,6 @@ namespace PianoRoll.Model
                 if (pre > Phoneme.Preutter || ovl > Phoneme.Overlap)
                     throw new Exception("Да еб вашу мать");
             }
-            Envelope = new Envelope(this);
         }
 
         public double GetRequiredLength()
