@@ -202,7 +202,7 @@ namespace PianoRoll.Control
             double startX = MusicMath.GetNoteXPosition(note.AbsoluteTime);
             double lenX = x - startX;
             note.Length = MusicMath.GetStartTime(lenX);
-            note.Length = Pitch.SnapX(note.Length);
+            note.Length = MusicMath.SnapX(note.Length);
             deltaL -= note.Length;
             PartEditor.AddNote(x - MusicMath.GetNoteXPosition(deltaL), y);
             OnNoteChanged();

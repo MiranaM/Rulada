@@ -192,27 +192,6 @@ namespace PianoRoll.Model
             note.PitchBend.Array = pitches;
         }
 
-        public static double SnapX(double x)
-        {
-            return SnapTick((long)(x / PartEditor.xScale)) * PartEditor.xScale;
-        }
-
-        public static long SnapTick(long tick)
-        {
-            tick =  ((long)(tick + Settings.IntervalTick * 0.25) / Settings.IntervalTick * Settings.IntervalTick);
-            if (tick % Settings.IntervalTick != 0)
-                throw new Exception();
-            return tick;
-        }
-
-        public static double SnapMs(double ms)
-        {
-            var tick = MusicMath.MillisecondToTick(ms);
-            tick = (int) SnapTick(tick);
-            return MusicMath.MillisecondToTick(tick);
-
-        }
-
         public static void BuildPitchInfo(Note note, out PitchInfo pitchInfo)
         {
             Note prevNote = note.IsConnectedLeft() ? note.GetPrev() : null;
@@ -239,8 +218,8 @@ namespace PianoRoll.Model
             if (pps.First().X > startMs) pps.Insert(0, new PitchPoint(startMs, pps.First().Y));
             if (pps.Last().X < endMs) pps.Add(new PitchPoint(endMs, pps.Last().Y));
 
-            int start = (int) SnapTick(MusicMath.MillisecondToTick(pps.First().X));
-            int end = (int) SnapTick(MusicMath.MillisecondToTick(pps.Last().X));
+            int start = (int) MusicMath.SnapMs(pps.First().X);
+            int end = (int) MusicMath.SnapMs(pps.Last().X);
 
             // combine all
             pitchInfo.Start = start;
@@ -384,7 +363,7 @@ namespace PianoRoll.Model
             BuildPitchInfo(noteNext, out PitchInfo pitchNextInfo);
             int[] thisPitch = note.PitchBend.Array;
             int[] nextPitch = noteNext.PitchBend.Array;
-            int length = (int) SnapTick(-pitchNextInfo.Start / Settings.IntervalTick);
+            int length = (int) MusicMath.SnapTick(-pitchNextInfo.Start / Settings.IntervalTick);
             int start = thisPitch.Length - length;
             if (start <= 0) return;
             int C = MusicMath.GetYOffset(note, noteNext);

@@ -24,21 +24,28 @@
             Name="UseDictCheckBox"
             Grid.Row="1"
             VerticalAlignment="Center"
-            Checked="UseDictCheckBox_Checked"
+            Click="UseDictCheckBox_Checked"
             Content="Словарь"
             Foreground="#FF90FFFF"
-            IsChecked="True"
-            Unchecked="UseDictCheckBox_Checked" />
+            IsChecked="True" />
         <CheckBox
             Name="UseTransCheckBox"
             Grid.Row="1"
             Margin="80,0,0,0"
             VerticalAlignment="Center"
-            Checked="UseTransCheckBox_Checked"
+            Click="UseTransCheckBox_Checked"
             Content="Переходы"
             Foreground="#FF90FFFF"
-            IsChecked="true"
-            Unchecked="UseTransCheckBox_Checked" />
+            IsChecked="True" />
+        <CheckBox
+            Name="SnapCheckBox"
+            Grid.Row="1"
+            Margin="160,0,0,0"
+            VerticalAlignment="Center"
+            Click="SnapCheckBox_Checked"
+            Content="Прилипание к сетке"
+            Foreground="#FF90FFFF"
+            IsChecked="True" />
         <Label
             Name="Debug1"
             Grid.Row="1"

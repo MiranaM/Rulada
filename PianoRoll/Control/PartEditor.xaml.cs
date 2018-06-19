@@ -32,6 +32,7 @@ namespace PianoRoll.Control
         public static double yScale = 15;
         public static bool UseDict = true;
         public static bool UseTrans = true;
+        public static bool MustSnap = true;
 
         public Part Part;
         private long lastPosition;
@@ -48,11 +49,11 @@ namespace PianoRoll.Control
 
         public PartEditor()
         {
+            OnPartChanged += OnPartChanged_Part;
             xScale = (80.0 / Settings.Resolution);
             minWidth = minBars * Project.BeatPerBar * Settings.Resolution;
             InitializeComponent();
             DrawInit();
-            OnPartChanged += OnPartChanged_Part;
         }
 
         public void OnPartChanged_Part()
@@ -299,8 +300,9 @@ namespace PianoRoll.Control
             int MinLength = Settings.Resolution / MaxDivider;
             long startTime = MusicMath.GetStartTime(x);
             int noteNum = MusicMath.GetNoteNum(y);
-            startTime += (long)(MinLength * 0.5);
-            startTime -= (long)((double)startTime % MinLength);
+            // startTime += (long)(MinLength * 0.5);
+            // startTime -= (long)((double)startTime % MinLength);
+            startTime = MusicMath.SnapTick(startTime);
             Part.AddNote(startTime, noteNum);
             OnPartChanged();
         }
@@ -368,6 +370,12 @@ namespace PianoRoll.Control
         private void UseDictCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             UseDict = UseDictCheckBox.IsChecked.Value;
+            OnPartChanged();
+        }
+
+        private void SnapCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            MustSnap = SnapCheckBox.IsChecked.Value;
             OnPartChanged();
         }
     }

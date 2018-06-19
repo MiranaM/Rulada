@@ -213,5 +213,27 @@ namespace PianoRoll.Util
         {
             return (source.NoteNum - subject.NoteNum) * 100;
         }
+
+
+        public static double SnapX(double x)
+        {
+            return SnapTick((long)(x / PartEditor.xScale)) * PartEditor.xScale;
+        }
+
+        public static long SnapTick(long tick)
+        {
+            tick = ((long)(tick + Settings.IntervalTick * 0.25) / Settings.IntervalTick * Settings.IntervalTick);
+            if (tick % Settings.IntervalTick != 0)
+                throw new Exception();
+            return tick;
+        }
+
+        public static double SnapMs(double ms)
+        {
+            var tick = MusicMath.MillisecondToTick(ms);
+            tick = (int)SnapTick(tick);
+            return MusicMath.MillisecondToTick(tick);
+        }
+
     }
 }
