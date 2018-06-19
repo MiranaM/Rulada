@@ -44,7 +44,7 @@ namespace PianoRoll
         public static void Read()
         {
             if (!File.Exists(SettingsFile)) File.Create(SettingsFile);
-            string[] lines = File.ReadAllLines(SettingsFile);
+            string[] lines = File.ReadAllLines(SettingsFile, Encoding.ASCII);
             foreach (string line in lines)
             {
                 if (line.StartsWith("Local="))
@@ -96,7 +96,7 @@ namespace PianoRoll
                 $"LastH=" + LastH,
                 $"DefaultLyric=" + DefaultLyric
             };
-            File.WriteAllLines(SettingsFile, lines);
+            File.WriteAllLines(SettingsFile, lines, Encoding.UTF8);
         }
     }
 }
