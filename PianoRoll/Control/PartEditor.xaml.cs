@@ -28,13 +28,16 @@ namespace PianoRoll.Control
     {
 
         #region variables
-        public Part Part;
         public static double xScale = 1.0 / 15;
         public static double yScale = 15;
+        public static bool UseDict = true;
+        public static bool UseTrans = true;
+
+        public Part Part;
         private long lastPosition;
         public int MaxDivider = 4;
-        public bool doSnap = true;
         private int minBars = 4;
+        public bool doSnap = true;
         private double minWidth;
         public PitchBendExpression PitchBend;
 
@@ -354,6 +357,18 @@ namespace PianoRoll.Control
         public void Remove(NoteControl note)
         {
             NoteCanvas.Children.Remove(note);
+        }
+
+        private void UseTransCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            UseTrans = UseTransCheckBox.IsChecked.Value;
+            OnPartChanged();
+        }
+
+        private void UseDictCheckBox_Checked(object sender, RoutedEventArgs e)
+        {
+            UseDict = UseDictCheckBox.IsChecked.Value;
+            OnPartChanged();
         }
     }
 }

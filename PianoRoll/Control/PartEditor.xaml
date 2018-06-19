@@ -20,9 +20,29 @@
             Height="33"
             Fill="#FF001122"
             Stroke="Black" />
+        <CheckBox
+            Name="UseDictCheckBox"
+            Grid.Row="1"
+            VerticalAlignment="Center"
+            Checked="UseDictCheckBox_Checked"
+            Content="Словарь"
+            Foreground="#FF90FFFF"
+            IsChecked="True"
+            Unchecked="UseDictCheckBox_Checked" />
+        <CheckBox
+            Name="UseTransCheckBox"
+            Grid.Row="1"
+            Margin="80,0,0,0"
+            VerticalAlignment="Center"
+            Checked="UseTransCheckBox_Checked"
+            Content="Переходы"
+            Foreground="#FF90FFFF"
+            IsChecked="true"
+            Unchecked="UseTransCheckBox_Checked" />
         <Label
             Name="Debug1"
             Grid.Row="1"
+            Margin="200,0,0,0"
             Padding="0"
             VerticalContentAlignment="Center"
             Content=""

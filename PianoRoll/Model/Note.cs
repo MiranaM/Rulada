@@ -158,8 +158,8 @@ namespace PianoRoll.Model
         {
             _lyric = lyric;
             var temp = lyric;
-            if (true) temp = TransitionTool.Process(this);
-            if (true) temp = Part.Track.Singer.SingerDictionary.Process(temp);
+            if (PartEditor.UseTrans) temp = TransitionTool.Process(this);
+            if (PartEditor.UseDict) temp = Part.Track.Singer.SingerDictionary.Process(temp);
             Phoneme = Part.Track.Singer.FindPhoneme(temp);
         }
 
