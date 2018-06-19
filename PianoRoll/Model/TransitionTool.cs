@@ -27,7 +27,7 @@ namespace PianoRoll.Model
         {
             if (IsDefault)
             {
-                if (!note.IsConnectedLeft()) return "-" + note.Lyric;
+                if (!note.IsConnectedLeft() && note.Lyric[0] != '-') return "-" + note.Lyric;
                 else return note.Lyric;
             }
             else return note.Lyric;
