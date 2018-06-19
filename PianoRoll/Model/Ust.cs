@@ -121,7 +121,7 @@ namespace PianoRoll.Model
                 note.AbsoluteTime = absoluteTime;
                 absoluteTime += (long)note.Length;
                 PitchFromUst(pitchData, ref note);
-                part.Notes.Add(note);
+                if (note.Lyric.Trim(' ') != "R" && note.Lyric.Trim(' ') != "") part.Notes.Add(note);
             }
             return part;
         }
