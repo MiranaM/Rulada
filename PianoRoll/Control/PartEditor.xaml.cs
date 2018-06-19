@@ -300,9 +300,9 @@ namespace PianoRoll.Control
             int MinLength = Settings.Resolution / MaxDivider;
             long startTime = MusicMath.GetStartTime(x);
             int noteNum = MusicMath.GetNoteNum(y);
-            // startTime += (long)(MinLength * 0.5);
-            // startTime -= (long)((double)startTime % MinLength);
-            startTime = MusicMath.SnapTick(startTime);
+            startTime += (long)(MinLength * 0.5);
+            startTime -= (long)((double)startTime % MinLength);
+            // startTime = MusicMath.SnapTick(startTime);
             Part.AddNote(startTime, noteNum);
             OnPartChanged();
         }
