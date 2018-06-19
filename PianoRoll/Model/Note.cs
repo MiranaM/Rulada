@@ -150,7 +150,9 @@ namespace PianoRoll.Model
         private void SetLyric(string lyric)
         {
             _lyric = lyric;
-            Phoneme = Part.Track.Singer.FindPhoneme(TransitionTool.Process(this));
+            string trans = TransitionTool.Process(this);
+            string dict = Part.Track.Singer.SingerDictionary.Process(trans);
+            Phoneme = Part.Track.Singer.FindPhoneme(dict);
         }
 
         private void SetNoteControl(NoteControl noteControl)

@@ -88,6 +88,7 @@
     <Compile Include="Model\Midi.cs" />
     <Compile Include="Model\Render.cs" />
     <Compile Include="Model\Project.cs" />
+    <Compile Include="Model\SingerDictionary.cs" />
     <Compile Include="Model\SoundPart.cs" />
     <Compile Include="Model\SoundTrack.cs" />
     <Compile Include="Model\Srnx.cs" />

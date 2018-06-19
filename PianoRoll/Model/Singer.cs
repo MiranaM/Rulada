@@ -24,6 +24,7 @@ namespace PianoRoll.Model
         public List<string> Subs { get; private set; }
         public List<Phoneme> Phonemes { get; private set; }
         public bool IsEnabled { get; private set; }
+        public SingerDictionary SingerDictionary;
 
         public static void FindSingers()
         {
@@ -135,6 +136,7 @@ namespace PianoRoll.Model
                 }
                 else File.Create(filename);
             }
+            SingerDictionary = new SingerDictionary(this);
         }
 
         public Phoneme FindPhoneme(string lyric)
