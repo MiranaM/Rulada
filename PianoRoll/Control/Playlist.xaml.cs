@@ -98,7 +98,7 @@ namespace PianoRoll.Control
         public void Clear()
         {
             lastPosition = 0;
-            lastHeigth = 0;
+            lastHeigth = 5;
             ContentCanvas.Children.Clear();
             HeaderCanvas.Children.Clear();
             GridCanvas.Children.Clear();

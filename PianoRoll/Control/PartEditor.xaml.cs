@@ -58,9 +58,8 @@ namespace PianoRoll.Control
 
         public void OnPartChanged_Part()
         {
-            Part.SortNotes();
-            Part.TrimNotes();
-            DrawNotes();
+            Part.Recalculate();
+            Draw();
         }
 
         public void Draw()
@@ -100,7 +99,6 @@ namespace PianoRoll.Control
         public void DrawNotes()
         {
             if (Part == null) return;
-            Part.RefreshPhonemes();
             Clear();
 
             foreach (Note note in Part.Notes)
@@ -128,7 +126,6 @@ namespace PianoRoll.Control
                 if (!note.HasPhoneme) continue;
                 double x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
                 double y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
-                // if (note.PitchBend.Points.Count == 0) continue;
                 string pitchSource = GetPitchSource(note, x0, y0);
                 DrawPitchPath(pitchSource, x0, y0, i);
                 foreach (Ellipse ellipse in GetPitchPoints(note.PitchBend.Points, x0, y0, i))
@@ -292,17 +289,34 @@ namespace PianoRoll.Control
                 GridCanvas.Children.Add(line);
                 beat++;
             }
+            DrawUnitGrid();
         }
+
+        private void DrawUnitGrid()
+        {
+            double width = lastPosition > minWidth ? lastPosition : minWidth;
+            for (long n = 0; n < width; n += Project.MinNoteLengthTick )
+            {
+                if (n % Settings.Resolution != 0 )
+                {
+                    Polyline line = new Polyline();
+                    line.StrokeDashArray.Add(yScale / 3);
+                    line.StrokeDashArray.Add(yScale / 3);
+                    line.StrokeDashCap = PenLineCap.Triangle;
+                    line.StrokeEndLineCap = PenLineCap.Triangle;
+                    line.StrokeStartLineCap = PenLineCap.Triangle;
+                    line.Points.Add(new Point(n * xScale, 0));
+                    line.Points.Add(new Point(n * xScale, Settings.Octaves * 12 * yScale));
+                    line.Stroke = Schemes.beatSeparatorBrush;
+                    GridCanvas.Children.Add(line);
+                }
+            }
+        } 
 
         public void AddNote(double x, double y)
         {
-            // Console.WriteLine($"{currentMousePosition.X}, {currentMousePosition.Y}");
-            int MinLength = Settings.Resolution / MaxDivider;
-            long startTime = MusicMath.GetStartTime(x);
+            long startTime = MusicMath.GetAbsoluteTime(x);
             int noteNum = MusicMath.GetNoteNum(y);
-            startTime += (long)(MinLength * 0.5);
-            startTime -= (long)((double)startTime % MinLength);
-            // startTime = MusicMath.SnapTick(startTime);
             Part.AddNote(startTime, noteNum);
             OnPartChanged();
         }

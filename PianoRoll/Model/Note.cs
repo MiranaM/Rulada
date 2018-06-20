@@ -89,9 +89,9 @@ namespace PianoRoll.Model
         #endregion
 
         #region Setters
-        private void SetLength(int value) { _length = value; }
-        private void SetLength(double value) { _length = (int)value; }
-        private void SetLength(float value) { _length = (int)value; }
+        private void SetLength(int value) { _length = value; if (value <= 0) Delete(); }
+        private void SetLength(double value) { _length = (int)value; if (value <= 0) Delete(); }
+        private void SetLength(float value) { _length = (int)value; if (value <= 0) Delete(); }
 
         private void SetNoteNum(int value) { _noteNum = value; }
         private void SetNoteNum(double value) { _noteNum = (int)value; }
@@ -192,11 +192,39 @@ namespace PianoRoll.Model
             else NoteControl.SetText(Lyric);
         }
 
-        public void Recalculate()
+        public void SubmitPosLen()
         {
-            AbsoluteTime = MusicMath.GetStartTime(Canvas.GetLeft(NoteControl));
-            NoteNum = MusicMath.GetNoteNum(Canvas.GetTop(NoteControl)) - 1;
-            
+            if (NoteControl != null)
+            {
+                AbsoluteTime = MusicMath.GetAbsoluteTime(Canvas.GetLeft(NoteControl));
+                NoteNum = MusicMath.GetNoteNum(Canvas.GetTop(NoteControl)) - 1;
+            }
+        }
+
+        public void Trim()
+        {
+            Note next = GetNext();
+            if (next != null && Length > next.AbsoluteTime - AbsoluteTime)
+                Length = next.AbsoluteTime - AbsoluteTime;
+        }
+
+        public void Delete()
+        {
+            Part.Delete(this);
+            NoteControl.Delete();
+        }
+
+        /// <summary>
+        /// Snap AbsoluteTime and Length to project grid
+        /// </summary>
+        public void Snap()
+        {
+            AbsoluteTime = MusicMath.SnapAbsoluteTime(AbsoluteTime);
+            Length = MusicMath.SnapAbsoluteTime(Length);
+        }
+
+        public void RecalculatePreOvl()
+        {
             Note notePrev = Part.GetPrevNote(this);
             pre = HasPhoneme ? Phoneme.Preutter : 30;
             ovl = HasPhoneme ? Phoneme.Overlap : 30;

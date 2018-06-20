@@ -198,7 +198,7 @@ namespace PianoRoll.Util
             return (int)(Settings.Octaves * 12 - y / PartEditor.yScale);
         }
 
-        public static long GetStartTime(double x)
+        public static long GetAbsoluteTime(double x)
         {
             return (long)(x / PartEditor.xScale);
         }
@@ -214,12 +214,33 @@ namespace PianoRoll.Util
             return (source.NoteNum - subject.NoteNum) * 100;
         }
 
-
+        /// <summary>
+        /// Snap parameters like X Position ON EDIT
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public static double SnapX(double x)
         {
             return SnapTick((long)(x / PartEditor.xScale)) * PartEditor.xScale;
         }
 
+        /// <summary>
+        /// Snap parameters like Length, AbsoluteTime etc ON EDIT
+        /// </summary>
+        /// <param name="tick"></param>
+        /// <returns></returns>
+        public static double SnapAbsoluteTime(long tick)
+        {
+            tick = (int) (tick + Project.MinNoteLengthTick * 0.5);
+            tick -= tick % Project.MinNoteLengthTick;
+            return tick;
+        }
+
+        /// <summary>
+        /// Snap tick ON RENDER
+        /// </summary>
+        /// <param name="tick"></param>
+        /// <returns></returns>
         public static long SnapTick(long tick)
         {
             tick = ((long)(tick + Settings.IntervalTick * 0.25) / Settings.IntervalTick * Settings.IntervalTick);
@@ -228,6 +249,11 @@ namespace PianoRoll.Util
             return tick;
         }
 
+        /// <summary>
+        /// Snap ms ON RENDER
+        /// </summary>
+        /// <param name="ms"></param>
+        /// <returns></returns>
         public static double SnapMs(double ms)
         {
             var tick = MusicMath.MillisecondToTick(ms);

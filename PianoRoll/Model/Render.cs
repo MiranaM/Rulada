@@ -21,7 +21,6 @@ namespace PianoRoll.Model
         {
             position = 0;
             Part part = Project.Current.Tracks[0].Parts[0];
-            part.RefreshPhonemes();
             part.Recalculate();
             part.BuildPitch();
 

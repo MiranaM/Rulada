@@ -46,6 +46,7 @@
             DragCompleted="ThumbResizeLeft_DragCompleted"
             DragDelta="ThumbResizeLeft_DragDelta"
             DragStarted="ThumbResizeLeft_DragStarted"
+            MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
             Opacity="0.2" />
         <Thumb
             x:Name="ThumbResizeRight"
@@ -55,6 +56,7 @@
             DragCompleted="ThumbResizeRight_DragCompleted"
             DragDelta="ThumbResizeRight_DragDelta"
             DragStarted="ThumbResizeRight_DragStarted"
+            MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
             Opacity="0.2" />
         <Thumb
             x:Name="ThumbMove"
@@ -64,8 +66,6 @@
             DragCompleted="ThumbMove_DragCompleted"
             DragDelta="ThumbMove_DragDelta"
             DragStarted="ThumbMove_DragStarted"
-            MouseLeftButtonUp="ThumbMove_MouseLeftButtonUp"
-            MouseRightButtonDown="Lyric_MouseRightButtonDown"
             MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
             Opacity="0" />
         <TextBox

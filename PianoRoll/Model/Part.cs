@@ -24,7 +24,6 @@ namespace PianoRoll.Model
         public PitchBendExpression PitchBend;
         private List<Note> _notes;
 
-        public void Recalculate() { foreach (Note note in Notes) note.Recalculate(); }
         public List<Note> GetSortedNotes() { return Notes.OrderBy(n => n.AbsoluteTime).ToList(); }
 
         public Part()
@@ -43,16 +42,6 @@ namespace PianoRoll.Model
             Notes = Notes.OrderBy(n => n.AbsoluteTime).ToList();
         }
         
-        public void TrimNotes()
-        {
-            foreach (Note note in Notes)
-            {
-                Note next = note.GetNext();
-                if (next != null && note.Length > next.AbsoluteTime - note.AbsoluteTime)
-                    note.Length = next.AbsoluteTime - note.AbsoluteTime;
-            }
-        }
-
         public Note GetPrevNote(Note note)
         {
             List<Note> notes = GetSortedNotes();
@@ -152,6 +141,20 @@ namespace PianoRoll.Model
             note.Part = this;
             note.Length = length;
             Notes.Add(note);
+        }
+
+        public void Recalculate()
+        {
+            foreach (Note note in Notes) note.SubmitPosLen();
+            SortNotes();
+            foreach (Note note in Notes) note.Trim();
+            if (PartEditor.MustSnap) foreach (Note note in Notes) note.Snap();
+            foreach (Note note in Notes) note.RecalculatePreOvl();
+        }
+
+        public void Delete(Note note)
+        {
+            Notes.Remove(note);
         }
 
     }

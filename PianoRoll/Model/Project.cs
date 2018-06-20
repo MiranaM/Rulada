@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PianoRoll.Control;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,11 +14,15 @@ namespace PianoRoll.Model
         public List<string> SingerNames = new List<string>();
         public List<Track> Tracks = new List<Track>();
         public List<SoundTrack> SoundTracks;
+        public string Dir;
+        public bool IsNew = true;
+
         public static double Tempo = 120;
         public static int BeatPerBar = 4;
         public static int BeatUnit = 4;
-        public string Dir;
-        public bool IsNew = true;
+        public static int MinNoteLengthTick { get { return Settings.Resolution / BeatUnit; } }
+        public static double MinNoteLengthX { get { return Settings.Resolution / BeatUnit * PartEditor.xScale; } }
+        public static int UnitPerBar { get { return BeatPerBar * BeatUnit; } }
 
         public Project()
         {

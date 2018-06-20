@@ -10,7 +10,7 @@
     mc:Ignorable="d">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="10" />
+            <RowDefinition Height="0" />
             <RowDefinition Height="20" />
             <RowDefinition Height="203*" />
             <RowDefinition Height="60" />
@@ -23,6 +23,7 @@
         <CheckBox
             Name="UseDictCheckBox"
             Grid.Row="1"
+            Margin="50,0,0,0"
             VerticalAlignment="Center"
             Click="UseDictCheckBox_Checked"
             Content="Словарь"
@@ -31,7 +32,7 @@
         <CheckBox
             Name="UseTransCheckBox"
             Grid.Row="1"
-            Margin="80,0,0,0"
+            Margin="120,0,0,0"
             VerticalAlignment="Center"
             Click="UseTransCheckBox_Checked"
             Content="Переходы"
@@ -40,7 +41,7 @@
         <CheckBox
             Name="SnapCheckBox"
             Grid.Row="1"
-            Margin="160,0,0,0"
+            Margin="200,0,0,0"
             VerticalAlignment="Center"
             Click="SnapCheckBox_Checked"
             Content="Прилипание к сетке"
