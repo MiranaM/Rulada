@@ -36,6 +36,10 @@ namespace PianoRoll.Model
 
         public static Singer Load(string dir)
         {
+            if (SingerNames.ContainsKey(dir))
+            {
+                return SingerNames[dir];
+            }
             if (dir.StartsWith("%VOICE%"))
             {
                 string name = dir.Replace("%VOICE%", "");
@@ -49,7 +53,6 @@ namespace PianoRoll.Model
                 singer.Add();
                 return singer;
             }
-
         }
         
         private Singer(string dir)

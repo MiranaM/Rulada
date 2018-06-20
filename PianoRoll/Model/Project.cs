@@ -31,6 +31,12 @@ namespace PianoRoll.Model
 
         public static Project Current;
 
+
+        /// <summary>
+        /// Add singer by directory or name
+        /// </summary>
+        /// <param name="singerDir"></param>
+        /// <returns></returns>
         public Singer AddSinger(string singerDir)
         {
             Singer singer = Singer.Load(singerDir);

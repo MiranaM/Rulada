@@ -51,6 +51,9 @@ namespace PianoRoll.View
 
         private void Open(string dir)
         {
+            New();
+            return;
+
             Clear();
             XmlReader xmlReader = XmlReader.Create(new StringReader(dir));
             File.ReadAllText(dir);
