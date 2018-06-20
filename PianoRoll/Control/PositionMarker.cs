@@ -25,9 +25,17 @@ namespace PianoRoll.Control
         Line Line;
         Canvas Canvas;
         ScrollViewer ScrollViewer;
+        private long _position;
+        public long Position { get => _position; set => SetPosition(value); }
 
         public delegate void PositionChangedEvent(object sender, PositionChangedArgs e);
         public event PositionChangedEvent OnPositionChanged;
+
+        void SetPosition(long value)
+        {
+            _position = value;
+            MoveTo(value);
+        }
 
         public PositionMarker(Canvas canvas, ScrollViewer scrollViewer)
         {
@@ -96,7 +104,7 @@ namespace PianoRoll.Control
             while (Render.PlayerPosition < Render.PlayerLength)
             {
                 Thread.Sleep(100);
-                MoveTo(Render.PlayerPosition);
+                Position = Render.PlayerPosition;
             }
         }
 

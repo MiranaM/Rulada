@@ -8,6 +8,7 @@ using NAudio.Wave;
 using PianoRoll.Util;
 using PianoRoll.View;
 using PianoRoll.Control;
+using System.Diagnostics;
 
 namespace PianoRoll.Model
 {
@@ -16,6 +17,7 @@ namespace PianoRoll.Model
         static WaveChannel32 waveChannel;
         static WaveOutEvent player;
         static WaveStream output;
+        static Process bat;
         static long position = 0;
         static Part Part;
         static bool IsPlaying = false;
@@ -61,13 +63,26 @@ namespace PianoRoll.Model
                     $"del \"{Settings.Output}.whd\" \r\n" +
                     $"del \"{Settings.Output}.dat\" \r\n" +
                     ":E");
-           
-            System.Diagnostics.Process proc = new System.Diagnostics.Process();
-            proc.StartInfo.FileName = Settings.Bat;
-            proc.StartInfo.WorkingDirectory = Settings.CacheFolder;
-            proc.EnableRaisingEvents = true;
-            proc.Exited += new EventHandler(OnExited);
-            proc.Start();
+            Process();
+        }
+
+        static async void Process()
+        {
+            bat = new System.Diagnostics.Process();
+            bat.StartInfo.FileName = Settings.Bat;
+            bat.StartInfo.WorkingDirectory = Settings.CacheFolder;
+            bat.EnableRaisingEvents = true;
+            bat.Exited += new EventHandler(OnExited);
+            await ProcessStart();
+        }
+
+        static Task<bool> ProcessStart()
+        {
+            return Task.Run(() =>
+            {
+                bat.Start();
+                return true;
+            });
         }
 
         public static void OnExited(object sender, System.EventArgs e)
@@ -77,6 +92,7 @@ namespace PianoRoll.Model
 
         public static void Play()
         {
+            if (IsPlaying) Stop();
             IsPlaying = true;
             if (!File.Exists(Settings.Output)) return;
             output = new WaveFileReader(Settings.Output);
