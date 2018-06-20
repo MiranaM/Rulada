@@ -45,21 +45,33 @@ namespace PianoRoll.Control
         public delegate void PartChangedEvent();
         public event PartChangedEvent OnPartChanged;
 
+        public PositionMarker PositionMarker;
+        public static PartEditor Instance;
+        public static Point ScrollPosition;
         #endregion
 
         public PartEditor()
         {
+            Instance = this;
             OnPartChanged += OnPartChanged_Part;
             xScale = (80.0 / Settings.Resolution);
             minWidth = minBars * Project.BeatPerBar * Settings.Resolution;
             InitializeComponent();
             DrawInit();
+            Loaded += OnLoaded_Part;
+        }
+
+        public void OnLoaded_Part(object sender, RoutedEventArgs e)
+        {
+            PositionMarkerCanvas.Width = scrollViewer.ActualWidth;
+            PositionMarkerCanvas.Height = scrollViewer.ActualHeight;
         }
 
         public void OnPartChanged_Part()
         {
             Part.Recalculate();
             Draw();
+            PositionMarker = new PositionMarker(PositionMarkerCanvas, scrollViewer);
         }
 
         public void Draw()
@@ -83,6 +95,7 @@ namespace PianoRoll.Control
             NoteBackgroundCanvas.Children.Clear();
             PitchCanvas.Children.Clear();
             PitchPointCanvas.Children.Clear();
+            PositionMarkerCanvas.Children.Clear();
             DrawInit();
         }
 
@@ -321,13 +334,14 @@ namespace PianoRoll.Control
             OnPartChanged();
         }
 
-        private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        public void SetPositionMarker(long sample)
         {
-            if (Keyboard.IsKeyDown(Key.LeftCtrl))
-            {
-                Point currentMousePosition = e.GetPosition(RootCanvas);
-                AddNote(currentMousePosition.X, currentMousePosition.Y);
-            }
+            PositionMarker.MoveTo(sample);
+        }
+
+        public void SetPositionMarker(double x)
+        {
+            PositionMarker.MoveTo(x);
         }
 
         private void CreatePiano()
@@ -391,6 +405,24 @@ namespace PianoRoll.Control
         {
             MustSnap = SnapCheckBox.IsChecked.Value;
             OnPartChanged();
+        }
+
+        private void RootCanvas_MouseLeftButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            Point position = e.GetPosition(RootCanvas);
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+            {
+                AddNote(position.X, position.Y);
+            }
+            else
+            {
+                SetPositionMarker(position.X);
+            }
+        }
+
+        private void scrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            ScrollPosition = new Point(e.HorizontalOffset, e.VerticalOffset);
         }
     }
 }

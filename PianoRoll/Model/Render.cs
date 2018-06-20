@@ -7,23 +7,27 @@ using System.IO;
 using NAudio.Wave;
 using PianoRoll.Util;
 using PianoRoll.View;
+using PianoRoll.Control;
 
 namespace PianoRoll.Model
 {
-    class Render
+    public static class Render
     {
         static WaveChannel32 waveChannel;
         static WaveOutEvent player;
         static WaveStream output;
         static long position = 0;
+        static Part Part;
+        static bool IsPlaying = false;
+        public static long PlayerPosition { get { return output.Position; } }
+        public static long PlayerLength { get { return output.Length; } }
 
-        public static void Send()
+        public static void Send(Part part)
         {
+            Part = part;
             position = 0;
-            Part part = Project.Current.Tracks[0].Parts[0];
-            part.Recalculate();
-            part.BuildPitch();
-
+            Part.Recalculate();
+            Part.BuildPitch();
             if (output != null) output.Close();
             if (File.Exists(Settings.Output)) File.Delete(Settings.Output);
             if (File.Exists(Settings.Output + ".dat")) File.Delete(Settings.Output + ".dat");
@@ -34,7 +38,7 @@ namespace PianoRoll.Model
             File.WriteAllText(Settings.Bat, delcommand);
             int i = 1;
             long renderPosition = 0;
-            foreach (Note note in part.Notes)
+            foreach (Note note in Part.Notes)
             {
                 string tempfilename = Path.Combine(Settings.CacheFolder, $"{i}");
                 tempfilename += $"_{note.Lyric}_{note.NoteNum}_{note.Length}.wav";
@@ -73,6 +77,7 @@ namespace PianoRoll.Model
 
         public static void Play()
         {
+            IsPlaying = true;
             if (!File.Exists(Settings.Output)) return;
             output = new WaveFileReader(Settings.Output);
             output.Position = position;
@@ -80,6 +85,7 @@ namespace PianoRoll.Model
             player = new WaveOutEvent();
             player.Init(waveChannel);
             player.Play();
+            // PartEditor.Instance.PositionMarker.MoveAsync();
         }
 
         public static void Stop()
@@ -91,6 +97,7 @@ namespace PianoRoll.Model
 
         public static void Pause()
         {
+            IsPlaying = false;
             if (player != null)
             {
                 position = player.GetPosition();
@@ -101,6 +108,7 @@ namespace PianoRoll.Model
 
         public static int[] TakeEach(int[] array, int each)
         {
+            IsPlaying = false;
             List<int> list = new List<int>();
             for (int i = 0; i < array.Length; i++)
             {
@@ -111,7 +119,7 @@ namespace PianoRoll.Model
 
         public static void SendToResampler(Note note, string tempfilename)
         {
-            Part part = Project.Current.Tracks[0].Parts[0];
+            Part Part = Project.Current.Tracks[0].Parts[0];
 
             string pitchBase64 = Base64.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.SkipOnRender));
             Phoneme phoneme = note.Phoneme;
@@ -119,11 +127,11 @@ namespace PianoRoll.Model
             (
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n",
                 Settings.Resampler,
-                Path.Combine(part.Track.Singer.Dir, phoneme.File),
+                Path.Combine(Part.Track.Singer.Dir, phoneme.File),
                 tempfilename,
                 MusicMath.NoteNum2String(note.NoteNum), 
                 note.Velocity,
-                part.Flags + note.Flags,
+                Part.Flags + note.Flags,
                 phoneme.Offset,
                 (int)note.RequiredLength,
                 phoneme.Consonant,
@@ -141,9 +149,9 @@ namespace PianoRoll.Model
         /// </summary>
         public static void SendToAppendTool(Note note, string filename)
         {
-            Part part = Project.Current.Tracks[0].Parts[0];
+            Part Part = Project.Current.Tracks[0].Parts[0];
             string lyric = note.Lyric;
-            Note next = part.GetNextNote(note);
+            Note next = Part.GetNextNote(note);
             double offset = note.pre;
             if (next != null)
             {
@@ -179,7 +187,7 @@ namespace PianoRoll.Model
         /// </summary>
         public static void SendToAppendTool(long duration, string filename)
         {
-            Part part = Project.Current.Tracks[0].Parts[0];
+            Part Part = Project.Current.Tracks[0].Parts[0];
             string length = $"{duration}@{Project.Tempo}+0";
             string ops = $"0 {length} 0 0";
             string request = $"\"{Settings.AppendTool}\" \"{Settings.Output}\" \"{filename}\" {ops}\r\n";

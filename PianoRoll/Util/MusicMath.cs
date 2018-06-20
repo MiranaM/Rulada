@@ -141,7 +141,6 @@ namespace PianoRoll.Util
 
         public static double LinearToDecibel(double v) { return Math.Log10(v) * 20; }
 
-
         public static string NoteNum2String(int noteNum)
         {
             int octave = noteNum / 12 + 1;
@@ -188,27 +187,52 @@ namespace PianoRoll.Util
             return $"{note}{octave}";
         }
 
+        /// <summary>
+        /// NoteNum to Y Position
+        /// </summary>
+        /// <param name="noteNumber"></param>
+        /// <returns></returns>
         public static double GetNoteYPosition(int noteNumber)
         {
             return (double)(Settings.Octaves * 12 - 1 - noteNumber) * PartEditor.yScale;
         }
 
+        /// <summary>
+        /// Y Position to NoteNum
+        /// </summary>
+        /// <param name="y"></param>
+        /// <returns></returns>
         public static int GetNoteNum(double y)
         {
             return (int)(Settings.Octaves * 12 - y / PartEditor.yScale);
         }
 
+        /// <summary>
+        /// X Position to Absolute Time
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
         public static long GetAbsoluteTime(double x)
         {
             return (long)(x / PartEditor.xScale);
         }
 
-        public static double GetNoteXPosition(long startTime)
+        /// <summary>
+        /// Absolute Time to X Position
+        /// </summary>
+        /// <param name="absoluteTime"></param>
+        /// <returns></returns>
+        public static double GetNoteXPosition(long absoluteTime)
         {
-            return (double)startTime * PartEditor.xScale;
+            return (double)absoluteTime * PartEditor.xScale;
         }
 
-
+        /// <summary>
+        /// Y position between NoteNum points
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="subject"></param>
+        /// <returns></returns>
         public static int GetYOffset(Note source, Note subject)
         {
             return (source.NoteNum - subject.NoteNum) * 100;
