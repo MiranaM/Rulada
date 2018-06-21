@@ -39,7 +39,9 @@ namespace PianoRoll.Model
         /// <returns></returns>
         public Singer AddSinger(string singerDir)
         {
-            Singer singer = Singer.Load(singerDir);
+            Singer singer = Singer.Find(singerDir);
+            if (singer != null) return singer;
+            singer = Singer.Load(singerDir);
             if (!SingerNames.Contains(singer.Name))
             {
                 SingerNames.Add(singer.Name);

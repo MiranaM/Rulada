@@ -34,12 +34,17 @@ namespace PianoRoll.Model
             }
         }
 
+        public static Singer Find(string name)
+        {
+            if (SingerNames.ContainsKey(name))
+            {
+                return SingerNames[name];
+            }
+            else return null;
+        }
+
         public static Singer Load(string dir)
         {
-            if (SingerNames.ContainsKey(dir))
-            {
-                return SingerNames[dir];
-            }
             if (dir.StartsWith("%VOICE%"))
             {
                 string name = dir.Replace("%VOICE%", "");
