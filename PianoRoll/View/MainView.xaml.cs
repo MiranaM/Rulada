@@ -173,7 +173,6 @@ namespace PianoRoll.View
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             Render.Send(PartEditor.Part);
-            Render.Play();
         }
 
         private void StopPlayButton_Click(object sender, RoutedEventArgs e)

@@ -24,8 +24,12 @@ namespace PianoRoll.Model
         public static long PlayerPosition { get { return output.Position; } }
         public static long PlayerLength { get { return output.Length; } }
 
+        public delegate void RenderCompletedHandler();
+        public static event RenderCompletedHandler OnRenderComplited;
+
         public static void Send(Part part)
         {
+            OnRenderComplited += OnRenderCompleted_Render;
             Part = part;
             position = 0;
             Part.Recalculate();
@@ -66,6 +70,10 @@ namespace PianoRoll.Model
             Process();
         }
 
+        static void OnRenderCompleted_Render()
+        {
+        }
+
         static async void Process()
         {
             bat = new System.Diagnostics.Process();
@@ -87,21 +95,21 @@ namespace PianoRoll.Model
 
         public static void OnExited(object sender, System.EventArgs e)
         {
+            if (!File.Exists(Settings.Output)) return;
+            output = new WaveFileReader(Settings.Output);
+            output.Position = position;
             Play();
         }
-
+        
         public static void Play()
         {
             if (IsPlaying) Stop();
             IsPlaying = true;
-            if (!File.Exists(Settings.Output)) return;
-            output = new WaveFileReader(Settings.Output);
-            output.Position = position;
+            // if (output == null) output = new WaveFileReader(Settings.Output);
             waveChannel = new WaveChannel32(output);
             player = new WaveOutEvent();
             player.Init(waveChannel);
             player.Play();
-            // PartEditor.Instance.PositionMarker.MoveAsync();
         }
 
         public static void Stop()

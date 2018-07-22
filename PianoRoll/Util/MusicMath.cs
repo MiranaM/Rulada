@@ -48,29 +48,19 @@ namespace PianoRoll.Util
                 return zoomRatios[i];
             }
         }
-
-        static double GetBeatTicks()
-        {
-            return Settings.Resolution;
-        }
-
-        static double GetTempoCoeff()
-        {
-            return 60 / Project.Tempo;
-        }
-
+        
         public static double TickToMillisecond(double tick)
         {
-            double BeatTicks = GetBeatTicks();
-            double TempoCoeff = GetTempoCoeff();
+            double BeatTicks = Settings.Resolution;
+            double TempoCoeff = 60 / Project.Tempo;
             double size = tick / BeatTicks;
             return size * TempoCoeff * 1000;
         }
 
         public static int MillisecondToTick(double ms)
         {
-            double BeatTicks = GetBeatTicks();
-            double TempoCoeff = GetTempoCoeff();
+            double BeatTicks = Settings.Resolution;
+            double TempoCoeff = 60 / Project.Tempo;
             return (int)(ms / TempoCoeff / 1000 * BeatTicks);
         }
 

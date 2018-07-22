@@ -59,12 +59,19 @@ namespace PianoRoll.Control
             InitializeComponent();
             DrawInit();
             Loaded += OnLoaded_Part;
+            Render.OnRenderComplited += OnRenderComplited_PartEditor;
+        }
+
+        void OnRenderComplited_PartEditor()
+        {
+            PositionMarker.MoveAsync();
         }
 
         public void OnLoaded_Part(object sender, RoutedEventArgs e)
         {
             PositionMarkerCanvas.Width = scrollViewer.ActualWidth;
             PositionMarkerCanvas.Height = scrollViewer.ActualHeight;
+            PositionMarker = new PositionMarker(PositionMarkerCanvas, scrollViewer);
         }
 
         public void OnPartChanged_Part()

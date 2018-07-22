@@ -9,7 +9,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace PianoRoll.Control
 {
@@ -25,29 +27,12 @@ namespace PianoRoll.Control
         Line Line;
         Canvas Canvas;
         ScrollViewer ScrollViewer;
-        private long _position;
-        public long Position { get => _position; set => SetPosition(value); }
-
-        public delegate void PositionChangedEvent(object sender, PositionChangedArgs e);
-        public event PositionChangedEvent OnPositionChanged;
-
-        void SetPosition(long value)
-        {
-            _position = value;
-            MoveTo(value);
-        }
 
         public PositionMarker(Canvas canvas, ScrollViewer scrollViewer)
         {
             Canvas = canvas;
             ScrollViewer = scrollViewer;
             DrawPositionMarker();
-            OnPositionChanged += OnPositionChanged_Move;
-        }
-
-        void OnPositionChanged_Move(object sender, PositionChangedArgs e)
-        {
-            MoveTo(e.position);
         }
 
         void DrawPositionMarker()
@@ -99,27 +84,21 @@ namespace PianoRoll.Control
             Canvas.SetLeft(Line, x);
         }
 
-        public void MoveSync()
-        {
-            while (Render.PlayerPosition < Render.PlayerLength)
-            {
-                Thread.Sleep(100);
-                Position = Render.PlayerPosition;
-            }
-        }
-
         public async void MoveAsync2()
         {
             for (long i = 0; i < Render.PlayerLength; i += 100)
             {
                 await Task.Delay(100);
-                OnPositionChanged(this, new PositionChangedArgs (i));
+                double ms = ((double)i) / 44.1;
+                long tick = MusicMath.MillisecondToTick(ms);
+                double x = MusicMath.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
+                MoveTo(Render.PlayerPosition);
             }
         }
 
         public async void MoveAsync()
         {
-            Task<bool> result = Move();
+            // bool result = await Move();
         }
 
         Task<bool> Move()
@@ -129,7 +108,11 @@ namespace PianoRoll.Control
                 while (Render.PlayerPosition < Render.PlayerLength)
                 {
                     Thread.Sleep(100);
-                    OnPositionChanged(this, new PositionChangedArgs(Render.PlayerPosition));
+                    Dispatcher.CurrentDispatcher.Invoke(() =>
+                    {
+                        // MoveTo(Render.PlayerPosition);
+                        PartEditor.Instance.Debug1.Content = Render.PlayerPosition.ToString();
+                    });
                 }
                 return true;
             });
