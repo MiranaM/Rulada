@@ -51,6 +51,7 @@ namespace PianoRoll.Model
         private Envelope _envelope;
         private VibratoExpression _vibrato;
         private Phoneme _phoneme;
+        private string phonemes;
 
         public Part Part;
 
@@ -70,6 +71,7 @@ namespace PianoRoll.Model
         public NoteControl NoteControl { get => _noteControl; set => SetNoteControl(value); }
         public Phoneme Phoneme { get => _phoneme; set => _phoneme = value; }
         public Phoneme DefaultPhoneme { get { return Model.Phoneme.GetDefault(Lyric); } }
+        public string Phonemes { get; set; }
 
         public double STP { get; set; }
 
@@ -157,9 +159,9 @@ namespace PianoRoll.Model
         private void SetLyric(string lyric)
         {
             _lyric = lyric;
-            var temp = lyric;
+            string temp = lyric;
+            if (PartEditor.UseDict) Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
             if (PartEditor.UseTrans) temp = TransitionTool.Process(this);
-            if (PartEditor.UseDict) temp = Part.Track.Singer.SingerDictionary.Process(temp);
             Phoneme = Part.Track.Singer.FindPhoneme(temp);
         }
 

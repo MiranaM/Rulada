@@ -30,6 +30,16 @@ namespace PianoRoll.Model
                 if (!note.IsConnectedLeft() && note.Lyric[0] != '-') return "-" + note.Lyric;
                 else return note.Lyric;
             }
+            else if (note.Part.Track.Singer.VoicebankType == "Arpasing RUS")
+            {
+                if (!note.IsConnectedLeft())
+                    return "- " + note.Phonemes;
+                else
+                {
+                    string prevph = note.GetPrev().Phonemes;
+                    return $"{prevph} {note.Phonemes}";
+                }
+            }
             else return note.Lyric;
         }
     }

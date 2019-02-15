@@ -38,10 +38,29 @@ namespace PianoRoll.Model
         {
             if (Enabled)
             {
-                if (!Dict.ContainsKey(lyric)) return lyric;
+                if (!Dict.ContainsKey(lyric)) return SeparatedProcess(lyric);
                 else return Dict[lyric];
             }
             else return lyric;
+        }
+
+        public string SeparatedProcess(string lyric)
+        {
+            List<string> phonemes = new List<string>();
+            for (int i = 0; i < lyric.Length; )
+            {
+                int j = lyric.Length - i;
+                while (!Dict.ContainsKey(lyric.Substring(i, j)))
+                {
+                    j--;
+                    if (j == 0)
+                        return lyric;
+                }
+                var phs = Dict[lyric.Substring(i, j)];
+                phonemes.Add(phs);
+                i += j;
+            }
+            return String.Join(" ", phonemes);
         }
     }
 }

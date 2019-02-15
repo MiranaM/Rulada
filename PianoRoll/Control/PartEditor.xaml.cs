@@ -202,6 +202,7 @@ namespace PianoRoll.Control
 
         public string GetPitchSource(Part part, double x0, double y0)
         {
+            return "";
             double c = (yScale);
             int[] pitchData = Part.PitchBend.Array;
             //double val = -note.Oto.Preutter < note.PitchBend.Points.First().X ? -note.Oto.Preutter : note.PitchBend.Points.First().X;

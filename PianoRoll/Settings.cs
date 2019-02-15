@@ -45,29 +45,29 @@ namespace PianoRoll
             string[] lines = File.ReadAllLines(SettingsFile, Encoding.ASCII);
             foreach (string line in lines)
             {
-                if (line.StartsWith("Local="))
+                if (line.StartsWith("Local=") && line.Length > "Local=".Length)
                     Local = line.Substring("Local=".Length);
-                if (line.StartsWith("VoicebankDirectory="))
+                if (line.StartsWith("VoicebankDirectory=") && line.Length > "VoicebankDirectory=".Length)
                     VoicebankDirectory = line.Substring("VoicebankDirectory=".Length).Replace("%Local%",Local);
-                if (line.StartsWith("DefaultVoicebank="))
+                if (line.StartsWith("DefaultVoicebank=") && line.Length > "DefaultVoicebank=".Length)
                     DefaultVoicebank = line.Substring("DefaultVoicebank=".Length).Replace("%Local%", Local);
-                if (line.StartsWith("DefaultVoicebankType="))
+                if (line.StartsWith("DefaultVoicebankType=") && line.Length > "DefaultVoicebankType=".Length)
                     DefaultVoicebankType = line.Substring("DefaultVoicebankType=".Length);
-                if (line.StartsWith("AppendTool="))
+                if (line.StartsWith("AppendTool=") && line.Length > "AppendTool=".Length)
                     AppendTool = line.Substring("AppendTool=".Length).Replace("%Local%", Local);
-                if (line.StartsWith("TransitionTool="))
+                if (line.StartsWith("TransitionTool=") && line.Length > "TransitionTool=".Length)
                     TransitionTool = line.Substring("TransitionTool=".Length).Replace("%Local%", Local);
-                if (line.StartsWith("Resampler="))
+                if (line.StartsWith("Resampler=") && line.Length > "Resampler=".Length)
                     Resampler = line.Substring("Resampler=".Length).Replace("%Local%", Local);
-                if (line.StartsWith("LastFile="))
+                if (line.StartsWith("LastFile=") && line.Length > "LastFile=".Length)
                     LastFile = line.Substring("LastFile=".Length).Replace(Local, "%Local%");
-                if (line.StartsWith("LastV="))
+                if (line.StartsWith("LastV=") && line.Length > "LastV=".Length)
                     if (double.TryParse(line.Substring("LastV=".Length), out double result))
                         LastV = result;
-                if (line.StartsWith("LastH="))
+                if (line.StartsWith("LastH=") && line.Length > "LastH=".Length)
                     if (double.TryParse(line.Substring("LastH=".Length), out double result))
                         LastH = result;
-                if (line.StartsWith("DefaultLyric="))
+                if (line.StartsWith("DefaultLyric=") && line.Length > "DefaultLyric=".Length)
                     DefaultLyric = line.Substring("DefaultLyric=".Length);
             }
             if (!File.Exists(LastFile)) LastFile = null;

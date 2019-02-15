@@ -153,7 +153,7 @@ namespace PianoRoll.Model
                 Settings.Resampler,
                 Path.Combine(Part.Track.Singer.Dir, phoneme.File),
                 tempfilename,
-                MusicMath.NoteNum2String(note.NoteNum), 
+                MusicMath.NoteNum2String(note.NoteNum - 12), 
                 note.Velocity,
                 Part.Flags + note.Flags,
                 phoneme.Offset,
