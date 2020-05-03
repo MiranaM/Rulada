@@ -60,7 +60,7 @@ namespace PianoRoll.Control
         {
             Lyric.Content = lyric;
             EditLyric.Text = lyric;
-            Phoneme.Content = null;
+            ThumbMove.IsEnabled = false;
             ToolTip = "can't find source file";
         }
 
@@ -69,6 +69,7 @@ namespace PianoRoll.Control
             Lyric.Content = lyric;
             Phoneme.Content = phoneme;
             EditLyric.Text = lyric;
+            ThumbMove.IsEnabled = true;
         }
 
         private void ConfirmLyric()

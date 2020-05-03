@@ -119,7 +119,7 @@ namespace PianoRoll.Model
             return hasEnvelope ? envelope : new Envelope(this);
         }
 
-        public bool HasPhoneme => Phonemes != null;
+        public bool HasPhoneme => Phoneme != null;
         private NoteControl noteControl;
         private bool hasEnvelope;
 
@@ -163,7 +163,7 @@ namespace PianoRoll.Model
         {
             Lyric = lyric;
             if (HasPhoneme)
-                NoteControl.SetText(Lyric, Phonemes);
+                NoteControl.SetText(Lyric, Phoneme.Alias);
             else
                 NoteControl.SetText(Lyric);
         }
@@ -201,8 +201,8 @@ namespace PianoRoll.Model
         public void RecalculatePreOvl()
         {
             var notePrev = Part.GetPrevNote(this);
-            Pre = 50; //HasPhoneme ? Phoneme.Preutter : 30;
-            Ovl = 30; //HasPhoneme ? Phoneme.Overlap : 30;
+            Pre = HasPhoneme ? Phoneme.Preutter : 30;
+            Ovl = HasPhoneme ? Phoneme.Overlap : 30;
             Stp = 0;
             double length = MusicMath.TickToMillisecond(Length);
             if (notePrev != null && MusicMath.TickToMillisecond(Length) / 2 < Pre - Ovl)
