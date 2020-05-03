@@ -8,6 +8,7 @@ namespace PianoRoll.Model
     {
         private static bool Enabled;
         private static Dictionary<string, string> Dict;
+        private const char Separator = '\t';
 
         public SingerDictionary(Singer singer)
         {
@@ -23,9 +24,10 @@ namespace PianoRoll.Model
             Dict = new Dictionary<string, string>();
             foreach (var line in File.ReadAllLines(dir, Encoding.UTF8))
             {
-                if (line == "") continue;
-                var lyric = line.Split('=')[0];
-                var value = line.Split('=')[1];
+                if (line == "" || !line.Contains(Separator.ToString()))
+                    continue;
+                var lyric = line.Split(Separator)[0];
+                var value = line.Split(Separator)[1];
                 Dict[lyric] = value;
             }
 
