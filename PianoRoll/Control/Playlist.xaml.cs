@@ -41,7 +41,7 @@ namespace PianoRoll.Control
 
         public void AddTrack()
         {
-            var trackControll = new TrackControll(lastHeigth, minWidth);
+            var trackControll = new TrackControl(lastHeigth, minWidth);
             lastHeigth += 80 + 5.0;
             HeaderCanvas.Children.Add(trackControll.Header);
             ContentCanvas.Children.Add(trackControll.Content);
@@ -50,7 +50,7 @@ namespace PianoRoll.Control
 
         public void AddTrack(Track track)
         {
-            var trackControll = new TrackControll(lastHeigth, minWidth, track);
+            var trackControll = new TrackControl(lastHeigth, minWidth, track);
             lastHeigth += 80 + 5.0;
             HeaderCanvas.Children.Add(trackControll.Header);
             ContentCanvas.Children.Add(trackControll.Content);

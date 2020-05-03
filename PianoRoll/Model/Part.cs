@@ -17,7 +17,7 @@ namespace PianoRoll.Model
         public string Flags;
         public List<Note> Notes;
         public Track Track;
-        public PartControll PartControll;
+        public PartControl PartControll;
         public PitchBendExpression PitchBend;
         private List<Note> _notes;
 
