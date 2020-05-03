@@ -47,7 +47,7 @@ namespace PianoRoll.Model
             foreach (var note in Part.Notes)
             {
                 var tempfilename = Path.Combine(Settings.CacheFolder, $"{i}");
-                tempfilename += $"_{note.Lyric}_{note.NoteNum}_{note.Length}.wav";
+                tempfilename += $"_{note.Lyric.GetHashCode()}_{note.NoteNum}_{note.Length}.wav";
                 // Send Rest
                 if (note.AbsoluteTime > renderPosition)
                 {

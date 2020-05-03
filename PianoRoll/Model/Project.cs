@@ -15,7 +15,7 @@ namespace PianoRoll.Model
 
         public static double Tempo = 120;
         public static int BeatPerBar = 4;
-        public static int BeatUnit = 32;
+        public static int BeatUnit = 8;
 
         public static int MinNoteLengthTick => Settings.Resolution / BeatUnit;
 
