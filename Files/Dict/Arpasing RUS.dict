@@ -1,0 +1,325 @@
+а	a
+б	b
+в	v
+г	g
+д	d
+е	y e
+ё	y o
+ж	zh
+з	z
+и	i
+к	k
+л	l
+м	m
+н	n
+у	u
+ф	f
+х	h
+ц	ts
+ч	ch
+ш	sh
+щ	sh'
+ы	i
+э	e
+ю	y u
+я	y a
+
+бя	b' a
+бе	b' e
+бё	b' o
+би	b' i
+бья	b' y a
+бье	b' y e
+бьё	b' y o
+бьи	b' y i
+бъя	b y a
+бъе	b y e
+бъё	b y o
+бъи	b y i
+бъ	b
+бь	b'
+
+вя	v' a
+ве	v' e
+вё	v' o
+ви	v' i
+вья	v' y a
+вье	v' y e
+вьё	v' y o
+вьи	v' y i
+въя	v y a
+въе	v y e
+въё	v y o
+въи	v y i
+въ	v
+вь	v'
+
+гя	g' a
+ге	g' e
+гё	g' o
+ги	g' i
+гья	g' y a
+гье	g' y e
+гьё	g' y o
+гьи	g' y i
+гъя	g y a
+гъе	g y e
+гъё	g y o
+гъи	g y i
+гъ	g
+гь	g'
+
+дя	d' a
+де	d' e
+дё	d' o
+ди	d' i
+дья	d' y a
+дье	d' y e
+дьё	d' y o
+дьи	d' y i
+дъя	d y a
+дъе	d y e
+дъё	d y o
+дъи	d y i
+дъ	d
+дь	d'
+
+жя	zh a
+же	zh e
+жё	zh o
+жи	zh i
+жья	zh y a
+жье	zh y e
+жьё	zh y o
+жьи	zh y i
+жъя	zh y a
+жъе	zh y e
+жъё	zh y o
+жъи	zh y i
+жъ	zh
+жь	zh
+
+зя	z' a
+зе	z' e
+зё	z' o
+зи	z' i
+зья	z' y a
+зье	z' y e
+зьё	z' y o
+зьи	z' y i
+зъя	z y a
+зъе	z y e
+зъё	z y o
+зъи	z y i
+зъ	z
+зь	z'
+
+кя	k' a
+ке	k' e
+кё	k' o
+ки	k' i
+кья	k' y a
+кье	k' y e
+кьё	k' y o
+кьи	k' y i
+къя	k y a
+къе	k y e
+къё	k y o
+къи	k y i
+къ	k
+кь	k'
+
+ля	l' a
+ле	l' e
+лё	l' o
+ли	l' i
+лья	l' y a
+лье	l' y e
+льё	l' y o
+льи	l' y i
+лъя	l y a
+лъе	l y e
+лъё	l y o
+лъи	l y i
+лъ	l
+ль	l'
+
+мя	m' a
+ме	m' e
+мё	m' o
+ми	m' i
+мья	m' y a
+мье	m' y e
+мьё	m' y o
+мьи	m' y i
+мъя	m y a
+мъе	m y e
+мъё	m y o
+мъи	m y i
+мъ	m
+мь	m'
+
+ня	y' a
+не	y' e
+нё	y' o
+ни	y' i
+нья	y' y a
+нье	y' y e
+ньё	y' y o
+ньи	y' y i
+нъя	y y a
+нъе	y y e
+нъё	y y o
+нъи	y y i
+нъ	y
+нь	y'
+
+пя	p' a
+пе	p' e
+пё	p' o
+пи	p' i
+пья	p' y a
+пье	p' y e
+пьё	p' y o
+пьи	p' y i
+пъя	p y a
+пъе	p y e
+пъё	p y o
+пъи	p y i
+пъ	p
+пь	p'
+
+ря	r' a
+ре	r' e
+рё	r' o
+ри	r' i
+рья	r' y a
+рье	r' y e
+рьё	r' y o
+рьи	r' y i
+ръя	r y a
+ръе	r y e
+ръё	r y o
+ръи	r y i
+ръ	r
+рь	r'
+
+ся	s' a
+се	s' e
+сё	s' o
+си	s' i
+сья	s' y a
+сье	s' y e
+сьё	s' y o
+сьи	s' y i
+съя	s y a
+съе	s y e
+съё	s y o
+съи	s y i
+съ	s
+сь	s'
+
+тя	t' a
+те	t' e
+тё	t' o
+ти	t' i
+тья	t' y a
+тье	t' y e
+тьё	t' y o
+тьи	t' y i
+тъя	t y a
+тъе	t y e
+тъё	t y o
+тъи	t y i
+тъ	t
+ть	t'
+
+фя	f' a
+фе	f' e
+фё	f' o
+фи	f' i
+фья	f' y a
+фье	f' y e
+фьё	f' y o
+фьи	f' y i
+фъя	f y a
+фъе	f y e
+фъё	f y o
+фъи	f y i
+фъ	f
+фь	f'
+
+хя	h' a
+хе	h' e
+хё	h' o
+хи	h' i
+хья	h' y a
+хье	h' y e
+хьё	h' y o
+хьи	h' y i
+хъя	h y a
+хъе	h y e
+хъё	h y o
+хъи	h y i
+хъ	h
+хь	h'
+
+ця	ts a
+це	ts e
+цё	ts o
+ци	ts i
+цья	ts y a
+цье	ts y e
+цьё	ts y o
+цьи	ts y i
+цъя	ts y a
+цъе	ts y e
+цъё	ts y o
+цъи	ts y i
+цъ	ts
+ць	ts
+
+чя	ch a
+че	ch e
+чё	ch o
+чи	ch i
+чья	ch y a
+чье	ch y e
+чьё	ch y o
+чьи	ch y i
+чъя	ch y a
+чъе	ch y e
+чъё	ch y o
+чъи	ch y i
+чъ	ch
+чь	ch
+
+шя	sh a
+ше	sh e
+шё	sh o
+ши	sh i
+шья	sh y a
+шье	sh y e
+шьё	sh y o
+шьи	sh y i
+шъя	sh y a
+шъе	sh y e
+шъё	sh y o
+шъи	sh y i
+шъ	sh
+шь	sh
+
+щя	sh' a
+ще	sh' e
+щё	sh' o
+щи	sh' i
+щья	sh' y a
+щье	sh' y e
+щьё	sh' y o
+щьи	sh' y i
+щъя	sh' y a
+щъе	sh' y e
+щъё	sh' y o
+щъи	sh' y i
+щъ	sh'
+щь	sh'

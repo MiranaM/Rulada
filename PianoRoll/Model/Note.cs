@@ -148,6 +148,17 @@ namespace PianoRoll.Model
             PitchBend = new PitchBendExpression();
         }
 
+        public Note(Part part)
+        {
+            Part = part;
+            Modulation = 0;
+            Intensity = 100;
+            Velocity = 100;
+            Length = Settings.Resolution;
+            Lyric = Settings.DefaultLyric;
+            PitchBend = new PitchBendExpression();
+        }
+
         public void NewLyric(string lyric)
         {
             Lyric = lyric;

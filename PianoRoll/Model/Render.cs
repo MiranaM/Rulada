@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using NAudio.Wave;
+using PianoRoll.Control;
 using PianoRoll.Util;
 
 namespace PianoRoll.Model
@@ -147,7 +148,7 @@ namespace PianoRoll.Model
             var Part = Project.Current.Tracks[0].Parts[0];
 
             var pitchBase64 = Base64.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.SkipOnRender));
-            var phoneme = note.Phoneme;
+            var phoneme = note.Phoneme != null? note.Phoneme : note.Lyric != null ? note.Lyric : Settings.DefaultLyric;
             string request = string.Format(
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n",
                 Settings.Resampler, Path.Combine(Part.Track.Singer.Dir, phoneme.File), tempfilename,

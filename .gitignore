@@ -299,4 +299,6 @@ __pycache__/
 *.xsd.cs
 PianoRoll/Settings.cs
 
-Files
+Files/Cache/*
+Files/output
+Files/render.bat

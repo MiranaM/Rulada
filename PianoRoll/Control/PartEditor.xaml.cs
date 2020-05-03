@@ -21,7 +21,7 @@ namespace PianoRoll.Control
         public static double xScale = 1.0 / 15;
         public static double yScale = 15;
         public static bool UseDict = true;
-        public static bool UseTrans;
+        public static bool UseTrans = true;
         public static bool MustSnap = true;
 
         public Part Part;
