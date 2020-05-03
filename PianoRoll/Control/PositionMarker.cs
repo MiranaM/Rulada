@@ -1,32 +1,32 @@
-﻿using PianoRoll.Model;
-using PianoRoll.Themes;
-using PianoRoll.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using PianoRoll.Model;
+using PianoRoll.Themes;
+using PianoRoll.Util;
 
 namespace PianoRoll.Control
 {
     public class PositionChangedArgs : EventArgs
     {
         public long position;
-        public PositionChangedArgs(long _p) { position = _p; }
+
+        public PositionChangedArgs(long _p)
+        {
+            position = _p;
+        }
     }
 
     public class PositionMarker
     {
-        Polygon Head;
-        Line Line;
-        Canvas Canvas;
-        ScrollViewer ScrollViewer;
+        private Polygon Head;
+        private Line Line;
+        private readonly Canvas Canvas;
+        private readonly ScrollViewer ScrollViewer;
 
         public PositionMarker(Canvas canvas, ScrollViewer scrollViewer)
         {
@@ -35,18 +35,15 @@ namespace PianoRoll.Control
             DrawPositionMarker();
         }
 
-        void DrawPositionMarker()
+        private void DrawPositionMarker()
         {
-            Head = new Polygon()
-            {
-                Fill = Schemes.positionMarkerHead
-            };
+            Head = new Polygon {Fill = Schemes.positionMarkerHead};
             Head.Points.Add(new Point(10, 0));
             Head.Points.Add(new Point(10, 5));
             Head.Points.Add(new Point(0, 15));
             Head.Points.Add(new Point(-10, 5));
             Head.Points.Add(new Point(-10, 0));
-            Line = new Line()
+            Line = new Line
             {
                 Stroke = Schemes.positionMarkerLine,
                 X1 = 0,
@@ -63,19 +60,19 @@ namespace PianoRoll.Control
         }
 
         /// <summary>
-        /// Move marker to wave sample position
+        ///     Move marker to wave sample position
         /// </summary>
         /// <param name="x"></param>
         public void MoveTo(long sample)
         {
-            double ms = sample / 44.1;
+            var ms = sample / 44.1;
             long tick = MusicMath.MillisecondToTick(ms);
-            double x = MusicMath.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
+            var x = MusicMath.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
             MoveTo(x);
         }
 
         /// <summary>
-        /// Move marker to x position on given canvas
+        ///     Move marker to x position on given canvas
         /// </summary>
         /// <param name="x"></param>
         public void MoveTo(double x)
@@ -89,9 +86,9 @@ namespace PianoRoll.Control
             for (long i = 0; i < Render.PlayerLength; i += 100)
             {
                 await Task.Delay(100);
-                double ms = ((double)i) / 44.1;
+                var ms = i / 44.1;
                 long tick = MusicMath.MillisecondToTick(ms);
-                double x = MusicMath.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
+                var x = MusicMath.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
                 MoveTo(Render.PlayerPosition);
             }
         }
@@ -101,7 +98,7 @@ namespace PianoRoll.Control
             // bool result = await Move();
         }
 
-        Task<bool> Move()
+        private Task<bool> Move()
         {
             return Task.Run(() =>
             {
@@ -114,6 +111,7 @@ namespace PianoRoll.Control
                         PartEditor.Instance.Debug1.Content = Render.PlayerPosition.ToString();
                     });
                 }
+
                 return true;
             });
         }

@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.IO;
-using PianoRoll.Util;
-using System.Globalization;
 using PianoRoll.Control;
+using PianoRoll.Util;
 
 namespace PianoRoll.Model
 {
-    enum Insert
+    internal enum Insert
     {
         Before,
         After
@@ -24,14 +21,17 @@ namespace PianoRoll.Model
         public PitchBendExpression PitchBend;
         private List<Note> _notes;
 
-        public List<Note> GetSortedNotes() { return Notes.OrderBy(n => n.AbsoluteTime).ToList(); }
+        public List<Note> GetSortedNotes()
+        {
+            return Notes.OrderBy(n => n.AbsoluteTime).ToList();
+        }
 
         public Part()
         {
             Notes = new List<Note>();
         }
 
-        void AddNote(Note note)
+        private void AddNote(Note note)
         {
             Notes.Add(note);
             SortNotes();
@@ -41,19 +41,19 @@ namespace PianoRoll.Model
         {
             Notes = Notes.OrderBy(n => n.AbsoluteTime).ToList();
         }
-        
+
         public Note GetPrevNote(Note note)
         {
-            List<Note> notes = GetSortedNotes();
-            int i = notes.IndexOf(note);
+            var notes = GetSortedNotes();
+            var i = notes.IndexOf(note);
             if (i <= 0) return null;
             return Notes[i - 1];
         }
 
         public Note GetNextNote(Note note)
         {
-            List<Note> notes = GetSortedNotes();
-            int i = notes.IndexOf(note);
+            var notes = GetSortedNotes();
+            var i = notes.IndexOf(note);
             if (i > notes.Count - 2) return null;
             return Notes[i + 1];
         }
@@ -61,26 +61,26 @@ namespace PianoRoll.Model
         public void BuildPitch()
         {
             Recalculate();
-            foreach (Note note in Notes) Pitch.BuildPitchData(note);
+            foreach (var note in Notes) Pitch.BuildPitchData(note);
             AveragePitch();
             PitchTrimStart();
             PitchTrimEnd();
         }
 
-        void AveragePitch()
+        private void AveragePitch()
         {
-            for (int i = 0; i < Notes.Count - 1; i++)
+            for (var i = 0; i < Notes.Count - 1; i++)
             {
-                Note note = Notes[i];
-                Note noteNext = Notes[i + 1];
+                var note = Notes[i];
+                var noteNext = Notes[i + 1];
                 if (note.PitchBend == null || noteNext.PitchBend == null) continue;
                 Pitch.AveragePitch(note, noteNext);
             }
         }
 
-        void PitchTrimStart()
+        private void PitchTrimStart()
         {
-            foreach (Note note in Notes)
+            foreach (var note in Notes)
             {
                 if (note.PitchBend == null || note.PitchBend.Array == null) continue;
                 var lenms = MusicMath.TickToMillisecond(note.Length) + note.pre;
@@ -94,12 +94,12 @@ namespace PianoRoll.Model
             }
         }
 
-        void PitchTrimEnd()
+        private void PitchTrimEnd()
         {
-            for (int i = 0; i < Notes.Count - 1; i++)
+            for (var i = 0; i < Notes.Count - 1; i++)
             {
-                Note note = Notes[i];
-                Note noteNext = Notes[i + 1];
+                var note = Notes[i];
+                var noteNext = Notes[i + 1];
                 if (note.PitchBend == null || note.PitchBend.Array == null) continue;
                 if (noteNext.PitchBend == null || noteNext.PitchBend.Array == null) continue;
                 if (noteNext.ovl >= noteNext.pre) continue;
@@ -108,7 +108,7 @@ namespace PianoRoll.Model
                 var len = lentick / Settings.IntervalTick;
                 if (note.PitchBend.Array.Length > len)
                 {
-                    int tokick = len;
+                    var tokick = len;
                     note.PitchBend.Array = note.PitchBend.Array.Skip(tokick).ToArray();
                 }
             }
@@ -126,7 +126,7 @@ namespace PianoRoll.Model
 
         public void AddNote(long startTime, int noteNum)
         {
-            Note note = new Note(this);
+            var note = new Note(this);
             note.NoteNum = noteNum;
             note.AbsoluteTime = startTime;
             note.Part = this;
@@ -135,7 +135,7 @@ namespace PianoRoll.Model
 
         public void AddNote(long startTime, int noteNum, int length)
         {
-            Note note = new Note(this);
+            var note = new Note(this);
             note.NoteNum = noteNum;
             note.AbsoluteTime = startTime;
             note.Part = this;
@@ -145,11 +145,9 @@ namespace PianoRoll.Model
 
         public void Recalculate()
         {
-            foreach (Note note in Notes)
-                note.SubmitPosLen();
+            foreach (var note in Notes) note.SubmitPosLen();
             SortNotes();
-            foreach (Note note in Notes)
-                note.Trim();
+            foreach (var note in Notes) note.Trim();
             if (PartEditor.MustSnap)
             {
                 var i = 0;
@@ -159,14 +157,13 @@ namespace PianoRoll.Model
                     i++;
                 }
             }
-            foreach (Note note in Notes)
-                note.RecalculatePreOvl();
+
+            foreach (var note in Notes) note.RecalculatePreOvl();
         }
 
         public void Delete(Note note)
         {
             Notes.Remove(note);
         }
-
     }
 }

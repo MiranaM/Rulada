@@ -1,9 +1,5 @@
-﻿using PianoRoll.Control;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using PianoRoll.Control;
 
 namespace PianoRoll.Model
 {
@@ -20,9 +16,12 @@ namespace PianoRoll.Model
         public static double Tempo = 120;
         public static int BeatPerBar = 4;
         public static int BeatUnit = 32;
-        public static int MinNoteLengthTick { get { return Settings.Resolution / BeatUnit; } }
-        public static double MinNoteLengthX { get { return Settings.Resolution / BeatUnit * PartEditor.xScale; } }
-        public static int UnitPerBar { get { return BeatPerBar * BeatUnit; } }
+
+        public static int MinNoteLengthTick => Settings.Resolution / BeatUnit;
+
+        public static double MinNoteLengthX => Settings.Resolution / BeatUnit * PartEditor.xScale;
+
+        public static int UnitPerBar => BeatPerBar * BeatUnit;
 
         public Project()
         {
@@ -31,17 +30,15 @@ namespace PianoRoll.Model
 
         public static Project Current;
 
-
         /// <summary>
-        /// Add singer by directory or name
+        ///     Add singer by directory or name
         /// </summary>
         /// <param name="singerDir"></param>
         /// <returns></returns>
         public Singer AddSinger(string singerDir)
         {
-            Singer singer = Singer.Find(singerDir);
-            if (singer != null)
-                return singer;
+            var singer = Singer.Find(singerDir);
+            if (singer != null) return singer;
             singer = Singer.Load(singerDir);
             if (!SingerNames.Contains(singer.Name))
             {
@@ -49,13 +46,13 @@ namespace PianoRoll.Model
                 Singers[singer.Name] = singer;
                 return singer;
             }
-            else
-                return Singers[singer.Name];
+
+            return Singers[singer.Name];
         }
 
         public Track AddTrack()
         {
-            Track track = new Track();
+            var track = new Track();
             Tracks.Add(track);
             return track;
         }
@@ -67,7 +64,7 @@ namespace PianoRoll.Model
 
         public SoundTrack AddSoundTrack()
         {
-            SoundTrack track = new SoundTrack();
+            var track = new SoundTrack();
             SoundTracks.Add(track);
             return track;
         }

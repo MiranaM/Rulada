@@ -1,26 +1,33 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using PianoRoll.Control;
 using PianoRoll.Model;
-using PianoRoll.View;
 
 namespace PianoRoll.Util
 {
     public static class MusicMath
     {
-        public static string[] noteStrings = new String[12] { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
+        public static string[] noteStrings =
+            new string[12] {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
 
-        public static string GetNoteString(int noteNum) { return noteNum < 0 ? "" : noteStrings[noteNum % 12] + (noteNum / 12 - 1).ToString(); }
+        public static string GetNoteString(int noteNum)
+        {
+            return noteNum < 0 ? "" : noteStrings[noteNum % 12] + (noteNum / 12 - 1);
+        }
 
-        public static int[] BlackNoteNums = { 1, 3, 6, 8, 10 };
-        public static bool IsBlackKey(int noteNum) { return BlackNoteNums.Contains(noteNum % 12); }
+        public static int[] BlackNoteNums = {1, 3, 6, 8, 10};
 
-        public static bool IsCenterKey(int noteNum) { return noteNum % 12 == 0; }
+        public static bool IsBlackKey(int noteNum)
+        {
+            return BlackNoteNums.Contains(noteNum % 12);
+        }
 
-        public static double[] zoomRatios = { 4.0, 2.0, 1.0, 1.0 / 2, 1.0 / 4, 1.0 / 8, 1.0 / 16, 1.0 / 32, 1.0 / 64 };
+        public static bool IsCenterKey(int noteNum)
+        {
+            return noteNum % 12 == 0;
+        }
+
+        public static double[] zoomRatios = {4.0, 2.0, 1.0, 1.0 / 2, 1.0 / 4, 1.0 / 8, 1.0 / 16, 1.0 / 32, 1.0 / 64};
 
         public static double getZoomRatio(double quarterWidth, int beatPerBar, int beatUnit, double minWidth)
         {
@@ -28,40 +35,44 @@ namespace PianoRoll.Util
 
             switch (beatUnit)
             {
-                case 2: i = 0; break;
-                case 4: i = 1; break;
-                case 8: i = 2; break;
-                case 16: i = 3; break;
-                default: throw new Exception("Invalid beat unit.");
+                case 2:
+                    i = 0;
+                    break;
+                case 4:
+                    i = 1;
+                    break;
+                case 8:
+                    i = 2;
+                    break;
+                case 16:
+                    i = 3;
+                    break;
+                default:
+                    throw new Exception("Invalid beat unit.");
             }
 
             if (beatPerBar % 4 == 0) i--; // level below bar is half bar, or 2 beatunit
             // else // otherwise level below bar is beat unit
 
-            if (quarterWidth * beatPerBar * 4 <= minWidth * beatUnit)
-            {
-                return beatPerBar / beatUnit * 4;
-            }
-            else
-            {
-                while (i + 1 < zoomRatios.Length && quarterWidth * zoomRatios[i + 1] > minWidth) i++;
-                return zoomRatios[i];
-            }
+            if (quarterWidth * beatPerBar * 4 <= minWidth * beatUnit) return beatPerBar / beatUnit * 4;
+
+            while (i + 1 < zoomRatios.Length && quarterWidth * zoomRatios[i + 1] > minWidth) i++;
+            return zoomRatios[i];
         }
-        
+
         public static double TickToMillisecond(double tick)
         {
             double BeatTicks = Settings.Resolution;
-            double TempoCoeff = 60 / Project.Tempo;
-            double size = tick / BeatTicks;
+            var TempoCoeff = 60 / Project.Tempo;
+            var size = tick / BeatTicks;
             return size * TempoCoeff * 1000;
         }
 
         public static int MillisecondToTick(double ms)
         {
             double BeatTicks = Settings.Resolution;
-            double TempoCoeff = 60 / Project.Tempo;
-            return (int)(ms / TempoCoeff / 1000 * BeatTicks);
+            var TempoCoeff = 60 / Project.Tempo;
+            return (int) (ms / TempoCoeff / 1000 * BeatTicks);
         }
 
         public static double SinEasingInOut(double x0, double x1, double y0, double y1, double x)
@@ -105,35 +116,51 @@ namespace PianoRoll.Util
             return (y - y0) / (y1 - y0) * (x1 - x0) + x0;
         }
 
-        public static double InterpolateShape(double x0, double x1, double y0, double y1, double x, PitchPointShape shape)
+        public static double InterpolateShape(double x0, double x1, double y0, double y1, double x,
+            PitchPointShape shape)
         {
             switch (shape)
             {
-                case PitchPointShape.io: return MusicMath.SinEasingInOut(x0, x1, y0, y1, x);
-                case PitchPointShape.i: return MusicMath.SinEasingIn(x0, x1, y0, y1, x);
-                case PitchPointShape.o: return MusicMath.SinEasingOut(x0, x1, y0, y1, x);
-                default: return MusicMath.Linear(x0, x1, y0, y1, x);
+                case PitchPointShape.io:
+                    return SinEasingInOut(x0, x1, y0, y1, x);
+                case PitchPointShape.i:
+                    return SinEasingIn(x0, x1, y0, y1, x);
+                case PitchPointShape.o:
+                    return SinEasingOut(x0, x1, y0, y1, x);
+                default:
+                    return Linear(x0, x1, y0, y1, x);
             }
         }
 
-        public static double InterpolateShapeX(double x0, double x1, double y0, double y1, double y, PitchPointShape shape)
+        public static double InterpolateShapeX(double x0, double x1, double y0, double y1, double y,
+            PitchPointShape shape)
         {
             switch (shape)
             {
-                case PitchPointShape.io: return MusicMath.SinEasingInOutX(x0, x1, y0, y1, y);
-                case PitchPointShape.i: return MusicMath.SinEasingInX(x0, x1, y0, y1, y);
-                case PitchPointShape.o: return MusicMath.SinEasingOutX(x0, x1, y0, y1, y);
-                default: return MusicMath.LinearX(x0, x1, y0, y1, y);
+                case PitchPointShape.io:
+                    return SinEasingInOutX(x0, x1, y0, y1, y);
+                case PitchPointShape.i:
+                    return SinEasingInX(x0, x1, y0, y1, y);
+                case PitchPointShape.o:
+                    return SinEasingOutX(x0, x1, y0, y1, y);
+                default:
+                    return LinearX(x0, x1, y0, y1, y);
             }
         }
 
-        public static double DecibelToLinear(double db) { return Math.Pow(10, db / 20); }
+        public static double DecibelToLinear(double db)
+        {
+            return Math.Pow(10, db / 20);
+        }
 
-        public static double LinearToDecibel(double v) { return Math.Log10(v) * 20; }
+        public static double LinearToDecibel(double v)
+        {
+            return Math.Log10(v) * 20;
+        }
 
         public static string NoteNum2String(int noteNum)
         {
-            int octave = noteNum / 12 + 1;
+            var octave = noteNum / 12 + 1;
             string note;
             switch (11 - noteNum % 12)
             {
@@ -174,51 +201,52 @@ namespace PianoRoll.Util
                     note = "C";
                     break;
             }
+
             return $"{note}{octave}";
         }
 
         /// <summary>
-        /// NoteNum to Y Position
+        ///     NoteNum to Y Position
         /// </summary>
         /// <param name="noteNumber"></param>
         /// <returns></returns>
         public static double GetNoteYPosition(int noteNumber)
         {
-            return (double)(Settings.Octaves * 12 - 1 - noteNumber) * PartEditor.yScale;
+            return (Settings.Octaves * 12 - 1 - noteNumber) * PartEditor.yScale;
         }
 
         /// <summary>
-        /// Y Position to NoteNum
+        ///     Y Position to NoteNum
         /// </summary>
         /// <param name="y"></param>
         /// <returns></returns>
         public static int GetNoteNum(double y)
         {
-            return (int)(Settings.Octaves * 12 - y / PartEditor.yScale);
+            return (int) (Settings.Octaves * 12 - y / PartEditor.yScale);
         }
 
         /// <summary>
-        /// X Position to Absolute Time
+        ///     X Position to Absolute Time
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
         public static long GetAbsoluteTime(double x)
         {
-            return (long)(x / PartEditor.xScale);
+            return (long) (x / PartEditor.xScale);
         }
 
         /// <summary>
-        /// Absolute Time to X Position
+        ///     Absolute Time to X Position
         /// </summary>
         /// <param name="absoluteTime"></param>
         /// <returns></returns>
         public static double GetNoteXPosition(long absoluteTime)
         {
-            return (double)absoluteTime * PartEditor.xScale;
+            return absoluteTime * PartEditor.xScale;
         }
 
         /// <summary>
-        /// Y position between NoteNum points
+        ///     Y position between NoteNum points
         /// </summary>
         /// <param name="source"></param>
         /// <param name="subject"></param>
@@ -229,17 +257,17 @@ namespace PianoRoll.Util
         }
 
         /// <summary>
-        /// Snap parameters like X Position ON EDIT
+        ///     Snap parameters like X Position ON EDIT
         /// </summary>
         /// <param name="x"></param>
         /// <returns></returns>
         public static double SnapX(double x)
         {
-            return SnapTick((long)(x / PartEditor.xScale)) * PartEditor.xScale;
+            return SnapTick((long) (x / PartEditor.xScale)) * PartEditor.xScale;
         }
 
         /// <summary>
-        /// Snap parameters like Length, AbsoluteTime etc ON EDIT
+        ///     Snap parameters like Length, AbsoluteTime etc ON EDIT
         /// </summary>
         /// <param name="tick"></param>
         /// <returns></returns>
@@ -251,29 +279,27 @@ namespace PianoRoll.Util
         }
 
         /// <summary>
-        /// Snap tick ON RENDER
+        ///     Snap tick ON RENDER
         /// </summary>
         /// <param name="tick"></param>
         /// <returns></returns>
         public static long SnapTick(long tick)
         {
-            tick = ((long)(tick + Settings.IntervalTick * 0.25) / Settings.IntervalTick * Settings.IntervalTick);
-            if (tick % Settings.IntervalTick != 0)
-                throw new Exception();
+            tick = (long) (tick + Settings.IntervalTick * 0.25) / Settings.IntervalTick * Settings.IntervalTick;
+            if (tick % Settings.IntervalTick != 0) throw new Exception();
             return tick;
         }
 
         /// <summary>
-        /// Snap ms ON RENDER
+        ///     Snap ms ON RENDER
         /// </summary>
         /// <param name="ms"></param>
         /// <returns></returns>
         public static double SnapMs(double ms)
         {
-            var tick = MusicMath.MillisecondToTick(ms);
-            tick = (int)SnapTick(tick);
-            return MusicMath.MillisecondToTick(tick);
+            var tick = MillisecondToTick(ms);
+            tick = (int) SnapTick(tick);
+            return MillisecondToTick(tick);
         }
-
     }
 }

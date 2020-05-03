@@ -8,11 +8,11 @@ using PianoRoll.Model;
 namespace PianoRoll.View
 {
     /// <summary>
-    /// Логика взаимодействия для SingerDialog.xaml
+    ///     Логика взаимодействия для SingerDialog.xaml
     /// </summary>
     public partial class SingerDialog : Window
     {
-        Part part;
+        private readonly Part part;
 
         public SingerDialog()
         {
@@ -22,29 +22,24 @@ namespace PianoRoll.View
             Author.Content = $"Author: {part.Track.Singer.Author}";
             if (part.Track.Singer.Image != null)
             {
-                string imagepath = System.IO.Path.Combine(part.Track.Singer.Dir, part.Track.Singer.Image);
+                var imagepath = Path.Combine(part.Track.Singer.Dir, part.Track.Singer.Image);
                 if (File.Exists(imagepath)) Avatar.Source = new BitmapImage(new Uri(imagepath));
             }
 
             DrawOto();
         }
 
-        void DrawOto()
+        private void DrawOto()
         {
             OtoView.Items.Clear();
-            foreach (Phoneme phoneme in part.Track.Singer.Phonemes)
+            foreach (var phoneme in part.Track.Singer.Phonemes)
             {
-                string[] line = new string[]
+                var line = new[]
                 {
-                    phoneme.Alias,
-                    phoneme.File,
-                    phoneme.Offset.ToString(),
-                    phoneme.Consonant.ToString(),
-                    phoneme.Cutoff.ToString(),
-                    phoneme.Preutter.ToString(),
-                    phoneme.Overlap.ToString()
+                    phoneme.Alias, phoneme.File, phoneme.Offset.ToString(), phoneme.Consonant.ToString(),
+                    phoneme.Cutoff.ToString(), phoneme.Preutter.ToString(), phoneme.Overlap.ToString()
                 };
-                ListViewItem item = new ListViewItem();
+                var item = new ListViewItem();
                 item.Content = line;
                 OtoView.Items.Add(phoneme);
             }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace PianoRoll.Control
 {
-    public class PartControll
+    public class PartControl
     {
     }
 }

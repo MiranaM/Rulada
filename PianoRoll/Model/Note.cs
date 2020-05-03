@@ -1,13 +1,9 @@
-﻿using PianoRoll.Control;
-using PianoRoll.Util;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
+using PianoRoll.Control;
+using PianoRoll.Util;
 
 namespace PianoRoll.Model
 {
@@ -36,7 +32,7 @@ namespace PianoRoll.Model
             v3 = 60;
             v4 = 0;
             v5 = 100;
-            Note next = note.GetNext();
+            var next = note.GetNext();
             if (next != null) p3 = next.ovl;
         }
     }
@@ -44,33 +40,71 @@ namespace PianoRoll.Model
     public class Note
     {
         #region variables
+
         private int _length;
         private string _lyric;
         private int _noteNum;
         private long _absoluteTime;
         private Envelope _envelope;
         private VibratoExpression _vibrato;
-        private Phoneme _phoneme;
         private string phonemes;
 
         public Part Part;
 
-        public dynamic Length { get => _length; set { SetLength(value); } }
-        public dynamic Lyric { get => _lyric; set { SetLyric(value); } }
-        public dynamic NoteNum { get => _noteNum; set { SetNoteNum(value); } }
-        public dynamic Envelope { get => GetEnvelope(); set { SetEnvelope(value); } }
-        public dynamic AbsoluteTime { get => _absoluteTime; set { _absoluteTime = (long)value; } }
-        public dynamic Vibrato { get => _vibrato; set { SetVibrato(value); } }
+        public dynamic Length
+        {
+            get => _length;
+            set => SetLength(value);
+        }
 
-        public double RequiredLength { get { return GetRequiredLength(); } }
+        public dynamic Lyric
+        {
+            get => _lyric;
+            set => SetLyric(value);
+        }
+
+        public dynamic NoteNum
+        {
+            get => _noteNum;
+            set => SetNoteNum(value);
+        }
+
+        public dynamic Envelope
+        {
+            get => GetEnvelope();
+            set => SetEnvelope(value);
+        }
+
+        public dynamic AbsoluteTime
+        {
+            get => _absoluteTime;
+            set => _absoluteTime = (long) value;
+        }
+
+        public dynamic Vibrato
+        {
+            get => _vibrato;
+            set => SetVibrato(value);
+        }
+
+        public double RequiredLength => GetRequiredLength();
+
         public int Velocity { get; set; }
         public int Intensity { get; set; }
         public int Modulation { get; set; }
         public string Flags { get; set; }
         public PitchBendExpression PitchBend { get; set; }
-        public NoteControl NoteControl { get => _noteControl; set => SetNoteControl(value); }
-        public Phoneme Phoneme { get => _phoneme; set => _phoneme = value; }
-        public Phoneme DefaultPhoneme { get { return Model.Phoneme.GetDefault(Lyric); } }
+
+        public NoteControl NoteControl
+        {
+            get => _noteControl;
+            set => SetNoteControl(value);
+        }
+
+        public Phoneme Phoneme { get; set; }
+
+        public Phoneme DefaultPhoneme => Model.Phoneme.GetDefault(Lyric);
+
         public string Phonemes { get; set; }
 
         public double STP { get; set; }
@@ -87,22 +121,54 @@ namespace PianoRoll.Model
 
         public bool HasPhoneme => Phoneme != null;
         private NoteControl _noteControl;
-        bool hasEnvelope = false;
+        private bool hasEnvelope;
+
         #endregion
 
         #region Setters
-        private void SetLength(int value) { _length = value; if (value <= 0) Delete(); }
-        private void SetLength(double value) { _length = (int)value; if (value <= 0) Delete(); }
-        private void SetLength(float value) { _length = (int)value; if (value <= 0) Delete(); }
 
-        private void SetNoteNum(int value) { _noteNum = value; }
-        private void SetNoteNum(double value) { _noteNum = (int)value; }
-        private void SetNoteNum(float value) { _noteNum = (int)value; }
+        private void SetLength(int value)
+        {
+            _length = value;
+            if (value <= 0) Delete();
+        }
 
-        private void SetEnvelope(Envelope value) { _envelope = value; hasEnvelope = true; }
+        private void SetLength(double value)
+        {
+            _length = (int) value;
+            if (value <= 0) Delete();
+        }
+
+        private void SetLength(float value)
+        {
+            _length = (int) value;
+            if (value <= 0) Delete();
+        }
+
+        private void SetNoteNum(int value)
+        {
+            _noteNum = value;
+        }
+
+        private void SetNoteNum(double value)
+        {
+            _noteNum = (int) value;
+        }
+
+        private void SetNoteNum(float value)
+        {
+            _noteNum = (int) value;
+        }
+
+        private void SetEnvelope(Envelope value)
+        {
+            _envelope = value;
+            hasEnvelope = true;
+        }
+
         private void SetEnvelope(string value)
         {
-            string[] ops = value.Split(',');
+            var ops = value.Split(',');
             _envelope = new Envelope
             {
                 p1 = double.Parse(ops[0]),
@@ -119,6 +185,7 @@ namespace PianoRoll.Model
             };
             hasEnvelope = true;
         }
+
         private void SetEnvelope(string[] value)
         {
             _envelope = new Envelope
@@ -138,11 +205,15 @@ namespace PianoRoll.Model
             hasEnvelope = true;
         }
 
-        private void SetVibrato(VibratoExpression value) { _vibrato = value; }
+        private void SetVibrato(VibratoExpression value)
+        {
+            _vibrato = value;
+        }
+
         private void SetVibrato(string vbr)
         {
-            string[] value = vbr.Split(',');
-            VibratoExpression vibrato = new VibratoExpression();
+            var value = vbr.Split(',');
+            var vibrato = new VibratoExpression();
             if (value.Count() >= 7)
             {
                 vibrato.Length = double.Parse(value[0], new CultureInfo("ja-JP"));
@@ -153,17 +224,16 @@ namespace PianoRoll.Model
                 vibrato.Shift = double.Parse(value[5], new CultureInfo("ja-JP"));
                 vibrato.Drift = double.Parse(value[6], new CultureInfo("ja-JP"));
             }
+
             _vibrato = vibrato;
         }
 
         private void SetLyric(string lyric)
         {
             _lyric = lyric;
-            string temp = lyric;
-            if (PartEditor.UseDict)
-                Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
-            if (PartEditor.UseTrans)
-                temp = TransitionTool.Process(this);
+            var temp = lyric;
+            if (PartEditor.UseDict) Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
+            if (PartEditor.UseTrans) temp = TransitionTool.Process(this);
             Phoneme = Part.Track.Singer.FindPhoneme(temp);
         }
 
@@ -173,10 +243,18 @@ namespace PianoRoll.Model
             _noteControl = noteControl;
             NewLyric(Lyric);
         }
+
         #endregion
 
-        public Note GetNext() { return Part.GetNextNote(this); }
-        public Note GetPrev() { return Part.GetPrevNote(this); }
+        public Note GetNext()
+        {
+            return Part.GetNextNote(this);
+        }
+
+        public Note GetPrev()
+        {
+            return Part.GetPrevNote(this);
+        }
 
         public Note(Part part)
         {
@@ -209,9 +287,8 @@ namespace PianoRoll.Model
 
         public void Trim()
         {
-            Note next = GetNext();
-            if (next != null && Length > next.AbsoluteTime - AbsoluteTime)
-                Length = next.AbsoluteTime - AbsoluteTime;
+            var next = GetNext();
+            if (next != null && Length > next.AbsoluteTime - AbsoluteTime) Length = next.AbsoluteTime - AbsoluteTime;
         }
 
         public void Delete()
@@ -221,7 +298,7 @@ namespace PianoRoll.Model
         }
 
         /// <summary>
-        /// Snap AbsoluteTime and Length to project grid
+        ///     Snap AbsoluteTime and Length to project grid
         /// </summary>
         public void Snap()
         {
@@ -231,7 +308,7 @@ namespace PianoRoll.Model
 
         public void RecalculatePreOvl()
         {
-            Note notePrev = Part.GetPrevNote(this);
+            var notePrev = Part.GetPrevNote(this);
             pre = HasPhoneme ? Phoneme.Preutter : 30;
             ovl = HasPhoneme ? Phoneme.Overlap : 30;
             stp = 0;
@@ -241,16 +318,15 @@ namespace PianoRoll.Model
                 pre = Phoneme.Preutter / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
                 ovl = Phoneme.Overlap / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
                 stp = Phoneme.Preutter - pre;
-                if (pre > Phoneme.Preutter || ovl > Phoneme.Overlap)
-                    throw new Exception("Да еб вашу мать");
+                if (pre > Phoneme.Preutter || ovl > Phoneme.Overlap) throw new Exception("Да еб вашу мать");
             }
         }
 
         public double GetRequiredLength()
         {
             double requiredLength;
-            Note next = Part.GetNextNote(this);
-            Note prev = Part.GetPrevNote(this);
+            var next = Part.GetNextNote(this);
+            var prev = Part.GetPrevNote(this);
             var len = MusicMath.TickToMillisecond(Length);
             requiredLength = len + pre;
             if (next != null && next.HasPhoneme)
@@ -258,6 +334,7 @@ namespace PianoRoll.Model
                 requiredLength -= next.Phoneme.Preutter;
                 requiredLength += next.Phoneme.Overlap;
             }
+
             requiredLength = Math.Ceiling((requiredLength + stp + 25) / 50) * 50;
             return requiredLength;
         }
@@ -265,17 +342,19 @@ namespace PianoRoll.Model
         public bool IsConnectedLeft()
         {
             // true если нет паузы после предыдущей ноты
-            Note prev = GetPrev();
-            if (prev == null) return false;
-            else return prev.AbsoluteTime + prev.Length == AbsoluteTime;
+            var prev = GetPrev();
+            if (prev == null)
+                return false;
+            return prev.AbsoluteTime + prev.Length == AbsoluteTime;
         }
 
         public bool IsConnectedRight()
         {
             // true если нет паузы перед следующей нотой
-            Note next = GetNext();
-            if (next == null) return false;
-            else return AbsoluteTime + Length == next.AbsoluteTime;
+            var next = GetNext();
+            if (next == null)
+                return false;
+            return AbsoluteTime + Length == next.AbsoluteTime;
         }
     }
 }

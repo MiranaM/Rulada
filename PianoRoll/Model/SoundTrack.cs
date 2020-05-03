@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace PianoRoll.Model
 {
     public struct PartTransform
     {
-        double X; // translation in track
-        double Offset; // translation in part
-        double Length; // change length
+        private double X; // translation in track
+        private double Offset; // translation in part
+        private double Length; // change length
     }
 
     public class SoundTrack
@@ -18,12 +14,10 @@ namespace PianoRoll.Model
         public List<SoundPart> Parts;
         public double Pan;
         public double Volume;
-        
-
 
         public SoundPart AddPart()
         {
-            SoundPart part = new SoundPart();
+            var part = new SoundPart();
             Parts.Add(part);
             part.SoundTrack = this;
             return part;

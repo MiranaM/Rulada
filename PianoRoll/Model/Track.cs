@@ -1,17 +1,12 @@
-﻿using PianoRoll.Control;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using PianoRoll.Control;
 
 namespace PianoRoll.Model
 {
-
     public class Track
     {
         public List<Part> Parts = new List<Part>();
-        public TrackControll TrackControll;
+        public TrackControl TrackControl;
         public double Pan;
         public double Volume;
         public Singer Singer;
@@ -30,12 +25,11 @@ namespace PianoRoll.Model
 
         public Part AddPart()
         {
-            Part part = new Part();
+            var part = new Part();
             Parts.Add(part);
             part.Track = this;
             return part;
         }
-
 
         public void AddPart(Part part)
         {
@@ -43,5 +37,4 @@ namespace PianoRoll.Model
             part.Track = this;
         }
     }
-
 }

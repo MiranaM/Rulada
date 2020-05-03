@@ -1,18 +1,13 @@
-﻿using PianoRoll.Model;
-using PianoRoll.Themes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using System.Windows.Controls;
 using System.Windows.Shapes;
+using PianoRoll.Model;
+using PianoRoll.Themes;
 
 namespace PianoRoll.Control
 {
-    class SoundTrackControl
+    internal class SoundTrackControl
     {
-
         public SoundTrackHeader Header;
         public Rectangle Content;
         public SoundTrack Track;
@@ -35,28 +30,22 @@ namespace PianoRoll.Control
             AddParts(Track.Parts);
         }
 
-        void CreateHeader(double y)
+        private void CreateHeader(double y)
         {
             Header = new SoundTrackHeader();
             Header.SetValue(Canvas.TopProperty, y);
             Header.SetValue(Canvas.LeftProperty, 5.0);
         }
 
-        void CreateContent(double y, double w, double h)
+        private void CreateContent(double y, double w, double h)
         {
-            Content = new Rectangle()
-            {
-                Height = h,
-                Width = w,
-                Fill = Schemes.black
-            };
+            Content = new Rectangle {Height = h, Width = w, Fill = Schemes.black};
             Content.SetValue(Canvas.TopProperty, y);
             Content.SetValue(Canvas.LeftProperty, 5.0);
         }
 
-        void AddParts(List<SoundPart> parts)
+        private void AddParts(List<SoundPart> parts)
         {
-
         }
     }
 }

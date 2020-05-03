@@ -1,31 +1,19 @@
-﻿using Microsoft.Win32;
-using NAudio.Midi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using PianoRoll.Model;
+﻿using System;
 using System.IO;
+using System.Text;
+using System.Windows;
+using System.Windows.Input;
 using System.Xml;
+using Microsoft.Win32;
+using PianoRoll.Model;
 
 namespace PianoRoll.View
 {
     /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
+    ///     Логика взаимодействия для MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-
         public MainWindow()
         {
             InitializeComponent();
@@ -37,13 +25,13 @@ namespace PianoRoll.View
             SetPosition();
         }
 
-        void SetPosition()
+        private void SetPosition()
         {
             PartEditor.scrollViewer.ScrollToVerticalOffset(Settings.LastV);
             PartEditor.scrollViewer.ScrollToHorizontalOffset(Settings.LastV);
         }
 
-        void Clear()
+        private void Clear()
         {
             PartEditor.Clear();
             Playlist.Clear();
@@ -55,14 +43,14 @@ namespace PianoRoll.View
             return;
 
             Clear();
-            XmlReader xmlReader = XmlReader.Create(new StringReader(dir));
+            var xmlReader = XmlReader.Create(new StringReader(dir));
             File.ReadAllText(dir);
-            Project Project = new Project();
+            var Project = new Project();
             Project.Dir = dir;
             Project.Current.IsNew = false;
 
             // temp
-            Track track = Project.AddTrack();
+            var track = Project.AddTrack();
             Playlist.AddTrack(track);
             PartEditor.Part = track.Parts[0];
             // endtemp
@@ -84,9 +72,9 @@ namespace PianoRoll.View
         private void ImportUst(string dir, bool IsNewProject = true)
         {
             if (IsNewProject) Project.Current = new Project();
-            Part part = Ust.Import(dir, out double tempo, out string singerDir);
+            var part = Ust.Import(dir, out var tempo, out var singerDir);
             Project.Tempo = tempo;
-            Track track = new Track(singerDir);
+            var track = new Track(singerDir);
             part.RefreshPhonemes();
             track.AddPart(part);
             PartEditor.Part = part;
@@ -98,9 +86,9 @@ namespace PianoRoll.View
         {
             Clear();
             TransitionTool.Load(Settings.TransitionTool);
-            Project project = new Project();
-            Track track =  project.AddTrack();
-            Part part = track.AddPart();
+            var project = new Project();
+            var track = project.AddTrack();
+            var part = track.AddPart();
             Playlist.AddTrack(track);
             PartEditor.Part = part;
             PartEditor.Draw();
@@ -116,7 +104,7 @@ namespace PianoRoll.View
 
         private void Save(string dir)
         {
-            XmlTextWriter textWritter = new XmlTextWriter(dir, Encoding.UTF8);
+            var textWritter = new XmlTextWriter(dir, Encoding.UTF8);
             textWritter.WriteStartDocument();
             textWritter.WriteStartElement("srnx");
             textWritter.WriteEndElement();
@@ -127,25 +115,27 @@ namespace PianoRoll.View
 
         private string ShowOpenFileDialog(string filter)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
+            var openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = filter;
             openFileDialog.FilterIndex = 1;
-            if (openFileDialog.ShowDialog().Value) return openFileDialog.FileName;
-            else return "";
+            if (openFileDialog.ShowDialog().Value)
+                return openFileDialog.FileName;
+            return "";
         }
 
         private string ShowSaveFileDialog(string filter)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            var saveFileDialog = new SaveFileDialog();
             saveFileDialog.Filter = filter;
             saveFileDialog.FilterIndex = 1;
-            if (saveFileDialog.ShowDialog().Value) return saveFileDialog.FileName;
-            else return null;
+            if (saveFileDialog.ShowDialog().Value)
+                return saveFileDialog.FileName;
+            return null;
         }
 
         private void Exit()
         {
-            this.Close();
+            Close();
         }
 
         protected override void OnClosed(EventArgs e)
@@ -154,20 +144,20 @@ namespace PianoRoll.View
             Settings.LastH = PartEditor.scrollViewer.HorizontalOffset;
             Settings.Save();
             base.OnClosed(e);
-            App.Current.Shutdown();
+            Application.Current.Shutdown();
         }
 
-        void ShowTempoDialog()
+        private void ShowTempoDialog()
         {
-            TempoDialog dialog = new TempoDialog();
+            var dialog = new TempoDialog();
             dialog.ShowDialog();
             Tempo.Content = Project.Tempo.ToString("f2");
         }
 
         private void PartEditor_MouseMove(object sender, MouseEventArgs e)
         {
-            Point p = e.GetPosition(this.PartEditor);
-            this.CursorTrack.Content = $"[{p.X.ToString("F2")} {p.Y.ToString("F2")}]";
+            var p = e.GetPosition(PartEditor);
+            CursorTrack.Content = $"[{p.X.ToString("F2")} {p.Y.ToString("F2")}]";
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
@@ -210,7 +200,6 @@ namespace PianoRoll.View
             PartEditor.DrawPartPitch();
         }
 
-
         private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
         {
             //SettingsWindow settings = new SettingsWindow();            
@@ -229,17 +218,14 @@ namespace PianoRoll.View
 
         private void MenuItemExportUst_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItemExportMidi_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItemExportVsq_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItemNew_Click(object sender, RoutedEventArgs e)
@@ -249,54 +235,58 @@ namespace PianoRoll.View
 
         private void MenuItemOpen_Click(object sender, RoutedEventArgs e)
         {
-            string dir = ShowOpenFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
-            if (dir == "") return;
-            else Open(dir);
+            var dir = ShowOpenFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
+            if (dir == "")
+                return;
+            Open(dir);
         }
 
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
         {
             if (Project.Current.IsNew)
             {
-                string dir = ShowSaveFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
-                if (dir == "") return;
-                else Save(dir);
+                var dir = ShowSaveFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
+                if (dir == "")
+                    return;
+                Save(dir);
             }
-            else Save(Project.Current.Dir);
+            else
+            {
+                Save(Project.Current.Dir);
+            }
         }
 
         private void MenuItemSaveAs_Click(object sender, RoutedEventArgs e)
         {
-            string dir = ShowSaveFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
-            if (dir == "") return;
-            else Save(dir);
+            var dir = ShowSaveFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
+            if (dir == "")
+                return;
+            Save(dir);
         }
 
         private void MenuItemImportUst_Click(object sender, RoutedEventArgs e)
         {
-            string dir = ShowOpenFileDialog("UST Files (*.ust)|*.ust|All Files (*.*)|*.*");
-            if (dir == "") return;
-            else ImportUst(dir);
+            var dir = ShowOpenFileDialog("UST Files (*.ust)|*.ust|All Files (*.*)|*.*");
+            if (dir == "")
+                return;
+            ImportUst(dir);
         }
 
         private void MenuItemImportMidi_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItemImportVsq_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void MenuItemImportAudio_Click(object sender, RoutedEventArgs e)
         {
-
         }
 
         private void ProjectButton_Click(object sender, RoutedEventArgs e)
         {
-            ProjectDialog projectDialog = new ProjectDialog();
+            var projectDialog = new ProjectDialog();
             projectDialog.ShowDialog();
         }
 
@@ -314,8 +304,6 @@ namespace PianoRoll.View
 
         private void MenuItemExportAudio_Click(object sender, RoutedEventArgs e)
         {
-
         }
-
     }
 }

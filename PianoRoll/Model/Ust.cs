@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
 using System.Globalization;
+using System.IO;
+using System.Linq;
 
 namespace PianoRoll.Model
 {
@@ -24,7 +22,7 @@ namespace PianoRoll.Model
         }
     }
 
-    class Number
+    internal class Number
     {
         public const string Next = "[#NEXT]";
         public const string Prev = "[#PREV]";
@@ -39,93 +37,123 @@ namespace PianoRoll.Model
             if (number.Length < 6) return false;
             if (number == Next) return true;
             if (number == Prev) return true;
-            return int.TryParse(number.Substring(2, 4), out int i);
+            return int.TryParse(number.Substring(2, 4), out var i);
         }
     }
 
-    class Ust
+    internal class Ust
     {
         public static Part Import(string dir, bool importProject = true)
         {
-            Part part = Import(dir, out double tempo, out string singerDir);
+            var part = Import(dir, out var tempo, out var singerDir);
             return part;
         }
 
         public static Part Import(string dir, out double tempo, out string singerDir)
         {
-
-            Track track = Project.Current.AddTrack();
-            Part part = track.AddPart();
-            string[] lines = File.ReadAllLines(dir);
+            var track = Project.Current.AddTrack();
+            var part = track.AddPart();
+            var lines = File.ReadAllLines(dir);
             double version;
             tempo = -1;
             singerDir = "";
             long absoluteTime = 0;
 
-            int i = 0;
+            var i = 0;
             if (lines[0] == Number.Version)
             {
                 version = 1.2;
                 i++;
                 i++;
             }
-            if (lines[i] != Number.Setting) throw new Exception("Error UST reading");
-            else i++;
+
+            if (lines[i] != Number.Setting)
+                throw new Exception("Error UST reading");
+            i++;
 
             while (i < lines.Length && !Number.IsNote(lines[i]))
             {
                 if (lines[i].StartsWith("UstVersion="))
-                    if (double.TryParse(lines[i].Substring("UstVersion=".Length), out double v))
+                    if (double.TryParse(lines[i].Substring("UstVersion=".Length), out var v))
                         version = v;
                 if (lines[i].StartsWith("Tempo="))
-                    if (double.TryParse(lines[i].Substring("Tempo=".Length), out double t))
+                    if (double.TryParse(lines[i].Substring("Tempo=".Length), out var t))
                         tempo = t;
-                if (lines[i].StartsWith("VoiceDir="))
-                    singerDir = lines[i].Substring("VoiceDir=".Length);
+                if (lines[i].StartsWith("VoiceDir=")) singerDir = lines[i].Substring("VoiceDir=".Length);
                 i++;
             }
 
             part.Notes = new List<Note>();
             while (i + 1 < lines.Length)
             {
-                Note note = new Note(part);
+                var note = new Note(part);
                 // skip number
                 i++;
-                USTPitchData pitchData = new USTPitchData(true);
+                var pitchData = new USTPitchData(true);
                 while (!Number.IsNote(lines[i]) && lines[i] != Number.TrackEnd)
                 {
-                    string line = lines[i];
-                    var parameter = line.Split(new char[] { '=' }, count: 2)[0];
-                    var value = line.Split(new char[] { '=' }, count: 2)[1];
+                    var line = lines[i];
+                    var parameter = line.Split(new[] {'='}, 2)[0];
+                    var value = line.Split(new[] {'='}, 2)[1];
 
                     switch (parameter)
                     {
-                        case "Lyric": note.Lyric = value; break;
-                        case "Length": note.Length = double.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
-                        case "STP": note.STP = double.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
-                        case "NoteNum": note.NoteNum = int.Parse(value, new CultureInfo("ja-JP").NumberFormat) - 12; break;
-                        case "Envelope": note.Envelope = value; break;
-                        case "Velocity": note.Velocity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
-                        case "Modulation": note.Modulation = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
-                        case "Intensity": note.Intensity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
-                        case "Flags": note.Flags = value; break;
-                        case "VBR": note.Vibrato = value; break;
-                        case "PBS": pitchData.PBS = value; break;
-                        case "PBW": pitchData.PBW = value; break;
-                        case "PBY": pitchData.PBY = value; break;
-                        case "PBM": pitchData.PBM = value; break;
+                        case "Lyric":
+                            note.Lyric = value;
+                            break;
+                        case "Length":
+                            note.Length = double.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            break;
+                        case "STP":
+                            note.STP = double.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            break;
+                        case "NoteNum":
+                            note.NoteNum = int.Parse(value, new CultureInfo("ja-JP").NumberFormat) - 12;
+                            break;
+                        case "Envelope":
+                            note.Envelope = value;
+                            break;
+                        case "Velocity":
+                            note.Velocity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            break;
+                        case "Modulation":
+                            note.Modulation = int.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            break;
+                        case "Intensity":
+                            note.Intensity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            break;
+                        case "Flags":
+                            note.Flags = value;
+                            break;
+                        case "VBR":
+                            note.Vibrato = value;
+                            break;
+                        case "PBS":
+                            pitchData.PBS = value;
+                            break;
+                        case "PBW":
+                            pitchData.PBW = value;
+                            break;
+                        case "PBY":
+                            pitchData.PBY = value;
+                            break;
+                        case "PBM":
+                            pitchData.PBM = value;
+                            break;
                     }
+
                     i++;
                     if (i == lines.Length) break;
                 }
+
                 note.AbsoluteTime = absoluteTime;
-                absoluteTime += (long)note.Length;
+                absoluteTime += (long) note.Length;
                 PitchFromUst(pitchData, ref note);
                 if (note.Lyric.Trim(' ') != "R" && note.Lyric.Trim(' ') != "") part.Notes.Add(note);
             }
+
             return part;
         }
-
 
         public static void PitchFromUst(USTPitchData data, ref Note note)
         {
@@ -134,7 +162,8 @@ namespace PianoRoll.Model
                 data.PBS = "-25";
                 data.PBS = "50";
             }
-            string pbs = "";
+
+            var pbs = "";
             note.PitchBend = new PitchBendExpression();
             var pts = note.PitchBend.Data as List<PitchPoint>;
             pts.Clear();
@@ -142,8 +171,8 @@ namespace PianoRoll.Model
             // PBS
             if (pbs.Contains(';'))
             {
-                var v1 = double.Parse(pbs.Split(new[] { ';' })[0], new CultureInfo("ja-JP"));
-                var v2 = double.Parse(pbs.Split(new[] { ';' })[1], new CultureInfo("ja-JP"));
+                var v1 = double.Parse(pbs.Split(';')[0], new CultureInfo("ja-JP"));
+                var v2 = double.Parse(pbs.Split(';')[1], new CultureInfo("ja-JP"));
                 pts.Add(new PitchPoint(v1, v2));
                 note.PitchBend.SnapFirst = false;
             }
@@ -153,28 +182,27 @@ namespace PianoRoll.Model
                 note.PitchBend.SnapFirst = true;
             }
 
-            double x = pts.First().X;
+            var x = pts.First().X;
             if (data.PBW != "")
             {
-                string[] w = data.PBW.Split(new[] { ',' });
+                var w = data.PBW.Split(',');
                 string[] y = null;
-                if (w.Count() > 1) y = data.PBY.Split(new[] { ',' });
-                for (int l = 0; l < w.Count() - 1; l++)
+                if (w.Count() > 1) y = data.PBY.Split(',');
+                for (var l = 0; l < w.Count() - 1; l++)
                 {
                     x += w[l] == "" ? 0 : float.Parse(w[l]);
                     pts.Add(new PitchPoint(x, y[l] == "" ? 0 : double.Parse(y[l])));
                 }
+
                 pts.Add(new PitchPoint(x + double.Parse(w[w.Count() - 1]), 0));
 
                 if (data.PBM != "")
                 {
-                    string[] m = data.PBM.Split(new[] { ',' });
-                    for (int l = 0; l < m.Count() - 1; l++)
-                    {
+                    var m = data.PBM.Split(',');
+                    for (var l = 0; l < m.Count() - 1; l++)
                         pts[l].Shape = m[l] == "r" ? PitchPointShape.o :
-                                        m[l] == "s" ? PitchPointShape.l :
-                                        m[l] == "j" ? PitchPointShape.l : PitchPointShape.io;
-                    }
+                            m[l] == "s" ? PitchPointShape.l :
+                            m[l] == "j" ? PitchPointShape.l : PitchPointShape.io;
                 }
             }
         }

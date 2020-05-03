@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PianoRoll.Model
+﻿namespace PianoRoll.Model
 {
     public class Phoneme
     {
@@ -18,7 +12,7 @@ namespace PianoRoll.Model
 
         public static Phoneme GetDefault(string alias = "")
         {
-            Phoneme phoneme = new Phoneme()
+            var phoneme = new Phoneme
             {
                 Alias = alias,
                 Offset = 0,
