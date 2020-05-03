@@ -271,7 +271,7 @@ namespace PianoRoll.Util
         /// </summary>
         /// <param name="tick"></param>
         /// <returns></returns>
-        public static double SnapAbsoluteTime(long tick)
+        public static double SnapAbsoluteTime(double tick)
         {
             tick = (int) (tick + Project.MinNoteLengthTick * 0.5);
             tick -= tick % Project.MinNoteLengthTick;

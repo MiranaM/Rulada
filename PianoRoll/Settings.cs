@@ -76,18 +76,18 @@ namespace PianoRoll
         public static void Save()
         {
             if (!File.Exists(SettingsFile)) File.Create(SettingsFile);
-            var lines = new[]
-            {
-                "Local=" + Local, "VoicebankDirectory=" + VoicebankDirectory.Replace(Local, "%Local%"),
-                "DefaultVoicebank=" + DefaultVoicebank.Replace(Local, "%Local%"),
-                "DefaultVoicebankType=" + DefaultVoicebankType,
-                "AppendTool=" + AppendTool.Replace(Local, "%Local%"),
-                "TransitionTool=" + TransitionTool.Replace(Local, "%Local%"),
-                "Resampler=" + Resampler.Replace(Local, "%Local%"),
-                "LastFile=" + LastFile.Replace(Local, "%Local%"), "LastV=" + LastV, "LastH=" + LastH,
-                "DefaultLyric=" + DefaultLyric
-            };
-            File.WriteAllLines(SettingsFile, lines, Encoding.UTF8);
+            //var lines = new[]
+            //{
+            //    "Local=" + Local, "VoicebankDirectory=" + VoicebankDirectory.Replace(Local, "%Local%"),
+            //    "DefaultVoicebank=" + DefaultVoicebank.Replace(Local, "%Local%"),
+            //    "DefaultVoicebankType=" + DefaultVoicebankType,
+            //    "AppendTool=" + AppendTool.Replace(Local, "%Local%"),
+            //    "TransitionTool=" + TransitionTool.Replace(Local, "%Local%"),
+            //    "Resampler=" + Resampler.Replace(Local, "%Local%"),
+            //    "LastFile=" + LastFile.Replace(Local, "%Local%"), "LastV=" + LastV, "LastH=" + LastH,
+            //    "DefaultLyric=" + DefaultLyric
+            //};
+            //File.WriteAllLines(SettingsFile, lines, Encoding.UTF8);
         }
     }
 }

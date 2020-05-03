@@ -18,7 +18,7 @@ namespace PianoRoll.Control
     {
         #region variables
 
-        public static double xScale = 1.0 / 15;
+        public static double xScale = 480/ Settings.Resolution;
         public static double yScale = 15;
         public static bool UseDict = true;
         public static bool UseTrans = true;
@@ -46,7 +46,7 @@ namespace PianoRoll.Control
         {
             Instance = this;
             OnPartChanged += OnPartChanged_Part;
-            xScale = 80.0 / Settings.Resolution;
+            //xScale = 480.0 / Settings.Resolution;
             minWidth = minBars * Project.BeatPerBar * Settings.Resolution;
             InitializeComponent();
             DrawInit();
@@ -310,7 +310,7 @@ namespace PianoRoll.Control
         private void DrawUnitGrid()
         {
             var width = lastPosition > minWidth ? lastPosition : minWidth;
-            for (long n = 0; n < width; n += Project.MinNoteLengthTick)
+            for (double n = 0; n < width; n += Project.MinNoteLengthTick)
                 if (n % Settings.Resolution != 0)
                 {
                     var line = new Polyline();
@@ -419,6 +419,18 @@ namespace PianoRoll.Control
         private void scrollViewer_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
             ScrollPosition = new Point(e.HorizontalOffset, e.VerticalOffset);
+        }
+
+        private void ZoomUpButton_Click(object sender, RoutedEventArgs e)
+        {
+            xScale = xScale * 2;
+            Draw();
+        }
+
+        private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
+        {
+            xScale = xScale / 2;
+            Draw();
         }
     }
 }
