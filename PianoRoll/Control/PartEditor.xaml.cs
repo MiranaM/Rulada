@@ -27,7 +27,7 @@ namespace PianoRoll.Control
         public Part Part;
         private long lastPosition;
         public int MaxDivider = 4;
-        private readonly int minBars = 4;
+        private readonly int minBars = 16;
         public bool doSnap = true;
         private readonly double minWidth;
         public PitchBendExpression PitchBend;

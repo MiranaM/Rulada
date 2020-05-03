@@ -13,11 +13,13 @@
     SnapsToDevicePixels="True"
     mc:Ignorable="d">
     <Canvas Name="MainCanvas">
-        <Grid x:Name="grid" Canvas.Top="-15">
+        <Grid x:Name="grid" Canvas.Top="-15" HorizontalAlignment="Stretch" Width="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                                                         AncestorType={x:Type local:NoteControl}},
+                                                         Path= Width}" >
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2" />
-                <ColumnDefinition Width="4*" />
-                <ColumnDefinition Width="2" />
+                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="4" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Name="LyricRow"
