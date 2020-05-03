@@ -56,7 +56,7 @@ namespace PianoRoll.Control
 
         public Note note;
 
-        //зафиксить текст lyric, вызывается из Note
+        // зафиксить текст lyric, вызывается из Note
         // чтобы отправить на изменение, нужно Note.NewLyric(lyric),
         // чтобы также обработать текст
         public void SetText (string lyric)
@@ -64,7 +64,7 @@ namespace PianoRoll.Control
             this.Lyric.Content = lyric;
             this.EditLyric.Text = lyric;
             Background = Schemes.unknownBrush;
-            ToolTip = "can't found source file";
+            ToolTip = "can't find source file";
         }
 
         public void SetText(string lyric, string phoneme)

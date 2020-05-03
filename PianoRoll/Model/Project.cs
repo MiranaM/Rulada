@@ -19,7 +19,7 @@ namespace PianoRoll.Model
 
         public static double Tempo = 120;
         public static int BeatPerBar = 4;
-        public static int BeatUnit = 4;
+        public static int BeatUnit = 32;
         public static int MinNoteLengthTick { get { return Settings.Resolution / BeatUnit; } }
         public static double MinNoteLengthX { get { return Settings.Resolution / BeatUnit * PartEditor.xScale; } }
         public static int UnitPerBar { get { return BeatPerBar * BeatUnit; } }
@@ -40,7 +40,8 @@ namespace PianoRoll.Model
         public Singer AddSinger(string singerDir)
         {
             Singer singer = Singer.Find(singerDir);
-            if (singer != null) return singer;
+            if (singer != null)
+                return singer;
             singer = Singer.Load(singerDir);
             if (!SingerNames.Contains(singer.Name))
             {
@@ -48,7 +49,8 @@ namespace PianoRoll.Model
                 Singers[singer.Name] = singer;
                 return singer;
             }
-            else return Singers[singer.Name];
+            else
+                return Singers[singer.Name];
         }
 
         public Track AddTrack()

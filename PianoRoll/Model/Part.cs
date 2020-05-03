@@ -145,11 +145,22 @@ namespace PianoRoll.Model
 
         public void Recalculate()
         {
-            foreach (Note note in Notes) note.SubmitPosLen();
+            foreach (Note note in Notes)
+                note.SubmitPosLen();
             SortNotes();
-            foreach (Note note in Notes) note.Trim();
-            if (PartEditor.MustSnap) foreach (Note note in Notes) note.Snap();
-            foreach (Note note in Notes) note.RecalculatePreOvl();
+            foreach (Note note in Notes)
+                note.Trim();
+            if (PartEditor.MustSnap)
+            {
+                var i = 0;
+                while (i < Notes.Count)
+                {
+                    Notes[i].Snap();
+                    i++;
+                }
+            }
+            foreach (Note note in Notes)
+                note.RecalculatePreOvl();
         }
 
         public void Delete(Note note)

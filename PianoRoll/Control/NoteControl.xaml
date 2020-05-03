@@ -22,9 +22,9 @@
     </UserControl.Background>
     <Grid x:Name="grid">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="1" />
             <ColumnDefinition Width="4*" />
-            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="1" />
         </Grid.ColumnDefinitions>
 
         <Label
@@ -38,26 +38,36 @@
             Content="sample"
             FontSize="12"
             Foreground="#FFC6F2FF" />
-        <Thumb
-            x:Name="ThumbResizeLeft"
-            Grid.Column="0"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            DragCompleted="ThumbResizeLeft_DragCompleted"
-            DragDelta="ThumbResizeLeft_DragDelta"
-            DragStarted="ThumbResizeLeft_DragStarted"
-            MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
-            Opacity="0.2" />
-        <Thumb
-            x:Name="ThumbResizeRight"
-            Grid.Column="2"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            DragCompleted="ThumbResizeRight_DragCompleted"
-            DragDelta="ThumbResizeRight_DragDelta"
-            DragStarted="ThumbResizeRight_DragStarted"
-            MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
-            Opacity="0.2" />
+        <Thumb x:Name="ThumbResizeLeft"
+               Grid.Column="0"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch"
+               DragCompleted="ThumbResizeLeft_DragCompleted"
+               DragDelta="ThumbResizeLeft_DragDelta"
+               DragStarted="ThumbResizeLeft_DragStarted"
+               MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
+               Opacity="0.2">
+            <Thumb.Template>
+                <ControlTemplate>
+                    <Grid Background="Red" />
+                </ControlTemplate>
+            </Thumb.Template>
+        </Thumb>
+        <Thumb x:Name="ThumbResizeRight"
+               Grid.Column="2"
+               HorizontalAlignment="Stretch"
+               VerticalAlignment="Stretch"
+               DragCompleted="ThumbResizeRight_DragCompleted"
+               DragDelta="ThumbResizeRight_DragDelta"
+               DragStarted="ThumbResizeRight_DragStarted"
+               MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
+               Opacity="0.2">
+            <Thumb.Template>
+                    <ControlTemplate>
+                        <Grid Background="Red" />
+                    </ControlTemplate>
+                </Thumb.Template>
+        </Thumb>
         <Thumb
             x:Name="ThumbMove"
             Grid.Column="1"

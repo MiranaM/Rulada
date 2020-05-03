@@ -30,8 +30,8 @@ namespace PianoRoll.Control
         #region variables
         public static double xScale = 1.0 / 15;
         public static double yScale = 15;
-        public static bool UseDict = true;
-        public static bool UseTrans = true;
+        public static bool UseDict = false;
+        public static bool UseTrans = false;
         public static bool MustSnap = true;
 
         public Part Part;

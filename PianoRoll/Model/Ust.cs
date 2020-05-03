@@ -103,7 +103,7 @@ namespace PianoRoll.Model
                         case "Lyric": note.Lyric = value; break;
                         case "Length": note.Length = double.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
                         case "STP": note.STP = double.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
-                        case "NoteNum": note.NoteNum = int.Parse(value, new CultureInfo("ja-JP").NumberFormat) - 24; break;
+                        case "NoteNum": note.NoteNum = int.Parse(value, new CultureInfo("ja-JP").NumberFormat) - 12; break;
                         case "Envelope": note.Envelope = value; break;
                         case "Velocity": note.Velocity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;
                         case "Modulation": note.Modulation = int.Parse(value, new CultureInfo("ja-JP").NumberFormat); break;

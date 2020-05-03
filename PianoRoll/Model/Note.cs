@@ -85,7 +85,7 @@ namespace PianoRoll.Model
             return hasEnvelope ? _envelope : new Envelope(this);
         }
 
-        public bool HasPhoneme { get { return Phoneme != null; } }
+        public bool HasPhoneme => Phoneme != null;
         private NoteControl _noteControl;
         bool hasEnvelope = false;
         #endregion
@@ -160,8 +160,10 @@ namespace PianoRoll.Model
         {
             _lyric = lyric;
             string temp = lyric;
-            if (PartEditor.UseDict) Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
-            if (PartEditor.UseTrans) temp = TransitionTool.Process(this);
+            if (PartEditor.UseDict)
+                Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
+            if (PartEditor.UseTrans)
+                temp = TransitionTool.Process(this);
             Phoneme = Part.Track.Singer.FindPhoneme(temp);
         }
 
@@ -190,8 +192,10 @@ namespace PianoRoll.Model
         public void NewLyric(string lyric)
         {
             Lyric = lyric;
-            if (HasPhoneme) NoteControl.SetText(Lyric, Phoneme.Alias);
-            else NoteControl.SetText(Lyric);
+            if (HasPhoneme)
+                NoteControl.SetText(Lyric, Phoneme.Alias);
+            else
+                NoteControl.SetText(Lyric);
         }
 
         public void SubmitPosLen()
