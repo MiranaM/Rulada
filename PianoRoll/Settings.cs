@@ -38,7 +38,7 @@ namespace PianoRoll
         public static void Read()
         {
             if (!File.Exists(SettingsFile)) File.Create(SettingsFile);
-            var lines = File.ReadAllLines(SettingsFile, Encoding.ASCII);
+            var lines = File.ReadAllLines(SettingsFile, Encoding.UTF8);
             foreach (var line in lines)
             {
                 if (line.StartsWith("Local=") && line.Length > "Local=".Length) Local = line.Substring("Local=".Length);

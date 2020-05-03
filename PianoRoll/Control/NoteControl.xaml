@@ -8,90 +8,127 @@
     xmlns:model="clr-namespace:PianoRoll.Model"
     xmlns:mv="clr-namespace:PianoRoll.ModelView"
     x:Name="Control"
-    d:DesignHeight="14"
+    d:DesignHeight="44"
     d:DesignWidth="60"
-    BorderBrush="#FF9BD7DA"
-    ClipToBounds="True"
     SnapsToDevicePixels="True"
     mc:Ignorable="d">
-    <UserControl.Background>
-        <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
-            <GradientStop Offset="1" Color="#FF434E5D" />
-            <GradientStop Color="#FF5D6E76" />
-        </LinearGradientBrush>
-    </UserControl.Background>
-    <Grid x:Name="grid">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1" />
-            <ColumnDefinition Width="4*" />
-            <ColumnDefinition Width="1" />
-        </Grid.ColumnDefinitions>
+    <Canvas Name="MainCanvas">
+        <Grid x:Name="grid" Canvas.Top="-15">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2" />
+                <ColumnDefinition Width="4*" />
+                <ColumnDefinition Width="2" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Name="LyricRow"
+                               Height="15" />
+                <RowDefinition Name="MainRow"
+                               Height="14" />
+                <RowDefinition Name="PhonemesRow"
+                               Height="15" />
+            </Grid.RowDefinitions>
 
-        <Label
-            x:Name="Lyric"
-            Grid.Column="1"
-            Height="30"
-            Margin="1,0,0,0"
-            Padding="0,0,0,0"
-            VerticalAlignment="Center"
-            VerticalContentAlignment="Center"
-            Content="sample"
-            FontSize="12"
-            Foreground="#FFC6F2FF" />
-        <Thumb x:Name="ThumbResizeLeft"
-               Grid.Column="0"
-               HorizontalAlignment="Stretch"
-               VerticalAlignment="Stretch"
-               DragCompleted="ThumbResizeLeft_DragCompleted"
-               DragDelta="ThumbResizeLeft_DragDelta"
-               DragStarted="ThumbResizeLeft_DragStarted"
-               MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
-               Opacity="0.2">
-            <Thumb.Template>
-                <ControlTemplate>
-                    <Grid Background="Red" />
-                </ControlTemplate>
-            </Thumb.Template>
-        </Thumb>
-        <Thumb x:Name="ThumbResizeRight"
-               Grid.Column="2"
-               HorizontalAlignment="Stretch"
-               VerticalAlignment="Stretch"
-               DragCompleted="ThumbResizeRight_DragCompleted"
-               DragDelta="ThumbResizeRight_DragDelta"
-               DragStarted="ThumbResizeRight_DragStarted"
-               MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
-               Opacity="0.2">
-            <Thumb.Template>
+            <Label x:Name="Lyric"
+                   Grid.Column="1"
+                   Grid.Row="0"
+                   Height="30"
+                   Margin="1,0,0,0"
+                   Padding="0,0,0,0"
+                   VerticalAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   Content="sample"
+                   FontSize="12"
+                   Foreground="#FF16121F" />
+            <Label x:Name="Phoneme"
+                   Grid.Column="1"
+                   Grid.Row="2"
+                   Height="30"
+                   Margin="1,0,0,0"
+                   Padding="0,0,0,0"
+                   VerticalAlignment="Center"
+                   VerticalContentAlignment="Center"
+                   Content="[a]"
+                   FontSize="12"
+                   Foreground="#FF16121F" />
+            <Thumb x:Name="ThumbResizeLeft"
+                   Grid.Column="0"
+                   Grid.Row="1"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   DragCompleted="ThumbResizeLeft_DragCompleted"
+                   DragDelta="ThumbResizeLeft_DragDelta"
+                   DragStarted="ThumbResizeLeft_DragStarted"
+                   MouseRightButtonUp="ThumbMove_MouseRightButtonUp">
+                <Thumb.Template>
                     <ControlTemplate>
-                        <Grid Background="Red" />
+                        <Grid Background="#FF3D4968" />
                     </ControlTemplate>
                 </Thumb.Template>
-        </Thumb>
-        <Thumb
-            x:Name="ThumbMove"
-            Grid.Column="1"
-            HorizontalAlignment="Stretch"
-            VerticalAlignment="Stretch"
-            DragCompleted="ThumbMove_DragCompleted"
-            DragDelta="ThumbMove_DragDelta"
-            DragStarted="ThumbMove_DragStarted"
-            MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
-            Opacity="0" />
-        <TextBox
-            x:Name="EditLyric"
-            Grid.Column="1"
-            Width="60"
-            Margin="0"
-            Padding="0,-5,0,-5"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Stretch"
-            VerticalContentAlignment="Center"
-            FontSize="11"
-            KeyDown="EditLyric_KeyDown"
-            LostFocus="EditLyric_LostFocus"
-            Text="TextBox"
-            TextWrapping="Wrap"
-            Visibility="Hidden" />
-    </Grid>
+            </Thumb>
+            <Thumb x:Name="ThumbResizeRight"
+                   Grid.Row="1"
+                   Grid.Column="2"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   DragCompleted="ThumbResizeRight_DragCompleted"
+                   DragDelta="ThumbResizeRight_DragDelta"
+                   DragStarted="ThumbResizeRight_DragStarted"
+                   MouseRightButtonUp="ThumbMove_MouseRightButtonUp">
+                <Thumb.Template>
+                    <ControlTemplate>
+                        <Grid Background="#FF7DD6D6" />
+                    </ControlTemplate>
+                </Thumb.Template>
+            </Thumb>
+            <Thumb x:Name="ThumbMove"
+                   Grid.Row="1"
+                   Grid.Column="1"
+                   BorderBrush="#FF9BD7DA"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch"
+                   DragCompleted="ThumbMove_DragCompleted"
+                   DragDelta="ThumbMove_DragDelta"
+                   DragStarted="ThumbMove_DragStarted"
+                   MouseRightButtonUp="ThumbMove_MouseRightButtonUp">
+                <Thumb.Style>
+                    <Style>
+                        <Setter Property="Thumb.Background"
+                                Value="#FF5D6E76" />
+                        <Setter Property="Thumb.Opacity"
+                                Value="1" />
+                        <Setter Property="Thumb.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Grid Background="{TemplateBinding Background}">
+                                    </Grid>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="Thumb.IsEnabled"
+                                     Value="False">
+                                <Setter Property="Thumb.Background"
+                                        Value="#AA4757"></Setter>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Thumb.Style>
+            </Thumb>
+            <TextBox x:Name="EditLyric"
+                     Grid.Column="1"
+                     Grid.Row="0"
+                     Width="60"
+                     Margin="0"
+                     Padding="0,-5,0,-5"
+                     HorizontalAlignment="Left"
+                     VerticalAlignment="Stretch"
+                     KeyDown="EditLyric_KeyDown"
+                     VerticalContentAlignment="Center"
+                     FontSize="11"
+                     LostFocus="EditLyric_LostFocus"
+                     Text="TextBox"
+                     TextWrapping="Wrap"
+                     Visibility="Hidden" />
+        </Grid>
+    </Canvas>
 </UserControl>

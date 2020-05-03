@@ -31,7 +31,7 @@ namespace PianoRoll.Control
 
         public delegate void NoteChangedEvent();
 
-        public event NoteChangedEvent OnNoteChanged;
+        public event NoteChangedEvent OnNoteChanged = delegate {  };
 
         public NoteControl(PartEditor partEditor)
         {
@@ -60,18 +60,19 @@ namespace PianoRoll.Control
         {
             Lyric.Content = lyric;
             EditLyric.Text = lyric;
-            Background = Schemes.unknownBrush;
+            ThumbMove.IsEnabled = false;
             ToolTip = "can't find source file";
         }
 
         public void SetText(string lyric, string phoneme)
         {
-            Lyric.Content = $"{lyric} [{phoneme}]";
+            Lyric.Content = lyric;
+            Phoneme.Content = phoneme;
             EditLyric.Text = lyric;
-            Background = Schemes.noteBrush;
+            ThumbMove.IsEnabled = true;
         }
 
-        private void ComfirmLyric()
+        private void ConfirmLyric()
         {
             EditLyric.Visibility = Visibility.Hidden;
             note.NewLyric(EditLyric.Text);
@@ -80,12 +81,12 @@ namespace PianoRoll.Control
 
         private void EditLyric_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return) ComfirmLyric();
+            if (e.Key == Key.Return) ConfirmLyric();
         }
 
         private void EditLyric_LostFocus(object sender, RoutedEventArgs e)
         {
-            ComfirmLyric();
+            ConfirmLyric();
         }
 
         private void ThumbResizeLeft_DragDelta(object sender, DragDeltaEventArgs e)

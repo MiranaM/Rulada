@@ -243,7 +243,7 @@ namespace PianoRoll.Control
             var top = MusicMath.GetNoteYPosition(noteNumber);
             var left = MusicMath.GetNoteXPosition(startTime);
             noteControl.Width = duration * xScale;
-            noteControl.Height = yScale;
+            noteControl.grid.RowDefinitions[1].Height = new GridLength(yScale);
             noteControl.SetValue(Canvas.TopProperty, top);
             noteControl.SetValue(Canvas.LeftProperty, left);
             return noteControl;
