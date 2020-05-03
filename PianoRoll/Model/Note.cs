@@ -22,8 +22,8 @@ namespace PianoRoll.Model
 
         public Envelope(Note note)
         {
-            p1 = note.ovl;
-            p2 = note.pre;
+            p1 = note.Ovl;
+            p2 = note.Pre;
             p3 = 30;
             p4 = 0;
             p5 = 0;
@@ -33,7 +33,7 @@ namespace PianoRoll.Model
             v4 = 0;
             v5 = 100;
             var next = note.GetNext();
-            if (next != null) p3 = next.ovl;
+            if (next != null) p3 = next.Ovl;
         }
     }
 
@@ -41,31 +41,31 @@ namespace PianoRoll.Model
     {
         #region variables
 
-        private int _length;
-        private string _lyric;
-        private int _noteNum;
-        private long _absoluteTime;
-        private Envelope _envelope;
-        private VibratoExpression _vibrato;
+        private int length;
+        private string lyric;
+        private int noteNum;
+        private long absoluteTime;
+        private Envelope envelope;
+        private VibratoExpression vibrato;
         private string phonemes;
 
         public Part Part;
 
         public dynamic Length
         {
-            get => _length;
+            get => length;
             set => SetLength(value);
         }
 
         public dynamic Lyric
         {
-            get => _lyric;
+            get => lyric;
             set => SetLyric(value);
         }
 
         public dynamic NoteNum
         {
-            get => _noteNum;
+            get => noteNum;
             set => SetNoteNum(value);
         }
 
@@ -77,13 +77,13 @@ namespace PianoRoll.Model
 
         public dynamic AbsoluteTime
         {
-            get => _absoluteTime;
-            set => _absoluteTime = (long) value;
+            get => absoluteTime;
+            set => absoluteTime = (long) value;
         }
 
         public dynamic Vibrato
         {
-            get => _vibrato;
+            get => vibrato;
             set => SetVibrato(value);
         }
 
@@ -97,7 +97,7 @@ namespace PianoRoll.Model
 
         public NoteControl NoteControl
         {
-            get => _noteControl;
+            get => noteControl;
             set => SetNoteControl(value);
         }
 
@@ -109,140 +109,19 @@ namespace PianoRoll.Model
 
         public double STP { get; set; }
 
-        public double pre { get; private set; }
-        public double ovl { get; private set; }
-        public double stp { get; private set; }
-        public double lengthAdd { get; private set; }
+        public double Pre { get; private set; }
+        public double Ovl { get; private set; }
+        public double Stp { get; private set; }
+        public double LengthAdd { get; private set; }
 
         public Envelope GetEnvelope()
         {
-            return hasEnvelope ? _envelope : new Envelope(this);
+            return hasEnvelope ? envelope : new Envelope(this);
         }
 
         public bool HasPhoneme => Phoneme != null;
-        private NoteControl _noteControl;
+        private NoteControl noteControl;
         private bool hasEnvelope;
-
-        #endregion
-
-        #region Setters
-
-        private void SetLength(int value)
-        {
-            _length = value;
-            if (value <= 0) Delete();
-        }
-
-        private void SetLength(double value)
-        {
-            _length = (int) value;
-            if (value <= 0) Delete();
-        }
-
-        private void SetLength(float value)
-        {
-            _length = (int) value;
-            if (value <= 0) Delete();
-        }
-
-        private void SetNoteNum(int value)
-        {
-            _noteNum = value;
-        }
-
-        private void SetNoteNum(double value)
-        {
-            _noteNum = (int) value;
-        }
-
-        private void SetNoteNum(float value)
-        {
-            _noteNum = (int) value;
-        }
-
-        private void SetEnvelope(Envelope value)
-        {
-            _envelope = value;
-            hasEnvelope = true;
-        }
-
-        private void SetEnvelope(string value)
-        {
-            var ops = value.Split(',');
-            _envelope = new Envelope
-            {
-                p1 = double.Parse(ops[0]),
-                p2 = double.Parse(ops[1]),
-                p3 = double.Parse(ops[2]),
-                v1 = double.Parse(ops[3]),
-                v2 = double.Parse(ops[4]),
-                v3 = double.Parse(ops[5]),
-                v4 = double.Parse(ops[6]),
-                // 7 -- %
-                p4 = ops.Length > 7 ? double.Parse(ops[8]) : 0,
-                p5 = ops.Length > 9 ? double.Parse(ops[9]) : 0,
-                v5 = ops.Length > 9 ? double.Parse(ops[10]) : 100
-            };
-            hasEnvelope = true;
-        }
-
-        private void SetEnvelope(string[] value)
-        {
-            _envelope = new Envelope
-            {
-                p1 = double.Parse(value[0], new CultureInfo("ja-JP").NumberFormat),
-                p2 = double.Parse(value[1], new CultureInfo("ja-JP").NumberFormat),
-                p3 = double.Parse(value[2], new CultureInfo("ja-JP").NumberFormat),
-                v1 = double.Parse(value[3], new CultureInfo("ja-JP").NumberFormat),
-                v2 = double.Parse(value[4], new CultureInfo("ja-JP").NumberFormat),
-                v3 = double.Parse(value[5], new CultureInfo("ja-JP").NumberFormat),
-                v4 = double.Parse(value[6], new CultureInfo("ja-JP").NumberFormat),
-                // 7 -- %
-                p4 = value.Length > 7 ? double.Parse(value[8]) : 0,
-                p5 = value.Length > 9 ? double.Parse(value[9], new CultureInfo("ja-JP").NumberFormat) : 0,
-                v5 = value.Length > 9 ? double.Parse(value[10], new CultureInfo("ja-JP").NumberFormat) : 100
-            };
-            hasEnvelope = true;
-        }
-
-        private void SetVibrato(VibratoExpression value)
-        {
-            _vibrato = value;
-        }
-
-        private void SetVibrato(string vbr)
-        {
-            var value = vbr.Split(',');
-            var vibrato = new VibratoExpression();
-            if (value.Count() >= 7)
-            {
-                vibrato.Length = double.Parse(value[0], new CultureInfo("ja-JP"));
-                vibrato.Period = double.Parse(value[1], new CultureInfo("ja-JP"));
-                vibrato.Depth = double.Parse(value[2], new CultureInfo("ja-JP"));
-                vibrato.In = double.Parse(value[3], new CultureInfo("ja-JP"));
-                vibrato.Out = double.Parse(value[4], new CultureInfo("ja-JP"));
-                vibrato.Shift = double.Parse(value[5], new CultureInfo("ja-JP"));
-                vibrato.Drift = double.Parse(value[6], new CultureInfo("ja-JP"));
-            }
-
-            _vibrato = vibrato;
-        }
-
-        private void SetLyric(string lyric)
-        {
-            _lyric = lyric;
-            var temp = lyric;
-            if (PartEditor.UseDict) Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
-            if (PartEditor.UseTrans) temp = TransitionTool.Process(this);
-            Phoneme = Part.Track.Singer.FindPhoneme(temp);
-        }
-
-        private void SetNoteControl(NoteControl noteControl)
-        {
-            noteControl.note = this;
-            _noteControl = noteControl;
-            NewLyric(Lyric);
-        }
 
         #endregion
 
@@ -256,9 +135,11 @@ namespace PianoRoll.Model
             return Part.GetPrevNote(this);
         }
 
-        public Note(Part part)
+        public Note(Part part, double lengthAdd, string phonemes)
         {
             Part = part;
+            LengthAdd = lengthAdd;
+            this.phonemes = phonemes;
             Modulation = 0;
             Intensity = 100;
             Velocity = 100;
@@ -309,33 +190,33 @@ namespace PianoRoll.Model
         public void RecalculatePreOvl()
         {
             var notePrev = Part.GetPrevNote(this);
-            pre = HasPhoneme ? Phoneme.Preutter : 30;
-            ovl = HasPhoneme ? Phoneme.Overlap : 30;
-            stp = 0;
+            Pre = HasPhoneme ? Phoneme.Preutter : 30;
+            Ovl = HasPhoneme ? Phoneme.Overlap : 30;
+            Stp = 0;
             double length = MusicMath.TickToMillisecond(Length);
-            if (notePrev != null && MusicMath.TickToMillisecond(Length) / 2 < pre - ovl)
+            if (notePrev != null && MusicMath.TickToMillisecond(Length) / 2 < Pre - Ovl)
             {
-                pre = Phoneme.Preutter / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
-                ovl = Phoneme.Overlap / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
-                stp = Phoneme.Preutter - pre;
-                if (pre > Phoneme.Preutter || ovl > Phoneme.Overlap) throw new Exception("Да еб вашу мать");
+                Pre = Phoneme.Preutter / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
+                Ovl = Phoneme.Overlap / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
+                Stp = Phoneme.Preutter - Pre;
+                if (Pre > Phoneme.Preutter || Ovl > Phoneme.Overlap)
+                    throw new Exception("Да еб вашу мать");
             }
         }
 
         public double GetRequiredLength()
         {
-            double requiredLength;
             var next = Part.GetNextNote(this);
             var prev = Part.GetPrevNote(this);
             var len = MusicMath.TickToMillisecond(Length);
-            requiredLength = len + pre;
+            double requiredLength = len + Pre;
             if (next != null && next.HasPhoneme)
             {
                 requiredLength -= next.Phoneme.Preutter;
                 requiredLength += next.Phoneme.Overlap;
             }
 
-            requiredLength = Math.Ceiling((requiredLength + stp + 25) / 50) * 50;
+            requiredLength = Math.Ceiling((requiredLength + Stp + 25) / 50) * 50;
             return requiredLength;
         }
 
@@ -356,5 +237,129 @@ namespace PianoRoll.Model
                 return false;
             return AbsoluteTime + Length == next.AbsoluteTime;
         }
+
+        #region private
+
+        private void SetLength(int value)
+        {
+            length = value;
+            if (value <= 0) Delete();
+        }
+
+        private void SetLength(double value)
+        {
+            length = (int)value;
+            if (value <= 0) Delete();
+        }
+
+        private void SetLength(float value)
+        {
+            length = (int)value;
+            if (value <= 0) Delete();
+        }
+
+        private void SetNoteNum(int value)
+        {
+            noteNum = value;
+        }
+
+        private void SetNoteNum(double value)
+        {
+            noteNum = (int)value;
+        }
+
+        private void SetNoteNum(float value)
+        {
+            noteNum = (int)value;
+        }
+
+        private void SetEnvelope(Envelope value)
+        {
+            envelope = value;
+            hasEnvelope = true;
+        }
+
+        private void SetEnvelope(string value)
+        {
+            var ops = value.Split(',');
+            envelope = new Envelope
+            {
+                p1 = double.Parse(ops[0]),
+                p2 = double.Parse(ops[1]),
+                p3 = double.Parse(ops[2]),
+                v1 = double.Parse(ops[3]),
+                v2 = double.Parse(ops[4]),
+                v3 = double.Parse(ops[5]),
+                v4 = double.Parse(ops[6]),
+                // 7 -- %
+                p4 = ops.Length > 7 ? double.Parse(ops[8]) : 0,
+                p5 = ops.Length > 9 ? double.Parse(ops[9]) : 0,
+                v5 = ops.Length > 9 ? double.Parse(ops[10]) : 100
+            };
+            hasEnvelope = true;
+        }
+
+        private void SetEnvelope(string[] value)
+        {
+            envelope = new Envelope
+            {
+                p1 = double.Parse(value[0], new CultureInfo("ja-JP").NumberFormat),
+                p2 = double.Parse(value[1], new CultureInfo("ja-JP").NumberFormat),
+                p3 = double.Parse(value[2], new CultureInfo("ja-JP").NumberFormat),
+                v1 = double.Parse(value[3], new CultureInfo("ja-JP").NumberFormat),
+                v2 = double.Parse(value[4], new CultureInfo("ja-JP").NumberFormat),
+                v3 = double.Parse(value[5], new CultureInfo("ja-JP").NumberFormat),
+                v4 = double.Parse(value[6], new CultureInfo("ja-JP").NumberFormat),
+                // 7 -- %
+                p4 = value.Length > 7 ? double.Parse(value[8]) : 0,
+                p5 = value.Length > 9 ? double.Parse(value[9], new CultureInfo("ja-JP").NumberFormat) : 0,
+                v5 = value.Length > 9 ? double.Parse(value[10], new CultureInfo("ja-JP").NumberFormat) : 100
+            };
+            hasEnvelope = true;
+        }
+
+        private void SetVibrato(VibratoExpression value)
+        {
+            vibrato = value;
+        }
+
+        private void SetVibrato(string vbr)
+        {
+            var value = vbr.Split(',');
+            var vibrato = new VibratoExpression();
+            if (value.Count() >= 7)
+            {
+                vibrato.Length = double.Parse(value[0], new CultureInfo("ja-JP"));
+                vibrato.Period = double.Parse(value[1], new CultureInfo("ja-JP"));
+                vibrato.Depth = double.Parse(value[2], new CultureInfo("ja-JP"));
+                vibrato.In = double.Parse(value[3], new CultureInfo("ja-JP"));
+                vibrato.Out = double.Parse(value[4], new CultureInfo("ja-JP"));
+                vibrato.Shift = double.Parse(value[5], new CultureInfo("ja-JP"));
+                vibrato.Drift = double.Parse(value[6], new CultureInfo("ja-JP"));
+            }
+
+            this.vibrato = vibrato;
+        }
+
+        private void SetLyric(string lyric)
+        {
+            this.lyric = lyric;
+            var temp = lyric;
+            if (PartEditor.UseDict)
+                Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
+            if (PartEditor.UseTrans)
+                temp = TransitionTool.Process(this);
+            Phoneme = Part.Track.Singer.FindPhoneme(temp);
+        }
+
+        private void SetNoteControl(NoteControl noteControl)
+        {
+            noteControl.note = this;
+            this.noteControl = noteControl;
+            NewLyric(Lyric);
+        }
+
+        #endregion
+
     }
 }

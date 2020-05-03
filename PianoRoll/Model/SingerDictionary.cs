@@ -6,8 +6,6 @@ namespace PianoRoll.Model
 {
     public class SingerDictionary
     {
-
-
         public SingerDictionary(Singer singer)
         {
             if (!singer.IsEnabled)

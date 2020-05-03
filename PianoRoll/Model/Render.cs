@@ -165,19 +165,19 @@ namespace PianoRoll.Model
             var Part = Project.Current.Tracks[0].Parts[0];
             string lyric = note.Lyric;
             var next = Part.GetNextNote(note);
-            var offset = note.pre;
+            var offset = note.Pre;
             if (next != null)
             {
-                offset -= next.pre;
-                offset += next.ovl;
+                offset -= next.Pre;
+                offset += next.Ovl;
             }
 
             var sign = offset >= 0 ? "+" : "-";
             var length = $"{note.Length}@{Project.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
-            string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", note.stp, // STP,
+            string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", note.Stp, // STP,
                 length, //note.RequiredLength, 
                 note.Envelope.p1, note.Envelope.p2, note.Envelope.p3, note.Envelope.v1, note.Envelope.v2,
-                note.Envelope.v3, note.Envelope.v4, note.ovl, //note.Phoneme.Overlap,
+                note.Envelope.v3, note.Envelope.v4, note.Ovl, //note.Phoneme.Overlap,
                 note.Envelope.p4, note.Envelope.p5, note.Envelope.v5);
             var request = $"\"{Settings.AppendTool}\" \"{Settings.Output}\" \"{filename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);

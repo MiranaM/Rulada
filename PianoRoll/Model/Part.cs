@@ -83,7 +83,7 @@ namespace PianoRoll.Model
             foreach (var note in Notes)
             {
                 if (note.PitchBend == null || note.PitchBend.Array == null) continue;
-                var lenms = MusicMath.TickToMillisecond(note.Length) + note.pre;
+                var lenms = MusicMath.TickToMillisecond(note.Length) + note.Pre;
                 var lentick = MusicMath.MillisecondToTick(lenms);
                 var len = lentick / Settings.IntervalTick;
                 if (note.PitchBend.Array.Length > len)
@@ -102,8 +102,8 @@ namespace PianoRoll.Model
                 var noteNext = Notes[i + 1];
                 if (note.PitchBend == null || note.PitchBend.Array == null) continue;
                 if (noteNext.PitchBend == null || noteNext.PitchBend.Array == null) continue;
-                if (noteNext.ovl >= noteNext.pre) continue;
-                var lenms = noteNext.pre - noteNext.ovl;
+                if (noteNext.Ovl >= noteNext.Pre) continue;
+                var lenms = noteNext.Pre - noteNext.Ovl;
                 var lentick = MusicMath.MillisecondToTick(lenms);
                 var len = lentick / Settings.IntervalTick;
                 if (note.PitchBend.Array.Length > len)
