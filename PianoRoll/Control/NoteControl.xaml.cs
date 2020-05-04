@@ -74,7 +74,16 @@ namespace PianoRoll.Control
         private void ConfirmLyric()
         {
             EditLyric.Visibility = Visibility.Hidden;
-            note.NewLyric(EditLyric.Text);
+            var texts = EditLyric.Text.Split(' ');
+            var noteToSet = note;
+            var i = 0;
+            while (noteToSet != null && i < texts.Length)
+            {
+                noteToSet.NewLyric(texts[i]);
+                i++;
+                noteToSet = noteToSet.GetNext();
+            }
+            // possible BUG: need OnNoteChanged on all of them?
             OnNoteChanged();
         }
 

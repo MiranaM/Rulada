@@ -49,6 +49,8 @@ namespace PianoRoll.Model
         private VibratoExpression vibrato;
         private string phonemes;
 
+        public bool IsRender;
+
         public Part Part;
 
         public dynamic Length

@@ -30,7 +30,8 @@ namespace PianoRoll.Model
         public static void Send(Part part)
         {
             OnRenderComplited += OnRenderCompleted_Render;
-            Part = part;
+            part.BuildRenderPart();
+            Part = part.RenderPart;
             position = 0;
             Part.Recalculate();
             Part.BuildPitch();

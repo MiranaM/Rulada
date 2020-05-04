@@ -30,7 +30,7 @@
                 return note.Lyric;
             }
 
-            if (note.Part.Track.Singer.VoicebankType == "Arpasing RUS")
+            if (note.Part.Track.Singer.VoicebankType == "Arpasing RUS" && !note.Phonemes.Contains("-"))
             {
                 if (!note.IsConnectedLeft())
                 {
@@ -42,6 +42,12 @@
             }
 
             return note.Lyric;
+        }
+
+        public static string GetRest(string phoneme)
+        {
+            // TODO: do right way
+            return phoneme + " -";
         }
     }
 }

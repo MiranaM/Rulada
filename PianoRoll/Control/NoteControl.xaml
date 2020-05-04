@@ -37,6 +37,7 @@
                    Margin="1,0,0,0"
                    Padding="0,0,0,0"
                    VerticalAlignment="Center"
+                   MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
                    VerticalContentAlignment="Center"
                    Content="sample"
                    FontSize="12"
