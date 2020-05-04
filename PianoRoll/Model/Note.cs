@@ -72,7 +72,7 @@ namespace PianoRoll.Model
         public dynamic Length
         {
             get => length;
-            set => SetLength(value);
+            set => length = (int)value;
         }
 
         public dynamic Lyric
@@ -200,13 +200,6 @@ namespace PianoRoll.Model
             }
         }
 
-        public void Trim()
-        {
-            var next = GetNext();
-            if (next != null && Length > next.AbsoluteTime - AbsoluteTime)
-                Length = next.AbsoluteTime - AbsoluteTime;
-        }
-
         public void Delete()
         {
             Part.Delete(this);
@@ -281,27 +274,6 @@ namespace PianoRoll.Model
         }
 
         #region private
-
-        private void SetLength(int value)
-        {
-            length = value;
-            if (value <= 0)
-                Delete();
-        }
-
-        private void SetLength(double value)
-        {
-            length = (int)value;
-            if (value <= 0)
-                Delete();
-        }
-
-        private void SetLength(float value)
-        {
-            length = (int)value;
-            if (value <= 0)
-                Delete();
-        }
 
         private void SetNoteNum(int value)
         {

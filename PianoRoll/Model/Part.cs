@@ -99,8 +99,7 @@ namespace PianoRoll.Model
             foreach (var note in Notes)
                 note.SubmitPosLen();
             SortNotes();
-            foreach (var note in Notes)
-                note.Trim();
+            TrimNotes();
             if (PartEditor.MustSnap)
             {
                 var i = 0;
@@ -112,6 +111,22 @@ namespace PianoRoll.Model
             }
 
             RecalculatePreOvl();
+        }
+
+        public void TrimNotes()
+        {
+            for (var index = 0; index < Notes.Count; index++)
+            {
+                var note = Notes[index];
+                var next = note.GetNext();
+                if (next != null && note.Length > next.AbsoluteTime - note.AbsoluteTime)
+                    note.Length = next.AbsoluteTime - note.AbsoluteTime;
+                if (note.Length <= 0)
+                {
+                    note.Delete();
+                    index--;
+                }
+            }
         }
 
         public void RecalculatePreOvl()
