@@ -94,6 +94,11 @@ namespace PianoRoll.Model
             Notes.Add(note);
         }
 
+        public void DeleteNote(Note note)
+        {
+            Notes.Remove(note);
+        }
+
         public void Recalculate()
         {
             foreach (var note in Notes)

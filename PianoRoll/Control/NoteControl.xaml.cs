@@ -30,8 +30,10 @@ namespace PianoRoll.Control
         }
 
         public delegate void NoteChangedEvent();
+        public delegate void NoteDeletedEvent(NoteControl noteControl);
 
         public event NoteChangedEvent OnNoteChanged = delegate {  };
+        public event NoteDeletedEvent OnNoteDeleted = delegate {  };
 
         public NoteControl(PartEditor partEditor)
         {
@@ -43,7 +45,7 @@ namespace PianoRoll.Control
 
         public void Delete()
         {
-            OnNoteChanged();
+            OnNoteDeleted(this);
         }
 
         public void OnNoteChanged_Note()
@@ -99,7 +101,8 @@ namespace PianoRoll.Control
 
         private void EditLyric_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Return) ConfirmLyric();
+            if (e.Key == Key.Return)
+                ConfirmLyric();
         }
 
         private void EditLyric_LostFocus(object sender, RoutedEventArgs e)
@@ -108,10 +111,30 @@ namespace PianoRoll.Control
                 ConfirmLyric();
         }
 
+        private bool TryResize(double offset)
+        {
+            if (Width + offset > 0)
+            {
+                Width += offset;
+                return true;
+            }
+            else
+            {
+                OnNoteDeleted(this);
+                return false;
+            }
+        }
+
         private void ThumbResizeLeft_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Canvas.SetLeft(this, Canvas.GetLeft(this) + e.HorizontalChange);
-            Width -= e.HorizontalChange;
+            var offset = -e.HorizontalChange;
+            if (TryResize(-e.HorizontalChange))
+                Canvas.SetLeft(this, Canvas.GetLeft(this) - offset);
+        }
+
+        private void ThumbResizeRight_DragDelta(object sender, DragDeltaEventArgs e)
+        {
+            TryResize(e.HorizontalChange);
         }
 
         private void ThumbResizeLeft_DragCompleted(object sender,
@@ -132,11 +155,6 @@ namespace PianoRoll.Control
         {
             note.Length = Width / PartEditor.xScale;
             OnNoteChanged();
-        }
-
-        private void ThumbResizeRight_DragDelta(object sender, DragDeltaEventArgs e)
-        {
-            Width += e.HorizontalChange;
         }
 
         private void ThumbResizeRight_DragStarted(object sender,
@@ -187,10 +205,7 @@ namespace PianoRoll.Control
         {
             if (Keyboard.IsKeyDown(Key.LeftCtrl))
             {
-                var part = Project.Current.Tracks[0].Parts[0];
-                part.Notes.Remove(note);
-                PartEditor.Remove(this);
-                // OnNoteChanged();
+                OnNoteDeleted(this);
             }
             else
             {

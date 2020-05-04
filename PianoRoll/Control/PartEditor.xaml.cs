@@ -109,6 +109,9 @@ namespace PianoRoll.Control
 
         public void DrawNotes()
         {
+            if (NoteCanvas.Children.Count != NoteControls.Count)
+                throw new Exception();
+
             if (Part == null) return;
 
             var i = 0;
@@ -122,6 +125,7 @@ namespace PianoRoll.Control
                     noteControl = new NoteControl(this);
                     NoteCanvas.Children.Add(noteControl);
                     NoteControls.Add(noteControl);
+                    noteControl.OnNoteDeleted += DeleteNoteControl;
                 }
                 MakeNote(noteControl, note.NoteNum, note.AbsoluteTime, note.Length);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
@@ -132,8 +136,18 @@ namespace PianoRoll.Control
 
             while (i < NoteControls.Count)
             {
-                NoteCanvas.Children.Remove(NoteControls[i]);
-                NoteControls.RemoveAt(i);
+                NoteControls[i].note = null; // now may refer to a note from different noteControl
+                DeleteNoteControl(NoteControls[i]);
+            }
+        }
+
+        public void DeleteNoteControl(NoteControl noteControl)
+        {
+            NoteCanvas.Children.Remove(noteControl);
+            NoteControls.Remove(noteControl);
+            if (noteControl.note != null)
+            {
+                Part.DeleteNote(noteControl.note);
             }
         }
 
@@ -155,7 +169,8 @@ namespace PianoRoll.Control
                 var y0 = (double) note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
                 var pitchSource = GetPitchSource(note, x0, y0);
                 DrawPitchPath(pitchSource, x0, y0, i);
-                foreach (var ellipse in GetPitchPoints(note.PitchBend.Points, x0, y0, i))
+                var points = GetPitchPoints(note.PitchBend.Points, x0, y0, i);
+                foreach (var ellipse in points)
                     PitchPointCanvas.Children.Add(ellipse);
                 i++;
             }

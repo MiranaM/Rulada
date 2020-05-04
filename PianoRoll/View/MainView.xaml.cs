@@ -193,6 +193,7 @@ namespace PianoRoll.View
 
         private void MenuItemDrawPitch_Click(object sender, RoutedEventArgs e)
         {
+            PartEditor.Part.BuildPitch();
             PartEditor.DrawPitch();
         }
 
