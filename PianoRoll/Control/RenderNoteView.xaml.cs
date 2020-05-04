@@ -41,6 +41,21 @@ namespace PianoRoll.Control
             Note = note;
             if (note.HasPhoneme)
                 Phoneme.Content = note.Phoneme.Alias;
+            var envelope = new Envelope(note);
+
+            var attack = MusicMath.MillisecondToTick(envelope.p1);
+            var preutterance = MusicMath.MillisecondToTick(envelope.p2);
+            var length = MusicMath.MillisecondToTick(note.Length);
+            var decay = MusicMath.MillisecondToTick(envelope.p3);
+            var straightPreutterance = preutterance - attack;
+
+            Overlap.Width = attack;
+            Canvas.SetLeft(Overlap, -preutterance);
+            Sustain.Width = length + straightPreutterance - decay;
+            Canvas.SetLeft(Sustain, -straightPreutterance);
+            Decay.Width = decay;
+            Canvas.SetLeft(Decay, length - decay);
+            
             Canvas.SetLeft(this, MusicMath.GetNoteXPosition(note.AbsoluteTime));
             Width = note.Length * PartEditor.xScale;
         }

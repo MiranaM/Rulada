@@ -18,17 +18,61 @@
                 <RowDefinition Name="NoteRow"
                                Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                      AncestorType={x:Type local:RenderNoteView}},
-                     Path=Height, FallbackValue=14}"></RowDefinition>
-                <RowDefinition Name="LyricRow" Height="15"></RowDefinition>
+                     Path=Height, FallbackValue=14}" />
+                <RowDefinition Name="LyricRow" Height="15" />
             </Grid.RowDefinitions>
-            <Grid x:Name="ThumbMove"
-                  Background="#665D7E76"
+            <Grid x:Name="NoteMain"
                   Grid.Row="0"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
-                <Rectangle Height="2"
-                           Fill="#FF5DAE76"
-                           VerticalAlignment="Bottom"></Rectangle>
+                <Border BorderBrush="#55005500" BorderThickness="1" Background="#22005500">
+                </Border>
+                <Canvas Name="EnvelopeContainer"
+                        HorizontalAlignment="Stretch"
+                        Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                     AncestorType={x:Type local:RenderNoteView}},
+                     Path=ActualHeight, FallbackValue=14}">
+                    <Canvas Name="Overlap"
+                            Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type local:RenderNoteView}},
+                             Path=ActualHeight, FallbackValue=14}">
+                        <Line Stroke="#FFFF88FF"
+                              X1="0"
+                              X2="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type Canvas}},
+                             Path=ActualWidth, FallbackValue=30}"
+                              Y1="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type Canvas}},
+                             Path=ActualHeight, FallbackValue=14}"
+                              Y2="0" />
+                    </Canvas>
+                    <Canvas Name="Sustain"
+                            Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                     AncestorType={x:Type local:RenderNoteView}},
+                     Path=ActualHeight, FallbackValue=14}">
+                        <Line Stroke="#FF000000"
+                              X1="0"
+                              X2="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type Canvas}},
+                             Path=ActualWidth, FallbackValue=30}"
+                              Y1="0"
+                              Y2="0" />
+                    </Canvas>
+                    <Canvas Name="Decay"
+                            Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                     AncestorType={x:Type local:RenderNoteView}},
+                     Path=ActualHeight, FallbackValue=14}">
+                        <Line Stroke="#FF88FFFF"
+                              X1="0"
+                              X2="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type Canvas}},
+                             Path=ActualWidth, FallbackValue=30}"
+                              Y1="0"
+                              Y2="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type Canvas}},
+                             Path=ActualHeight, FallbackValue=14}" />
+                    </Canvas>
+                </Canvas>
             </Grid>
             <Label x:Name="Phoneme"
                    Margin="0,0,0,0"
