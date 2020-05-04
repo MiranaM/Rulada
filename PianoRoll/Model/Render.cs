@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using NAudio.Wave;
 using PianoRoll.Control;
@@ -50,8 +51,9 @@ namespace PianoRoll.Model
             long renderPosition = 0;
             foreach (var note in Part.Notes)
             {
+                var phoneme = note.HasPhoneme ? note.Phoneme : note.DefaultPhoneme;
                 var tempfilename = Path.Combine(Settings.CacheFolder, $"{i}");
-                tempfilename += $"_{note.Lyric.GetHashCode()}_{note.NoteNum}_{note.Length}.wav";
+                tempfilename += $"_{phoneme.Alias}_{note.NoteNum}_{note.Length}.wav";
                 // Send Rest
                 if (note.AbsoluteTime > renderPosition)
                 {
