@@ -62,7 +62,7 @@
                    Background="#220000FF"
                    Content="[a]"
                    FontSize="12"
-                   Foreground="#FF6692AF" />
+                   Foreground="#FF008899" />
             <Thumb x:Name="ThumbResizeLeft"
                    Grid.Column="0"
                    Grid.Row="1"
@@ -133,10 +133,10 @@
             <TextBox x:Name="EditLyric"
                      Grid.Column="0"
                      Grid.ColumnSpan="2"
-                     Width="60"
+                     Width="Auto"
                      Margin="0"
                      Padding="0,-5,0,-5"
-                     HorizontalAlignment="Left"
+                     HorizontalAlignment="Stretch"
                      VerticalAlignment="Stretch"
                      KeyDown="EditLyric_KeyDown"
                      VerticalContentAlignment="Center"
