@@ -28,6 +28,7 @@
 бе	b' e
 бё	b' o
 би	b' i
+бю	b' u
 бья	b' y a
 бье	b' y e
 бьё	b' y o
@@ -43,6 +44,7 @@
 ве	v' e
 вё	v' o
 ви	v' i
+вю	v' u
 вья	v' y a
 вье	v' y e
 вьё	v' y o
@@ -58,6 +60,7 @@
 ге	g' e
 гё	g' o
 ги	g' i
+гю	g' u
 гья	g' y a
 гье	g' y e
 гьё	g' y o
@@ -73,6 +76,7 @@
 де	d' e
 дё	d' o
 ди	d' i
+дю	d' u
 дья	d' y a
 дье	d' y e
 дьё	d' y o
@@ -88,6 +92,7 @@
 же	zh e
 жё	zh o
 жи	zh i
+жю	zh' u
 жья	zh y a
 жье	zh y e
 жьё	zh y o
@@ -103,6 +108,7 @@
 зе	z' e
 зё	z' o
 зи	z' i
+зю	z' u
 зья	z' y a
 зье	z' y e
 зьё	z' y o
@@ -118,6 +124,7 @@
 ке	k' e
 кё	k' o
 ки	k' i
+кю	k' u
 кья	k' y a
 кье	k' y e
 кьё	k' y o
@@ -133,6 +140,7 @@
 ле	l' e
 лё	l' o
 ли	l' i
+лю	l' u
 лья	l' y a
 лье	l' y e
 льё	l' y o
@@ -148,6 +156,7 @@
 ме	m' e
 мё	m' o
 ми	m' i
+мю	m' u
 мья	m' y a
 мье	m' y e
 мьё	m' y o
@@ -163,6 +172,7 @@
 не	y' e
 нё	y' o
 ни	y' i
+ню	y' u
 нья	y' y a
 нье	y' y e
 ньё	y' y o
@@ -178,6 +188,7 @@
 пе	p' e
 пё	p' o
 пи	p' i
+пю	p' u
 пья	p' y a
 пье	p' y e
 пьё	p' y o
@@ -193,6 +204,7 @@
 ре	r' e
 рё	r' o
 ри	r' i
+рю	r' u
 рья	r' y a
 рье	r' y e
 рьё	r' y o
@@ -208,6 +220,7 @@
 се	s' e
 сё	s' o
 си	s' i
+сю	s' u
 сья	s' y a
 сье	s' y e
 сьё	s' y o
@@ -223,6 +236,7 @@
 те	t' e
 тё	t' o
 ти	t' i
+тю	t' u
 тья	t' y a
 тье	t' y e
 тьё	t' y o
@@ -238,6 +252,7 @@
 фе	f' e
 фё	f' o
 фи	f' i
+фю	f' u
 фья	f' y a
 фье	f' y e
 фьё	f' y o
@@ -253,6 +268,7 @@
 хе	h' e
 хё	h' o
 хи	h' i
+хю	h' u
 хья	h' y a
 хье	h' y e
 хьё	h' y o
@@ -268,6 +284,7 @@
 це	ts e
 цё	ts o
 ци	ts i
+цю	ts u
 цья	ts y a
 цье	ts y e
 цьё	ts y o
@@ -283,6 +300,7 @@
 че	ch e
 чё	ch o
 чи	ch i
+чю	ch u
 чья	ch y a
 чье	ch y e
 чьё	ch y o
@@ -298,6 +316,7 @@
 ше	sh e
 шё	sh o
 ши	sh i
+шю	sh u
 шья	sh y a
 шье	sh y e
 шьё	sh y o
@@ -313,6 +332,7 @@
 ще	sh' e
 щё	sh' o
 щи	sh' i
+щю	sh' u
 щья	sh' y a
 щье	sh' y e
 щьё	sh' y o
