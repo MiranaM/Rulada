@@ -33,12 +33,15 @@ namespace PianoRoll.Model
             part.BuildRenderPart();
             Part = part.RenderPart;
             position = 0;
-            Part.Recalculate();
+            Part.RecalculatePreOvl();
             Part.BuildPitch();
-            if (output != null) output.Close();
+            if (output != null)
+                output.Close();
             if (File.Exists(Settings.Output)) File.Delete(Settings.Output);
-            if (File.Exists(Settings.Output + ".dat")) File.Delete(Settings.Output + ".dat");
-            if (File.Exists(Settings.Output + ".whd")) File.Delete(Settings.Output + ".whd");
+            if (File.Exists(Settings.Output + ".dat"))
+                File.Delete(Settings.Output + ".dat");
+            if (File.Exists(Settings.Output + ".whd"))
+                File.Delete(Settings.Output + ".whd");
 
             if (!File.Exists(Settings.Bat)) File.Create(Settings.Bat);
             var delcommand = $"del \"{Settings.CacheFolder}\\*.wav\"\r\n";

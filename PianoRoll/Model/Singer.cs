@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using PianoRoll.Util;
 
 namespace PianoRoll.Model
 {
@@ -64,7 +65,19 @@ namespace PianoRoll.Model
         public double GetConsonantLength(string phoneme)
         {
             // TODO: do right way
-            return 60;
+            var value = 40;
+            if (phoneme == "r" || phoneme == "r'")
+                value = 20;
+            else if (phoneme == "ch"
+                || phoneme == "t'"
+                || phoneme == "ts"
+                || phoneme == "zh"
+                || phoneme == "sh"
+                || phoneme == "sh'"
+                || phoneme == "k'"
+            )
+                value = 80;
+            return MusicMath.TickToMillisecond(value);
         }
 
         public double GetRestLength(string phoneme)

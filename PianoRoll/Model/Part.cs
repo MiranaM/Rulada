@@ -58,7 +58,6 @@ namespace PianoRoll.Model
 
         public void BuildPitch()
         {
-            Recalculate();
             foreach (var note in Notes)
                 Pitch.BuildPitchData(note);
             AveragePitch();
@@ -112,7 +111,14 @@ namespace PianoRoll.Model
                 }
             }
 
-            foreach (var note in Notes) note.RecalculatePreOvl();
+            RecalculatePreOvl();
+        }
+
+        public void RecalculatePreOvl()
+        {
+
+            foreach (var note in Notes)
+                note.RecalculatePreOvl();
         }
 
         public void Delete(Note note)
@@ -123,8 +129,9 @@ namespace PianoRoll.Model
         public void BuildRenderPart()
         {
             var consonantsQueue = new List<string>();
-            double addedLength = 0;
+            int addedLength = 0;
             Note prevNote = null;
+            Note prevVowel = null;
             var singer = Track.Singer;
 
             RenderPart = new Part {Track = new Track {Singer = Track.Singer}, IsRender = true};
@@ -133,6 +140,8 @@ namespace PianoRoll.Model
             foreach (var note in Notes)
             {
                 prevNote = ProcessRestNotesForRenderBuild(prevNote, note, consonantsQueue, notes, singer);
+                if (prevNote == null)
+                    prevVowel = null;
 
                 var phonemes = note.Phonemes.Split(' ');
                 var vowelIndex = -1;
@@ -161,7 +170,7 @@ namespace PianoRoll.Model
                 for (var i = consonantsQueue.Count - 1; i >= 0; i--)
                 {
                     var phoneme = consonantsQueue[i];
-                    var length = Track.Singer.GetConsonantLength(phoneme);
+                    var length = (int)Track.Singer.GetConsonantLength(phoneme);
                     addedLength += length;
                     var parent = i < consonantsQueue.Count - fromPrevCount && prevNote != null ? prevNote : note;
                     newNotes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime - addedLength, length, phoneme, parent));
@@ -178,18 +187,19 @@ namespace PianoRoll.Model
                     consonantsQueue.Add(phonemes[i]);
                 }
 
-                if (prevNote != null)
+                if (prevVowel != null)
                 {
-                    if (!prevNote.IsRender)
+                    if (!prevVowel.IsRender)
                         throw  new Exception();
                     // BUG: will be crash for short notes.
-                    prevNote.Length -= addedLength;
+                    prevVowel.Length -= addedLength;
                 }
 
                 addedLength = 0;
                 if (!vowel.IsRender)
                     throw new Exception();
                 prevNote = vowel;
+                prevVowel = vowel;
             }
 
             ProcessRestNotesForRenderBuild(prevNote, null, consonantsQueue, notes, singer);

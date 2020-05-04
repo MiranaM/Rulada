@@ -35,7 +35,7 @@ namespace PianoRoll.Model
             var next = note.GetNext();
             if (next != null)
                 p3 = next.Ovl;
-            ResolveLength(note.Length);
+            ResolveLength(MusicMath.TickToMillisecond(note.Length));
         }
 
         private void ResolveLength(double length)
@@ -285,19 +285,22 @@ namespace PianoRoll.Model
         private void SetLength(int value)
         {
             length = value;
-            if (value <= 0) Delete();
+            if (value <= 0)
+                Delete();
         }
 
         private void SetLength(double value)
         {
             length = (int)value;
-            if (value <= 0) Delete();
+            if (value <= 0)
+                Delete();
         }
 
         private void SetLength(float value)
         {
             length = (int)value;
-            if (value <= 0) Delete();
+            if (value <= 0)
+                Delete();
         }
 
         private void SetNoteNum(int value)
