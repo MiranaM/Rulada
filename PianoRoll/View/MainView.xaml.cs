@@ -56,7 +56,7 @@ namespace PianoRoll.View
             // endtemp
 
             // Settings.LastFile = dir;
-            PartEditor.Draw();
+            PartEditor.DrawNotes();
             InitElements();
         }
 
@@ -65,7 +65,7 @@ namespace PianoRoll.View
             Clear();
             Playlist.AddTrack(track);
             Project.Current.AddTrack(track);
-            PartEditor.Draw();
+            PartEditor.DrawNotes();
             InitElements();
         }
 
@@ -91,7 +91,8 @@ namespace PianoRoll.View
             var part = track.AddPart();
             Playlist.AddTrack(track);
             PartEditor.Part = part;
-            PartEditor.Draw();
+            PartEditor.DrawPart();
+            PartEditor.DrawNotes();
             InitElements();
         }
 

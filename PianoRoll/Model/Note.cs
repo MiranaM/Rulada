@@ -210,7 +210,7 @@ namespace PianoRoll.Model
         public void Delete()
         {
             Part.Delete(this);
-            if (!IsRender)
+            if (NoteControl != null)
                 NoteControl.Delete();
         }
 

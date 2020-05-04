@@ -40,6 +40,8 @@ namespace PianoRoll.Control
         public static PartEditor Instance;
         public static Point ScrollPosition;
 
+        public List<NoteControl> NoteControls = new List<NoteControl>();
+
         #endregion
 
         public PartEditor()
@@ -69,13 +71,12 @@ namespace PianoRoll.Control
         public void OnPartChanged_Part()
         {
             Part.Recalculate();
-            Draw();
-            PositionMarker = new PositionMarker(PositionMarkerCanvas, scrollViewer);
+            DrawNotes();
+            //PositionMarker = new PositionMarker(PositionMarkerCanvas, scrollViewer);
         }
 
-        public void Draw()
+        public void DrawPart()
         {
-            DrawNotes();
             Resize();
             CreateBackgroundCanvas();
             DrawGrid();
@@ -101,24 +102,38 @@ namespace PianoRoll.Control
         public void DrawInit()
         {
             lastPosition = Settings.Resolution * Project.BeatPerBar * minBars;
-            Resize();
-            DrawGrid();
+            DrawPart();
             CreatePiano();
-            CreateBackgroundCanvas();
             lastPosition = 0;
         }
 
         public void DrawNotes()
         {
             if (Part == null) return;
-            Clear();
 
+            var i = 0;
             foreach (var note in Part.Notes)
             {
-                NoteControl noteControl = MakeNote(note.NoteNum, note.AbsoluteTime, note.Length);
+                NoteControl noteControl;
+                if (i < NoteControls.Count)
+                    noteControl = NoteControls[i];
+                else
+                {
+                    noteControl = new NoteControl(this);
+                    NoteCanvas.Children.Add(noteControl);
+                    NoteControls.Add(noteControl);
+                }
+                MakeNote(noteControl, note.NoteNum, note.AbsoluteTime, note.Length);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
                 note.NoteControl = noteControl;
-                NoteCanvas.Children.Add(noteControl);
+
+                i++;
+            }
+
+            while (i < NoteControls.Count)
+            {
+                NoteCanvas.Children.Remove(NoteControls[i]);
+                NoteControls.RemoveAt(i);
             }
         }
 
@@ -237,16 +252,14 @@ namespace PianoRoll.Control
             return pitchSource;
         }
 
-        private NoteControl MakeNote(int noteNumber, long startTime, int duration)
+        private void MakeNote(NoteControl noteControl, int noteNumber, long startTime, int duration)
         {
-            var noteControl = new NoteControl(this);
             var top = MusicMath.GetNoteYPosition(noteNumber);
             var left = MusicMath.GetNoteXPosition(startTime);
             noteControl.Width = duration * xScale;
             noteControl.grid.RowDefinitions[1].Height = new GridLength(yScale);
             noteControl.SetValue(Canvas.TopProperty, top);
             noteControl.SetValue(Canvas.LeftProperty, left);
-            return noteControl;
         }
 
         private void CreateBackgroundCanvas()
@@ -423,13 +436,15 @@ namespace PianoRoll.Control
         private void ZoomUpButton_Click(object sender, RoutedEventArgs e)
         {
             xScale = xScale * 2;
-            Draw();
+            DrawNotes();
+            DrawPart();
         }
 
         private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
         {
             xScale = xScale / 2;
-            Draw();
+            DrawNotes();
+            DrawPart();
         }
     }
 }
