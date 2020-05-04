@@ -49,6 +49,8 @@ namespace PianoRoll.Model
         private VibratoExpression vibrato;
         private string phonemes;
 
+        public bool IsRender;
+
         public Part Part;
 
         public dynamic Length
@@ -148,6 +150,11 @@ namespace PianoRoll.Model
             PitchBend = new PitchBendExpression();
         }
 
+        public override string ToString()
+        {
+            return $"{Lyric} [{Phonemes}] {{{Phoneme?.Alias}}}";
+        }
+
         public Note(Part part)
         {
             Part = part;
@@ -162,8 +169,8 @@ namespace PianoRoll.Model
         public void NewLyric(string lyric)
         {
             Lyric = lyric;
-            if (HasPhoneme)
-                NoteControl.SetText(Lyric, Phoneme.Alias);
+            if (Phonemes != string.Empty)
+                NoteControl.SetText(Lyric, Phonemes);
             else
                 NoteControl.SetText(Lyric);
         }
@@ -180,7 +187,8 @@ namespace PianoRoll.Model
         public void Trim()
         {
             var next = GetNext();
-            if (next != null && Length > next.AbsoluteTime - AbsoluteTime) Length = next.AbsoluteTime - AbsoluteTime;
+            if (next != null && Length > next.AbsoluteTime - AbsoluteTime)
+                Length = next.AbsoluteTime - AbsoluteTime;
         }
 
         public void Delete()
@@ -201,16 +209,17 @@ namespace PianoRoll.Model
         public void RecalculatePreOvl()
         {
             var notePrev = Part.GetPrevNote(this);
+            var phoneme = HasPhoneme ? Phoneme : DefaultPhoneme;
             Pre = HasPhoneme ? Phoneme.Preutter : 30;
             Ovl = HasPhoneme ? Phoneme.Overlap : 30;
             Stp = 0;
             double length = MusicMath.TickToMillisecond(Length);
             if (notePrev != null && MusicMath.TickToMillisecond(Length) / 2 < Pre - Ovl)
             {
-                Pre = Phoneme.Preutter / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
-                Ovl = Phoneme.Overlap / (Phoneme.Preutter - Phoneme.Overlap) * (length / 2);
-                Stp = Phoneme.Preutter - Pre;
-                if (Pre > Phoneme.Preutter || Ovl > Phoneme.Overlap)
+                Pre = phoneme.Preutter / (phoneme.Preutter - phoneme.Overlap) * (length / 2);
+                Ovl = phoneme.Overlap / (phoneme.Preutter - phoneme.Overlap) * (length / 2);
+                Stp = phoneme.Preutter - Pre;
+                if (Pre > phoneme.Preutter || Ovl > phoneme.Overlap)
                     throw new Exception("Да еб вашу мать");
             }
         }

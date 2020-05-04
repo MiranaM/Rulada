@@ -30,7 +30,8 @@ namespace PianoRoll.Model
         public static void Send(Part part)
         {
             OnRenderComplited += OnRenderCompleted_Render;
-            Part = part;
+            part.BuildRenderPart();
+            Part = part.RenderPart;
             position = 0;
             Part.Recalculate();
             Part.BuildPitch();
@@ -115,8 +116,10 @@ namespace PianoRoll.Model
 
         public static void Stop()
         {
-            if (player != null) player.Stop();
-            if (output != null) output.Close();
+            if (player != null)
+                player.Stop();
+            if (output != null)
+                output.Close();
             position = 0;
         }
 
@@ -129,7 +132,8 @@ namespace PianoRoll.Model
                 player.Stop();
             }
 
-            if (output != null) output.Close();
+            if (output != null)
+                output.Close();
         }
 
         public static int[] TakeEach(int[] array, int each)
@@ -145,16 +149,24 @@ namespace PianoRoll.Model
 
         public static void SendToResampler(Note note, string tempfilename)
         {
-            var Part = Project.Current.Tracks[0].Parts[0];
-
             var pitchBase64 = Base64.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.SkipOnRender));
-            var phoneme = note.Phoneme != null? note.Phoneme : note.Lyric != null ? note.Lyric : Settings.DefaultLyric;
+            var phoneme = note.HasPhoneme? note.Phoneme : note.DefaultPhoneme;
             string request = string.Format(
-                "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n",
-                Settings.Resampler, Path.Combine(Part.Track.Singer.Dir, phoneme.File), tempfilename,
-                MusicMath.NoteNum2String(note.NoteNum - 12), note.Velocity, Part.Flags + note.Flags, phoneme.Offset,
-                (int) note.RequiredLength, phoneme.Consonant, phoneme.Cutoff, note.Intensity, note.Modulation,
-                note.NoteNum, pitchBase64);
+                "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n\r\n",
+                Settings.Resampler, 
+                Path.Combine(Part.Track.Singer.Dir, phoneme.File), 
+                tempfilename,
+                MusicMath.NoteNum2String(note.NoteNum - 12), 
+                note.Velocity, 
+                Part.Flags + note.Flags, 
+                phoneme.Offset,
+                (int) note.RequiredLength, 
+                phoneme.Consonant, 
+                phoneme.Cutoff, 
+                note.Intensity, 
+                note.Modulation,
+                note.NoteNum, 
+                pitchBase64);
             File.AppendAllText(Settings.Bat, request);
         }
 
@@ -175,11 +187,20 @@ namespace PianoRoll.Model
 
             var sign = offset >= 0 ? "+" : "-";
             var length = $"{note.Length}@{Project.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
-            string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", note.Stp, // STP,
+            string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", 
+                note.Stp, // STP,
                 length, //note.RequiredLength, 
-                note.Envelope.p1, note.Envelope.p2, note.Envelope.p3, note.Envelope.v1, note.Envelope.v2,
-                note.Envelope.v3, note.Envelope.v4, note.Ovl, //note.Phoneme.Overlap,
-                note.Envelope.p4, note.Envelope.p5, note.Envelope.v5);
+                note.Envelope.p1, 
+                note.Envelope.p2, 
+                note.Envelope.p3, 
+                note.Envelope.v1, 
+                note.Envelope.v2,
+                note.Envelope.v3,
+                note.Envelope.v4, 
+                note.Ovl, //note.Phoneme.Overlap,
+                note.Envelope.p4, 
+                note.Envelope.p5, 
+                note.Envelope.v5);
             var request = $"\"{Settings.AppendTool}\" \"{Settings.Output}\" \"{filename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);
         }

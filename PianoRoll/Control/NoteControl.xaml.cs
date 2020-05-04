@@ -67,7 +67,7 @@ namespace PianoRoll.Control
         public void SetText(string lyric, string phoneme)
         {
             Lyric.Content = lyric;
-            Phoneme.Content = phoneme;
+            Phoneme.Content = $"[{phoneme}]";
             EditLyric.Text = lyric;
             ThumbMove.IsEnabled = true;
         }
@@ -75,7 +75,16 @@ namespace PianoRoll.Control
         private void ConfirmLyric()
         {
             EditLyric.Visibility = Visibility.Hidden;
-            note.NewLyric(EditLyric.Text);
+            var texts = EditLyric.Text.Split(' ');
+            var noteToSet = note;
+            var i = 0;
+            while (noteToSet != null && i < texts.Length)
+            {
+                noteToSet.NewLyric(texts[i]);
+                i++;
+                noteToSet = noteToSet.GetNext();
+            }
+            // possible BUG: need OnNoteChanged on all of them?
             OnNoteChanged();
         }
 
@@ -99,7 +108,6 @@ namespace PianoRoll.Control
             DragCompletedEventArgs e)
         {
             note.Length = Width / PartEditor.xScale;
-            Mouse.OverrideCursor = Cursors.Arrow;
             OnNoteChanged();
         }
 
@@ -107,14 +115,12 @@ namespace PianoRoll.Control
             DragStartedEventArgs e)
         {
             WidthInit = Width;
-            Mouse.OverrideCursor = Cursors.SizeWE;
         }
 
         private void ThumbResizeRight_DragCompleted(object sender,
             DragCompletedEventArgs e)
         {
             note.Length = Width / PartEditor.xScale;
-            Mouse.OverrideCursor = Cursors.Arrow;
             OnNoteChanged();
         }
 
@@ -127,7 +133,6 @@ namespace PianoRoll.Control
             DragStartedEventArgs e)
         {
             WidthInit = Width;
-            Mouse.OverrideCursor = Cursors.SizeWE;
         }
 
         private void ThumbMove_DragDelta(object sender, DragDeltaEventArgs e)

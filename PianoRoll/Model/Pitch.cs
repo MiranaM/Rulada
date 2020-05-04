@@ -296,7 +296,7 @@ namespace PianoRoll.Model
         {
             var prevNote = note.IsConnectedLeft() ? note.GetPrev() : null;
             var nextNote = note.IsConnectedRight() ? note.GetNext() : null;
-            var phoneme = note.HasPhoneme ? note.Phoneme : note.DefaultPhoneme;
+            var phoneme = note.HasPhoneme && note.Phoneme != null ? note.Phoneme : note.DefaultPhoneme;
             var pps = new List<PitchPoint>();
             foreach (var pp in note.PitchBend.Points) pps.Add(pp);
             if (pps.Count == 0)

@@ -36,10 +36,13 @@ namespace PianoRoll.Model
             for (var i = 0; i < lyric.Length;)
             {
                 var j = lyric.Length - i;
-                while (!dict.ContainsKey(lyric.Substring(i, j)))
+                var subs = lyric.Substring(i, j);
+                while (!dict.ContainsKey(subs))
                 {
                     j--;
-                    if (j == 0) return lyric;
+                    if (j == 0)
+                        return lyric;
+                    subs = lyric.Substring(i, j);
                 }
 
                 var phs = dict[lyric.Substring(i, j)];

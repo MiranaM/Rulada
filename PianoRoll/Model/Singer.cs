@@ -50,6 +50,29 @@ namespace PianoRoll.Model
             return singer;
         }
 
+        public bool IsVowel(string phoneme)
+        {
+            // TODO: do right way
+            return
+                phoneme == "a" ||
+                phoneme == "e" ||
+                phoneme == "i" ||
+                phoneme == "o" ||
+                phoneme == "u";
+        }
+
+        public double GetConsonantLength(string phoneme)
+        {
+            // TODO: do right way
+            return 60;
+        }
+
+        public double GetRestLength(string phoneme)
+        {
+            // TODO: do right way
+            return 60;
+        }
+
         private Singer(string dir)
         {
             Dir = dir;

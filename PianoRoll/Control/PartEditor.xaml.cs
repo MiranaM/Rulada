@@ -367,7 +367,6 @@ namespace PianoRoll.Control
                 label.Content = noteName;
                 label.Foreground = Schemes.pianoNoteNames;
                 label.SetValue(Canvas.TopProperty, MusicMath.GetNoteYPosition(note) - 6);
-                Console.WriteLine(label.Content);
                 Piano.Children.Add(label);
                 // label.SetValue(Canvas.LeftProperty, 12);
             }
