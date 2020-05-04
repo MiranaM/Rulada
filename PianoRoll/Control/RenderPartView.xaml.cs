@@ -47,7 +47,7 @@ namespace PianoRoll.Control
             CreateBackgroundCanvas();
             DrawGrid();
             DrawNotes();
-            //DrawPartPitch();
+            DrawPitch();
         }
 
         public void Resize()
@@ -64,8 +64,8 @@ namespace PianoRoll.Control
             foreach (var note in Part.Notes)
             {
                 if (!note.HasPhoneme) continue;
-                var x0 = (double)note.NoteControl.GetValue(Canvas.LeftProperty);
-                var y0 = (double)note.NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+                var x0 = MusicMath.Current.GetNoteXPosition(note.AbsoluteTime);
+                var y0 = MusicMath.Current.GetNoteYPosition(note.NoteNum) + Settings.Current.yScale / 2;
                 var pitchSource = GetPitchSource(note, x0, y0);
                 DrawPitchPath(pitchSource, x0, y0, i);
                 var points = GetPitchPoints(note.PitchBend.Points, x0, y0, i);
@@ -75,13 +75,16 @@ namespace PianoRoll.Control
             }
         }
 
+        /// <summary>
+        /// mode1 pitch. Not what you need. Goto DrawPitchPart
+        /// </summary>
         public void DrawPartPitch()
         {
             PitchOff();
             Part.BuildPartPitch();
             var i = 0;
-            var x0 = (double)Part.Notes[i].NoteControl.GetValue(Canvas.LeftProperty);
-            var y0 = (double)Part.Notes[i].NoteControl.GetValue(Canvas.TopProperty) + yScale / 2;
+            var x0 = MusicMath.Current.GetNoteXPosition(Part.Notes[i].AbsoluteTime);
+            var y0 = MusicMath.Current.GetNoteYPosition(Part.Notes[i].NoteNum) + Settings.Current.yScale / 2;
             var pitchSource = GetPitchSource(Part, x0, y0);
             DrawPitchPath(pitchSource, x0, y0);
             foreach (var ellipse in GetPitchPoints(Part.PitchBend.Points, x0, y0))
@@ -316,7 +319,6 @@ namespace PianoRoll.Control
                 label.Foreground = Schemes.Current.pianoNoteNames;
                 label.SetValue(Canvas.TopProperty, MusicMath.Current.GetNoteYPosition(note) - 6);
                 Piano.Children.Add(label);
-                // label.SetValue(Canvas.LeftProperty, 12);
             }
 
             for (var note = 0; note < Settings.Current.Octaves * 12 - 1; note++)

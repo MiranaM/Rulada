@@ -66,7 +66,7 @@ namespace PianoRoll.Model
 
         public void BuildPartPitch()
         {
-            //Pitch.BuildPitchData(PitchBend);
+            //Pitch.Current.BuildPitchData(PitchBend);
         }
 
         public void RefreshPhonemes()
