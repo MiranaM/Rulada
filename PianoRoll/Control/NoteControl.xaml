@@ -61,7 +61,7 @@
                    Grid.Column="0"
                    Grid.Row="1"
                    HorizontalAlignment="Stretch"
-                   Cursor="SizeWE"
+                   Cursor="Cross"
                    VerticalAlignment="Stretch"
                    DragCompleted="ThumbResizeLeft_DragCompleted"
                    DragDelta="ThumbResizeLeft_DragDelta"
