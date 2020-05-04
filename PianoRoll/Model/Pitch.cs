@@ -288,7 +288,7 @@ namespace PianoRoll.Model
         #endregion
 
 
-        private static double InterpolateVibrato(VibratoExpression vibrato, double posMs, long noteLength)
+        private double InterpolateVibrato(VibratoExpression vibrato, double posMs, long noteLength)
         {
             var lengthMs = vibrato.Length / 100 * MusicMath.TickToMillisecond(noteLength);
             var inMs = lengthMs * vibrato.In / 100;
@@ -303,7 +303,7 @@ namespace PianoRoll.Model
             return value;
         }
 
-        public static void BuildPitchData(Note note)
+        public void BuildPitchData(Note note)
         {
             BuildVibratoInfo(note, out var vibratoInfo, out var vibratoPrevInfo);
             var pitches = BuildVibrato(vibratoInfo, vibratoPrevInfo);
@@ -315,7 +315,7 @@ namespace PianoRoll.Model
             note.PitchBend.Array = pitches;
         }
 
-        public static void BuildPitchInfo(Note note, out PitchInfo pitchInfo)
+        public void BuildPitchInfo(Note note, out PitchInfo pitchInfo)
         {
             var prevNote = note.IsConnectedLeft() ? note.GetPrev() : null;
             var nextNote = note.IsConnectedRight() ? note.GetNext() : null;
@@ -350,7 +350,7 @@ namespace PianoRoll.Model
             pitchInfo.PitchPoints = pps.ToArray();
         }
 
-        public static void BuildVibratoInfo(Note note, out VibratoInfo vibratoInfo, out VibratoInfo vibratoPrevInfo)
+        public void BuildVibratoInfo(Note note, out VibratoInfo vibratoInfo, out VibratoInfo vibratoPrevInfo)
         {
             var prevNote = note.GetPrev();
             var nextNote = note.GetNext();
@@ -376,7 +376,7 @@ namespace PianoRoll.Model
             }
         }
 
-        public static int[] BuildPitch(PitchInfo pitchInfo)
+        public int[] BuildPitch(PitchInfo pitchInfo)
         {
             var pitches = new List<int>();
             var interv = Settings.IntervalTick;
@@ -429,7 +429,7 @@ namespace PianoRoll.Model
             return pitches.ToArray();
         }
 
-        public static int[] BuildVibrato(VibratoInfo vibratoInfo, VibratoInfo vibratoPrevInfo)
+        public int[] BuildVibrato(VibratoInfo vibratoInfo, VibratoInfo vibratoPrevInfo)
         {
             var pitches = new List<int>();
             var interv = Settings.IntervalTick;
@@ -453,7 +453,7 @@ namespace PianoRoll.Model
             return pitches.ToArray();
         }
 
-        public static int[] Interpolate(int[] pitches1, int[] pitches2, int offset = 0)
+        public int[] Interpolate(int[] pitches1, int[] pitches2, int offset = 0)
         {
             var pitches = new List<int>();
             var len = pitches1.Length > pitches2.Length + offset ? pitches1.Length : pitches2.Length;
@@ -470,7 +470,7 @@ namespace PianoRoll.Model
             return pitches.ToArray();
         }
 
-        public static void AveragePitch(Note note, Note noteNext)
+        public void AveragePitch(Note note, Note noteNext)
         {
             if (!note.IsConnectedRight()) return;
             BuildPitchInfo(note, out var pitchInfo);
