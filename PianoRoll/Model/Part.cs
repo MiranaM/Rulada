@@ -58,7 +58,7 @@ namespace PianoRoll.Model
         public void BuildPitch()
         {
             foreach (var note in Notes)
-                Pitch.BuildPitchData(note);
+                Pitch.Current.BuildPitchData(note);
             AveragePitch();
             PitchTrimStart();
             PitchTrimEnd();
@@ -300,7 +300,7 @@ namespace PianoRoll.Model
                 var note = Notes[i];
                 var noteNext = Notes[i + 1];
                 if (note.PitchBend == null || noteNext.PitchBend == null) continue;
-                Pitch.AveragePitch(note, noteNext);
+                Pitch.Current.AveragePitch(note, noteNext);
             }
         }
 

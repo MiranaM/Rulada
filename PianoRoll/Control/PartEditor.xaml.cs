@@ -248,7 +248,7 @@ namespace PianoRoll.Control
         {
             var c = yScale;
             var pitchData = note.PitchBend.Array;
-            Pitch.BuildPitchInfo(note, out var pitchInfo);
+            Pitch.Current.BuildPitchInfo(note, out var pitchInfo);
             // double val = pitchInfo.Start;
             var val = -note.Phoneme.Preutter;
             var xP = MusicMath.MillisecondToTick(val) * xScale;

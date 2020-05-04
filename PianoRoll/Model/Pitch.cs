@@ -263,8 +263,31 @@ namespace PianoRoll.Model
         o
     }
 
-    public static class Pitch
+    public class Pitch
     {
+        #region singleton base
+
+        private static Pitch current;
+        private Pitch()
+        {
+
+        }
+
+        public static Pitch Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    current = new Pitch();
+                }
+                return current;
+            }
+        }
+
+        #endregion
+
+
         private static double InterpolateVibrato(VibratoExpression vibrato, double posMs, long noteLength)
         {
             var lengthMs = vibrato.Length / 100 * MusicMath.TickToMillisecond(noteLength);
