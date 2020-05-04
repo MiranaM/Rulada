@@ -347,17 +347,18 @@ namespace PianoRoll.Model
 
         private void SetVibrato(string vbr)
         {
+            var cultureInfo = new CultureInfo("ja-JP");
             var value = vbr.Split(',');
             var vibrato = new VibratoExpression();
             if (value.Count() >= 7)
             {
-                vibrato.Length = double.Parse(value[0], new CultureInfo("ja-JP"));
-                vibrato.Period = double.Parse(value[1], new CultureInfo("ja-JP"));
-                vibrato.Depth = double.Parse(value[2], new CultureInfo("ja-JP"));
-                vibrato.In = double.Parse(value[3], new CultureInfo("ja-JP"));
-                vibrato.Out = double.Parse(value[4], new CultureInfo("ja-JP"));
-                vibrato.Shift = double.Parse(value[5], new CultureInfo("ja-JP"));
-                vibrato.Drift = double.Parse(value[6], new CultureInfo("ja-JP"));
+                vibrato.Length = double.Parse(value[0], cultureInfo);
+                vibrato.Period = double.Parse(value[1], cultureInfo);
+                vibrato.Depth  = double.Parse(value[2], cultureInfo);
+                vibrato.In     = double.Parse(value[3], cultureInfo);
+                vibrato.Out    = double.Parse(value[4], cultureInfo);
+                vibrato.Shift  = double.Parse(value[5], cultureInfo);
+                vibrato.Drift  = double.Parse(value[6], cultureInfo);
             }
 
             this.vibrato = vibrato;
