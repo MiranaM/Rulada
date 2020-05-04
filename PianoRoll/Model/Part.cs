@@ -19,7 +19,6 @@ namespace PianoRoll.Model
         public string Flags = "DP0";
         public List<Note> Notes;
         public Track Track;
-        public PartControl PartControl;
         public PitchBendExpression PitchBend;
         public bool IsRender;
 
