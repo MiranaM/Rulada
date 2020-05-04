@@ -59,6 +59,8 @@ namespace PianoRoll.Model
             tempo = -1;
             singerDir = "";
             long absoluteTime = 0;
+            var culture = new CultureInfo("ja-JP");
+            var numberFormat = culture.NumberFormat;
 
             var i = 0;
             if (lines[0] == Number.Version)
@@ -103,25 +105,25 @@ namespace PianoRoll.Model
                             note.Lyric = value;
                             break;
                         case "Length":
-                            note.Length = double.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            note.Length = double.Parse(value, numberFormat);
                             break;
                         case "STP":
-                            note.STP = double.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            note.STP = double.Parse(value, numberFormat);
                             break;
                         case "NoteNum":
-                            note.NoteNum = int.Parse(value, new CultureInfo("ja-JP").NumberFormat) - 12;
+                            note.NoteNum = int.Parse(value, numberFormat) - 12;
                             break;
                         case "Envelope":
                             note.Envelope = value;
                             break;
                         case "Velocity":
-                            note.Velocity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            note.Velocity = int.Parse(value, numberFormat);
                             break;
                         case "Modulation":
-                            note.Modulation = int.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            note.Modulation = int.Parse(value, numberFormat);
                             break;
                         case "Intensity":
-                            note.Intensity = int.Parse(value, new CultureInfo("ja-JP").NumberFormat);
+                            note.Intensity = int.Parse(value, numberFormat);
                             break;
                         case "Flags":
                             note.Flags = value;
