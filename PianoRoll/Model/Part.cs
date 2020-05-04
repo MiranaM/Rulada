@@ -14,11 +14,12 @@ namespace PianoRoll.Model
     public class Part
     {
         public PartTransform PartTransform;
-        public string Flags;
+        public string Flags = "DP0";
         public List<Note> Notes;
         public Track Track;
         public PartControl PartControl;
         public PitchBendExpression PitchBend;
+        public bool IsRender;
 
         public Part RenderPart;
 
@@ -93,9 +94,11 @@ namespace PianoRoll.Model
 
         public void Recalculate()
         {
-            foreach (var note in Notes) note.SubmitPosLen();
+            foreach (var note in Notes)
+                note.SubmitPosLen();
             SortNotes();
-            foreach (var note in Notes) note.Trim();
+            foreach (var note in Notes)
+                note.Trim();
             if (PartEditor.MustSnap)
             {
                 var i = 0;
@@ -121,22 +124,13 @@ namespace PianoRoll.Model
             Note prevNote = null;
             var singer = Track.Singer;
 
-            RenderPart = new Part {Track = new Track {Singer = Track.Singer}};
+            RenderPart = new Part {Track = new Track {Singer = Track.Singer}, IsRender = true};
             var notes = RenderPart.Notes;
 
             foreach (var note in Notes)
             {
-                if (prevNote != null && prevNote.AbsoluteTime + prevNote.Length < note.AbsoluteTime) // rest
-                {
-                    var last = prevNote;
-                    foreach (var phoneme in consonantsQueue)
-                    {
-                        notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, Track.Singer.GetConsonantLength(phoneme), phoneme, prevNote));
-                    }
-                    consonantsQueue.Clear();
-                    notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, singer.GetRestLength(last.Phonemes), TransitionTool.GetRest(last.Phonemes), prevNote));
+                if (ProcessRestNotesForRenderBuild(prevNote, note, consonantsQueue, notes, singer))
                     prevNote = null;
-                }
 
                 var phonemes = note.Phonemes.Split(' ');
                 var vowelIndex = -1;
@@ -188,6 +182,8 @@ namespace PianoRoll.Model
                 prevNote = note;
             }
 
+            ProcessRestNotesForRenderBuild(prevNote, null, consonantsQueue, notes, singer);
+
             foreach (var note in notes)
             {
                 var transitioned = TransitionTool.Process(note);
@@ -197,10 +193,34 @@ namespace PianoRoll.Model
 
         #region private
 
+        private bool ProcessRestNotesForRenderBuild(Note prevNote, Note note, List<string> consonantsQueue, List<Note> notes, Singer singer)
+        {
+            if (RenderPart.Notes.Count == 0)
+                return true;
+            if (prevNote != null && (note == null || prevNote.AbsoluteTime + prevNote.Length < note.AbsoluteTime))
+            {
+                var last = RenderPart.Notes[RenderPart.Notes.Count - 1];
+                foreach (var phoneme in consonantsQueue)
+                {
+                    var addedNote = CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length,
+                        Track.Singer.GetConsonantLength(phoneme), phoneme, prevNote);
+                    notes.Add(addedNote);
+                    last = addedNote;
+                }
+                consonantsQueue.Clear();
+                notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, singer.GetRestLength(last.Phonemes), TransitionTool.GetRest(last.Phonemes), prevNote));
+                return true;
+            }
+
+            return false;
+        }
+
         private Note CreateRenderNote(Part renderPart, double absoluteTime, double length, string phoneme, Note parent)
         {
-            var note = new Note(renderPart, length, phoneme);
+            var note = new Note(renderPart);
+            note.Length = length;
             note.AbsoluteTime = absoluteTime;
+            note.Phonemes = phoneme;
             note.Lyric = phoneme;
             note.IsRender = true;
             note.Intensity = parent.Intensity;

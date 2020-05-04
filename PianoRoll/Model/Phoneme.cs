@@ -19,7 +19,8 @@
                 Consonant = 0,
                 Cutoff = 0,
                 Preutter = 0,
-                Overlap = 0
+                Overlap = 0,
+                File = ""
             };
             return phoneme;
         }

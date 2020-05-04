@@ -64,13 +64,13 @@ namespace PianoRoll.Model
         public double GetConsonantLength(string phoneme)
         {
             // TODO: do right way
-            return 40;
+            return 100;
         }
 
         public double GetRestLength(string phoneme)
         {
             // TODO: do right way
-            return 30;
+            return 60;
         }
 
         private Singer(string dir)

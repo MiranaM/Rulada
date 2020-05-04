@@ -8,6 +8,7 @@
 ж	zh
 з	z
 и	i
+й	y
 к	k
 л	l
 м	m
@@ -168,21 +169,21 @@
 мъ	m
 мь	m'
 
-ня	y' a
-не	y' e
-нё	y' o
-ни	y' i
-ню	y' u
-нья	y' y a
-нье	y' y e
-ньё	y' y o
-ньи	y' y i
-нъя	y y a
-нъе	y y e
-нъё	y y o
-нъи	y y i
-нъ	y
-нь	y'
+ня	n' a
+не	n' e
+нё	n' o
+ни	n' i
+ню	n' u
+нья	n' y a
+нье	n' y e
+ньё	n' y o
+ньи	n' y i
+нъя	n y a
+нъе	n y e
+нъё	n y o
+нъи	n y i
+нъ	n
+нь	n'
 
 пя	p' a
 пе	p' e
