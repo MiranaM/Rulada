@@ -25,6 +25,11 @@
 ю	y u
 я	y a
 
+ба	b a
+бэ	b e
+бо	b o
+бы	b i
+бу	b u
 бя	b' a
 бе	b' e
 бё	b' o
@@ -41,6 +46,11 @@
 бъ	b
 бь	b'
 
+ва	v a
+вэ	v e
+во	v o
+вы	v i
+ву	v u
 вя	v' a
 ве	v' e
 вё	v' o
@@ -57,6 +67,11 @@
 въ	v
 вь	v'
 
+га	g a
+гэ	g e
+го	g o
+гы	g i
+гу	g u
 гя	g' a
 ге	g' e
 гё	g' o
@@ -73,6 +88,11 @@
 гъ	g
 гь	g'
 
+да	d a
+дэ	d e
+до	d o
+ды	d i
+ду	d u
 дя	d' a
 де	d' e
 дё	d' o
@@ -89,6 +109,11 @@
 дъ	d
 дь	d'
 
+жа	zh a
+жэ	zh e
+жо	zh o
+жы	zh i
+жу	zh u
 жя	zh a
 же	zh e
 жё	zh o
@@ -105,6 +130,11 @@
 жъ	zh
 жь	zh
 
+за	z a
+зэ	z e
+зо	z o
+зы	z i
+зу	z u
 зя	z' a
 зе	z' e
 зё	z' o
@@ -121,6 +151,11 @@
 зъ	z
 зь	z'
 
+ка	k a
+кэ	k e
+ко	k o
+кы	k i
+ку	k u
 кя	k' a
 ке	k' e
 кё	k' o
@@ -137,6 +172,11 @@
 къ	k
 кь	k'
 
+ла	l a
+лэ	l e
+ло	l o
+лы	l i
+лу	l u
 ля	l' a
 ле	l' e
 лё	l' o
@@ -153,6 +193,11 @@
 лъ	l
 ль	l'
 
+ма	m a
+мэ	m e
+мо	m o
+мы	m i
+му	m u
 мя	m' a
 ме	m' e
 мё	m' o
@@ -169,6 +214,11 @@
 мъ	m
 мь	m'
 
+на	n a
+нэ	n e
+но	n o
+ны	n i
+ну	n u
 ня	n' a
 не	n' e
 нё	n' o
@@ -185,6 +235,11 @@
 нъ	n
 нь	n'
 
+па	p a
+пэ	p e
+по	p o
+пы	p i
+пу	p u
 пя	p' a
 пе	p' e
 пё	p' o
@@ -201,6 +256,11 @@
 пъ	p
 пь	p'
 
+ра	r a
+рэ	r e
+ро	r o
+ры	r i
+ру	r u
 ря	r' a
 ре	r' e
 рё	r' o
@@ -217,6 +277,11 @@
 ръ	r
 рь	r'
 
+са	s a
+сэ	s e
+со	s o
+сы	s i
+су	s u
 ся	s' a
 се	s' e
 сё	s' o
@@ -233,6 +298,11 @@
 съ	s
 сь	s'
 
+та	t a
+тэ	t e
+то	t o
+ты	t i
+ту	t u
 тя	t' a
 те	t' e
 тё	t' o
@@ -249,6 +319,11 @@
 тъ	t
 ть	t'
 
+фа	f a
+фэ	f e
+фо	f o
+фы	f i
+фу	f u
 фя	f' a
 фе	f' e
 фё	f' o
@@ -265,6 +340,11 @@
 фъ	f
 фь	f'
 
+ха	h a
+хэ	h e
+хо	h o
+хы	h i
+ху	h u
 хя	h' a
 хе	h' e
 хё	h' o
@@ -281,6 +361,11 @@
 хъ	h
 хь	h'
 
+ца	ts a
+цэ	ts e
+цо	ts o
+цы	ts i
+цу	ts u
 ця	ts a
 це	ts e
 цё	ts o
@@ -297,6 +382,11 @@
 цъ	ts
 ць	ts
 
+ча	ch a
+чэ	ch e
+чо	ch o
+чы	ch i
+чу	ch u
 чя	ch a
 че	ch e
 чё	ch o
@@ -313,6 +403,11 @@
 чъ	ch
 чь	ch
 
+ша	sh a
+шэ	sh e
+шо	sh o
+шы	sh i
+шу	sh u
 шя	sh a
 ше	sh e
 шё	sh o
@@ -329,6 +424,11 @@
 шъ	sh
 шь	sh
 
+ща	sh' a
+щэ	sh' e
+що	sh' o
+щы	sh' i
+щу	sh' u
 щя	sh' a
 ще	sh' e
 щё	sh' o
