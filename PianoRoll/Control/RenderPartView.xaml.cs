@@ -30,15 +30,14 @@ namespace PianoRoll.Control
         {
             minWidth = minBars * Project.BeatPerBar * Settings.Resolution;
             InitializeComponent();
-            DrawInit();
-            DrawNotes();
+            CreatePiano();
         }
 
-        public void DrawInit()
+        public void SetPart(Part part)
         {
+            Part = part;
             lastPosition = Settings.Resolution * Project.BeatPerBar * minBars;
             DrawPart();
-            CreatePiano();
             lastPosition = 0;
         }
 
@@ -47,6 +46,8 @@ namespace PianoRoll.Control
             Resize();
             CreateBackgroundCanvas();
             DrawGrid();
+            DrawNotes();
+            //DrawPartPitch();
         }
 
         public void Resize()
@@ -179,6 +180,9 @@ namespace PianoRoll.Control
 
         private void CreateBackgroundCanvas()
         {
+            var brush1 = new SolidColorBrush(Color.FromRgb(192, 199, 187));
+            var brush2 = new SolidColorBrush(Color.FromRgb(232, 237, 228));
+            var brush3 = new SolidColorBrush(Color.FromRgb(218, 222, 215));
             for (var note = 0; note < Settings.Octaves * 12; note++)
                 if (note % 12 == 1 // C#
                     || note % 12 == 3 // E#
@@ -189,7 +193,7 @@ namespace PianoRoll.Control
                     var rect = new Rectangle();
                     rect.Height = yScale;
                     rect.Width = RootCanvas.Width;
-                    rect.Fill = Schemes.blackNoteChannelBrush;
+                    rect.Fill = brush3;
                     rect.SetValue(Canvas.TopProperty, MusicMath.GetNoteYPosition(note));
                     NoteBackgroundCanvas.Children.Add(rect);
                 }
@@ -201,7 +205,8 @@ namespace PianoRoll.Control
                 line.X2 = RootCanvas.Width;
                 line.Y1 = MusicMath.GetNoteYPosition(note);
                 line.Y2 = MusicMath.GetNoteYPosition(note);
-                line.Stroke = Schemes.noteSeparatorBrush;
+                line.Fill = brush2;
+                line.Stroke = brush1;
                 NoteBackgroundCanvas.Children.Add(line);
             }
         }

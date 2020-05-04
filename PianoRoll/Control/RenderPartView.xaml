@@ -57,13 +57,6 @@
                 </Canvas>
             </Grid>
         </ScrollViewer>
-        <Rectangle
-            Grid.Column="0"
-            Grid.ColumnSpan="2"
-            Width="Auto"
-            Margin="0"
-            Fill="#FF001122"
-            Stroke="Black" />
         <Button x:Name="ZoomUpButton"
                 Content="+"
                 Grid.Column="1"

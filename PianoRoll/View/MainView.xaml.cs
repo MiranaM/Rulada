@@ -307,5 +307,20 @@ namespace PianoRoll.View
         private void MenuItemExportAudio_Click(object sender, RoutedEventArgs e)
         {
         }
+
+        private void ShowRenderPartButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            if (RenderPartView.Visibility == Visibility.Collapsed && PartEditor.Part.RenderPart != null)
+            {
+                RenderPartView.SetPart(PartEditor.Part.RenderPart);
+                RenderPartView.Visibility = Visibility.Visible;
+                PartEditor.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                PartEditor.Visibility = Visibility.Visible;
+                RenderPartView.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 }
