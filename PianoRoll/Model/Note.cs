@@ -121,7 +121,7 @@ namespace PianoRoll.Model
 
         public Phoneme Phoneme { get; set; }
 
-        public Phoneme DefaultPhoneme => Phoneme.GetDefault(Lyric);
+        public Phoneme DefaultPhoneme => GetDefaultPhoneme(Lyric);
 
         public string Phonemes { get; set; }
 
@@ -376,6 +376,21 @@ namespace PianoRoll.Model
             noteControl.note = this;
             this.noteControl = noteControl;
             NewLyric(Lyric);
+        }
+
+        private Phoneme GetDefaultPhoneme(string alias = "")
+        {
+            var phoneme = new Phoneme
+            {
+                Alias = alias,
+                Offset = 0,
+                Consonant = 0,
+                Cutoff = 0,
+                Preutter = 0,
+                Overlap = 0,
+                File = ""
+            };
+            return phoneme;
         }
 
         #endregion
