@@ -10,25 +10,47 @@ using PianoRoll.Util;
 
 namespace PianoRoll.Model
 {
-    public static class Render
+    public class Render
     {
-        private static WaveChannel32 waveChannel;
-        private static WaveOutEvent player;
-        private static WaveStream output;
-        private static Process bat;
-        private static long position;
-        private static Part Part;
-        private static bool IsPlaying;
+        #region singleton base
 
-        public static long PlayerPosition => output.Position;
+        private static Render current;
+        private Render()
+        {
 
-        public static long PlayerLength => output.Length;
+        }
+
+        public static Render Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    current = new Render();
+                }
+                return current;
+            }
+        }
+
+        #endregion
+
+        private WaveChannel32 waveChannel;
+        private WaveOutEvent player;
+        private WaveStream output;
+        private Process bat;
+        private long position;
+        private Part Part;
+        private bool IsPlaying;
+
+        public long PlayerPosition => output.Position;
+
+        public long PlayerLength => output.Length;
 
         public delegate void RenderCompletedHandler();
 
-        public static event RenderCompletedHandler OnRenderComplited;
+        public event RenderCompletedHandler OnRenderComplited;
 
-        public static void Send(Part part)
+        public void Send(Part part)
         {
             OnRenderComplited += OnRenderCompleted_Render;
             part.BuildRenderPart();
@@ -38,21 +60,21 @@ namespace PianoRoll.Model
             Part.BuildPitch();
             if (output != null)
                 output.Close();
-            if (File.Exists(Settings.Output)) File.Delete(Settings.Output);
-            if (File.Exists(Settings.Output + ".dat"))
-                File.Delete(Settings.Output + ".dat");
-            if (File.Exists(Settings.Output + ".whd"))
-                File.Delete(Settings.Output + ".whd");
+            if (File.Exists(Settings.Current.Output)) File.Delete(Settings.Current.Output);
+            if (File.Exists(Settings.Current.Output + ".dat"))
+                File.Delete(Settings.Current.Output + ".dat");
+            if (File.Exists(Settings.Current.Output + ".whd"))
+                File.Delete(Settings.Current.Output + ".whd");
 
-            if (!File.Exists(Settings.Bat)) File.Create(Settings.Bat);
-            var delcommand = $"del \"{Settings.CacheFolder}\\*.wav\"\r\n";
-            File.WriteAllText(Settings.Bat, delcommand);
+            if (!File.Exists(Settings.Current.Bat)) File.Create(Settings.Current.Bat);
+            var delcommand = $"del \"{Settings.Current.CacheFolder}\\*.wav\"\r\n";
+            File.WriteAllText(Settings.Current.Bat, delcommand);
             var i = 1;
             long renderPosition = 0;
             foreach (var note in Part.Notes)
             {
                 var phoneme = note.HasPhoneme ? note.Phoneme : note.DefaultPhoneme;
-                var tempfilename = Path.Combine(Settings.CacheFolder, $"{i}");
+                var tempfilename = Path.Combine(Settings.Current.CacheFolder, $"{i}");
                 tempfilename += $"_{phoneme.Alias}_{note.NoteNum}_{note.Length}.wav";
                 // Send Rest
                 if (note.AbsoluteTime > renderPosition)
@@ -69,29 +91,29 @@ namespace PianoRoll.Model
                 i++;
             }
 
-            File.AppendAllText(Settings.Bat,
-                $"@if not exist \"{Settings.Output}.whd\" goto E \r\n" +
-                $"@if not exist \"{Settings.Output}.dat\" goto E \r\n" +
-                $"copy /Y \"{Settings.Output}.whd\" /B + \"{Settings.Output}.dat\" /B \"{Settings.Output}\" \r\n" +
-                $"del \"{Settings.Output}.whd\" \r\n" + $"del \"{Settings.Output}.dat\" \r\n" + ":E");
+            File.AppendAllText(Settings.Current.Bat,
+                $"@if not exist \"{Settings.Current.Output}.whd\" goto E \r\n" +
+                $"@if not exist \"{Settings.Current.Output}.dat\" goto E \r\n" +
+                $"copy /Y \"{Settings.Current.Output}.whd\" /B + \"{Settings.Current.Output}.dat\" /B \"{Settings.Current.Output}\" \r\n" +
+                $"del \"{Settings.Current.Output}.whd\" \r\n" + $"del \"{Settings.Current.Output}.dat\" \r\n" + ":E");
             Process();
         }
 
-        private static void OnRenderCompleted_Render()
+        private void OnRenderCompleted_Render()
         {
         }
 
-        private static async void Process()
+        private async void Process()
         {
             bat = new Process();
-            bat.StartInfo.FileName = Settings.Bat;
-            bat.StartInfo.WorkingDirectory = Settings.CacheFolder;
+            bat.StartInfo.FileName = Settings.Current.Bat;
+            bat.StartInfo.WorkingDirectory = Settings.Current.CacheFolder;
             bat.EnableRaisingEvents = true;
             bat.Exited += OnExited;
             await ProcessStart();
         }
 
-        private static Task<bool> ProcessStart()
+        private Task<bool> ProcessStart()
         {
             return Task.Run(() =>
             {
@@ -100,15 +122,15 @@ namespace PianoRoll.Model
             });
         }
 
-        public static void OnExited(object sender, EventArgs e)
+        public void OnExited(object sender, EventArgs e)
         {
-            if (!File.Exists(Settings.Output)) return;
-            output = new WaveFileReader(Settings.Output);
+            if (!File.Exists(Settings.Current.Output)) return;
+            output = new WaveFileReader(Settings.Current.Output);
             output.Position = position;
             Play();
         }
 
-        public static void Play()
+        public void Play()
         {
             if (IsPlaying) Stop();
             IsPlaying = true;
@@ -119,7 +141,7 @@ namespace PianoRoll.Model
             player.Play();
         }
 
-        public static void Stop()
+        public void Stop()
         {
             if (player != null)
                 player.Stop();
@@ -128,7 +150,7 @@ namespace PianoRoll.Model
             position = 0;
         }
 
-        public static void Pause()
+        public void Pause()
         {
             IsPlaying = false;
             if (player != null)
@@ -141,7 +163,7 @@ namespace PianoRoll.Model
                 output.Close();
         }
 
-        public static int[] TakeEach(int[] array, int each)
+        public int[] TakeEach(int[] array, int each)
         {
             IsPlaying = false;
             var list = new List<int>();
@@ -152,16 +174,16 @@ namespace PianoRoll.Model
             return list.ToArray();
         }
 
-        public static void SendToResampler(Note note, string tempFilename)
+        public void SendToResampler(Note note, string tempFilename)
         {
-            var pitchBase64 = Base64.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.SkipOnRender));
+            var pitchBase64 = Base64.Current.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.Current.SkipOnRender));
             var phoneme = note.HasPhoneme? note.Phoneme : note.DefaultPhoneme;
             string request = string.Format(
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n\r\n",
-                Settings.Resampler, 
+                Settings.Current.Resampler, 
                 Path.Combine(Part.Track.Singer.Dir, phoneme.File), 
                 tempFilename,
-                MusicMath.NoteNum2String(note.NoteNum - 12), 
+                MusicMath.Current.NoteNum2String(note.NoteNum - 12), 
                 note.Velocity, 
                 Part.Flags + note.Flags, 
                 phoneme.Offset,
@@ -172,13 +194,13 @@ namespace PianoRoll.Model
                 note.Modulation,
                 note.NoteNum, 
                 pitchBase64);
-            File.AppendAllText(Settings.Bat, request);
+            File.AppendAllText(Settings.Current.Bat, request);
         }
 
         /// <summary>
         ///     Send Note to AppendTool
         /// </summary>
-        public static void SendToAppendTool(Note note, string filename)
+        public void SendToAppendTool(Note note, string filename)
         {
             var next = Part.GetNextNote(note);
             var offset = note.Pre;
@@ -190,7 +212,7 @@ namespace PianoRoll.Model
 
             var envelope = new Envelope(note);
             var sign = offset >= 0 ? "+" : "-";
-            var length = $"{note.Length}@{Project.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
+            var length = $"{note.Length}@{Settings.Current.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
             string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", 
                 note.Stp, // STP,
                 length, //note.RequiredLength, 
@@ -205,20 +227,20 @@ namespace PianoRoll.Model
                 envelope.p4, 
                 envelope.p5, 
                 envelope.v5);
-            var request = $"\"{Settings.AppendTool}\" \"{Settings.Output}\" \"{filename}\" {ops} \r\n";
-            File.AppendAllText(Settings.Bat, request);
+            var request = $"\"{Settings.Current.AppendTool}\" \"{Settings.Current.Output}\" \"{filename}\" {ops} \r\n";
+            File.AppendAllText(Settings.Current.Bat, request);
         }
 
         /// <summary>
         ///     Send Pause to AppendTool
         /// </summary>
-        public static void SendToAppendTool(long duration, string filename)
+        public void SendToAppendTool(long duration, string filename)
         {
             //var Part = Project.Current.Tracks[0].Parts[0];
-            var length = $"{duration}@{Project.Tempo}+0";
+            var length = $"{duration}@{Settings.Current.Tempo}+0";
             var ops = $"0 {length} 0 0";
-            var request = $"\"{Settings.AppendTool}\" \"{Settings.Output}\" \"{filename}\" {ops}\r\n";
-            File.AppendAllText(Settings.Bat, request);
+            var request = $"\"{Settings.Current.AppendTool}\" \"{Settings.Current.Output}\" \"{filename}\" {ops}\r\n";
+            File.AppendAllText(Settings.Current.Bat, request);
         }
     }
 }

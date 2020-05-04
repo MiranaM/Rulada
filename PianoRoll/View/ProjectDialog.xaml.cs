@@ -13,14 +13,18 @@ namespace PianoRoll.View
         {
             InitializeComponent();
 
-            InitSingers();
+        }
+
+        public void Init(SingerManager singerManager)
+        {
+            InitSingers(singerManager);
             InitTitle();
         }
 
-        public void InitSingers()
+        public void InitSingers(SingerManager singerManager)
         {
             SingersList.Items.Clear();
-            foreach (var sing in Project.Current.SingerNames)
+            foreach (var sing in singerManager.SingerNames)
             {
                 var item = new ListViewItem();
                 item.Content = sing;

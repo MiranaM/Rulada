@@ -39,7 +39,7 @@ namespace PianoRoll.Control
         {
             PartEditor = partEditor;
             InitializeComponent();
-            minheight = PartEditor.yScale;
+            minheight = Settings.Current.yScale;
             OnNoteChanged += OnNoteChanged_Note;
         }
 
@@ -140,7 +140,7 @@ namespace PianoRoll.Control
         private void ThumbResizeLeft_DragCompleted(object sender,
             DragCompletedEventArgs e)
         {
-            note.Length = Width / PartEditor.xScale;
+            note.Length = Width / Settings.Current.xScale;
             OnNoteChanged();
         }
 
@@ -153,7 +153,7 @@ namespace PianoRoll.Control
         private void ThumbResizeRight_DragCompleted(object sender,
             DragCompletedEventArgs e)
         {
-            note.Length = Width / PartEditor.xScale;
+            note.Length = Width / Settings.Current.xScale;
             OnNoteChanged();
         }
 
@@ -189,8 +189,8 @@ namespace PianoRoll.Control
         {
             var x = Canvas.GetLeft(this) + currentMousePosition.X;
             var y = Canvas.GetTop(this) + currentMousePosition.Y;
-            double time = MusicMath.GetNoteXPosition(note.AbsoluteTime);
-            note.Length = MusicMath.GetAbsoluteTime(x - time);
+            double time = MusicMath.Current.GetNoteXPosition(note.AbsoluteTime);
+            note.Length = MusicMath.Current.GetAbsoluteTime(x - time);
             PartEditor.AddNote(x, y);
             // OnNoteChanged is already called in "add note"
         }

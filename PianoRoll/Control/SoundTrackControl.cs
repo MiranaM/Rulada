@@ -39,7 +39,7 @@ namespace PianoRoll.Control
 
         private void CreateContent(double y, double w, double h)
         {
-            Content = new Rectangle {Height = h, Width = w, Fill = Schemes.black};
+            Content = new Rectangle {Height = h, Width = w, Fill = Schemes.Current.black };
             Content.SetValue(Canvas.TopProperty, y);
             Content.SetValue(Canvas.LeftProperty, 5.0);
         }

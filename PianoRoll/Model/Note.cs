@@ -35,7 +35,7 @@ namespace PianoRoll.Model
             var next = note.GetNext();
             if (next != null)
                 p3 = next.Ovl;
-            ResolveLength(MusicMath.TickToMillisecond(note.Length));
+            ResolveLength(MusicMath.Current.TickToMillisecond(note.Length));
         }
 
         private void ResolveLength(double length)
@@ -121,7 +121,7 @@ namespace PianoRoll.Model
 
         public Phoneme Phoneme { get; set; }
 
-        public Phoneme DefaultPhoneme => Model.Phoneme.GetDefault(Lyric);
+        public Phoneme DefaultPhoneme => Phoneme.GetDefault(Lyric);
 
         public string Phonemes { get; set; }
 
@@ -161,8 +161,8 @@ namespace PianoRoll.Model
             Modulation = 0;
             Intensity = 100;
             Velocity = 100;
-            Length = Settings.Resolution;
-            Lyric = Settings.DefaultLyric;
+            Length = Settings.Current.Resolution;
+            Lyric = Settings.Current.DefaultLyric;
             PitchBend = new PitchBendExpression();
         }
 
@@ -177,8 +177,8 @@ namespace PianoRoll.Model
             Modulation = 0;
             Intensity = 100;
             Velocity = 100;
-            Length = Settings.Resolution;
-            Lyric = Settings.DefaultLyric;
+            Length = Settings.Current.Resolution;
+            Lyric = Settings.Current.DefaultLyric;
             PitchBend = new PitchBendExpression();
         }
 
@@ -195,8 +195,8 @@ namespace PianoRoll.Model
         {
             if (NoteControl != null)
             {
-                AbsoluteTime = MusicMath.GetAbsoluteTime(Canvas.GetLeft(NoteControl));
-                NoteNum = MusicMath.GetNoteNum(Canvas.GetTop(NoteControl)) - 1;
+                AbsoluteTime = MusicMath.Current.GetAbsoluteTime(Canvas.GetLeft(NoteControl));
+                NoteNum = MusicMath.Current.GetNoteNum(Canvas.GetTop(NoteControl)) - 1;
             }
         }
 
@@ -212,8 +212,8 @@ namespace PianoRoll.Model
         /// </summary>
         public void Snap()
         {
-            AbsoluteTime = MusicMath.SnapAbsoluteTime(AbsoluteTime);
-            Length = MusicMath.SnapAbsoluteTime(Length);
+            AbsoluteTime = MusicMath.Current.SnapAbsoluteTime(AbsoluteTime);
+            Length = MusicMath.Current.SnapAbsoluteTime(Length);
         }
 
         public void UpdateEnvelope()
@@ -228,8 +228,8 @@ namespace PianoRoll.Model
             Pre = HasPhoneme ? Phoneme.Preutter : 30;
             Ovl = HasPhoneme ? Phoneme.Overlap : 30;
             Stp = 0;
-            double length = MusicMath.TickToMillisecond(Length);
-            if (notePrev != null && MusicMath.TickToMillisecond(Length) / 2 < Pre - Ovl)
+            double length = MusicMath.Current.TickToMillisecond(Length);
+            if (notePrev != null && MusicMath.Current.TickToMillisecond(Length) / 2 < Pre - Ovl)
             {
                 Pre = phoneme.Preutter / (phoneme.Preutter - phoneme.Overlap) * (length / 2);
                 Ovl = phoneme.Overlap / (phoneme.Preutter - phoneme.Overlap) * (length / 2);
@@ -243,7 +243,7 @@ namespace PianoRoll.Model
         {
             var next = Part.GetNextNote(this);
             var prev = Part.GetPrevNote(this);
-            var len = MusicMath.TickToMillisecond(Length);
+            var len = MusicMath.Current.TickToMillisecond(Length);
             double requiredLength = len + Pre;
             if (next != null && next.HasPhoneme)
             {
@@ -367,7 +367,7 @@ namespace PianoRoll.Model
             if (PartEditor.UseDict)
                 Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
             if (PartEditor.UseTrans)
-                temp = TransitionTool.Process(this);
+                temp = TransitionTool.Current.Process(this);
             Phoneme = Part.Track.Singer.FindPhoneme(temp);
         }
 

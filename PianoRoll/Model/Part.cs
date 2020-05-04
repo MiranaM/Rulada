@@ -153,7 +153,7 @@ namespace PianoRoll.Model
             Note prevVowel = null;
             var singer = Track.Singer;
 
-            RenderPart = new Part {Track = new Track {Singer = Track.Singer}, IsRender = true};
+            RenderPart = new Part {Track = new Track (Track.Singer), IsRender = true};
             var notes = RenderPart.Notes;
 
             foreach (var note in Notes)
@@ -226,7 +226,7 @@ namespace PianoRoll.Model
             long prevAbs = 0;
             foreach (var note in notes)
             {
-                var transitioned = TransitionTool.Process(note);
+                var transitioned = TransitionTool.Current.Process(note);
                 note.Phoneme = Track.Singer.FindPhoneme(transitioned);
 
                 // report
@@ -256,7 +256,7 @@ namespace PianoRoll.Model
                     last = addedNote;
                 }
                 consonantsQueue.Clear();
-                notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, singer.GetRestLength(last.Phonemes), TransitionTool.GetRest(last.Phonemes), prevNote));
+                notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, singer.GetRestLength(last.Phonemes), TransitionTool.Current.GetRest(last.Phonemes), prevNote));
 
                 if (!last.IsRender)
                     throw new Exception();
@@ -309,9 +309,9 @@ namespace PianoRoll.Model
             foreach (var note in Notes)
             {
                 if (note.PitchBend == null || note.PitchBend.Array == null) continue;
-                var lenms = MusicMath.TickToMillisecond(note.Length) + note.Pre;
-                var lentick = MusicMath.MillisecondToTick(lenms);
-                var len = lentick / Settings.IntervalTick;
+                var lenms = MusicMath.Current.TickToMillisecond(note.Length) + note.Pre;
+                var lentick = MusicMath.Current.MillisecondToTick(lenms);
+                var len = lentick / Settings.Current.IntervalTick;
                 if (note.PitchBend.Array.Length > len)
                 {
                     int tokick = note.PitchBend.Array.Length - len;
@@ -330,8 +330,8 @@ namespace PianoRoll.Model
                 if (noteNext.PitchBend == null || noteNext.PitchBend.Array == null) continue;
                 if (noteNext.Ovl >= noteNext.Pre) continue;
                 var lenms = noteNext.Pre - noteNext.Ovl;
-                var lentick = MusicMath.MillisecondToTick(lenms);
-                var len = lentick / Settings.IntervalTick;
+                var lentick = MusicMath.Current.MillisecondToTick(lenms);
+                var len = lentick / Settings.Current.IntervalTick;
                 if (note.PitchBend.Array.Length > len)
                 {
                     var tokick = len;

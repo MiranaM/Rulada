@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using PianoRoll.Control;
 
 namespace PianoRoll.Model
@@ -6,51 +7,27 @@ namespace PianoRoll.Model
     public class Project
     {
         public string Title;
-        public Dictionary<string, Singer> Singers = new Dictionary<string, Singer>();
-        public List<string> SingerNames = new List<string>();
+
         public List<Track> Tracks = new List<Track>();
         public List<SoundTrack> SoundTracks;
         public string Dir;
         public bool IsNew = true;
+        public Singer DefaultSinger;
 
-        public static double Tempo = 120;
-        public static int BeatPerBar = 4;
-        public static int BeatUnit = 8;
+        //public int UnitPerBar => BeatPerBar * BeatUnit;
 
-        public static double MinNoteLengthTick => Settings.Resolution / BeatUnit * PartEditor.xScale;
-
-        public static int UnitPerBar => BeatPerBar * BeatUnit;
-
-        public Project()
+        public Project(Singer defaultSinger)
         {
+            DefaultSinger = defaultSinger;
             Current = this;
         }
 
         public static Project Current;
 
-        /// <summary>
-        ///     Add singer by directory or name
-        /// </summary>
-        /// <param name="singerDir"></param>
-        /// <returns></returns>
-        public Singer AddSinger(string singerDir)
-        {
-            var singer = Singer.Find(singerDir);
-            if (singer != null) return singer;
-            singer = Singer.Load(singerDir);
-            if (!SingerNames.Contains(singer.Name))
-            {
-                SingerNames.Add(singer.Name);
-                Singers[singer.Name] = singer;
-                return singer;
-            }
-
-            return Singers[singer.Name];
-        }
 
         public Track AddTrack()
         {
-            var track = new Track();
+            var track = new Track(DefaultSinger);
             Tracks.Add(track);
             return track;
         }
@@ -71,5 +48,9 @@ namespace PianoRoll.Model
         {
             SoundTracks.Add(track);
         }
+
+
+
+
     }
 }

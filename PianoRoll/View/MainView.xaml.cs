@@ -14,21 +14,24 @@ namespace PianoRoll.View
     /// </summary>
     public partial class MainWindow : Window
     {
+        public SingerManager SingerManager;
         public MainWindow()
         {
+
             InitializeComponent();
-            Settings.Read();
-            Singer.FindSingers();
+            SingerManager = new SingerManager();
+            New();
+            
             // if (Settings.LastFile != null) ImportUst(Settings.LastFile);
             // else New();
-            New();
+            
             SetPosition();
         }
 
         private void SetPosition()
         {
-            PartEditor.scrollViewer.ScrollToVerticalOffset(Settings.LastV);
-            PartEditor.scrollViewer.ScrollToHorizontalOffset(Settings.LastV);
+            PartEditor.scrollViewer.ScrollToVerticalOffset(Settings.Current.LastV);
+            PartEditor.scrollViewer.ScrollToHorizontalOffset(Settings.Current.LastV);
         }
 
         private void Clear()
@@ -44,8 +47,8 @@ namespace PianoRoll.View
 
             Clear();
             var xmlReader = XmlReader.Create(new StringReader(dir));
-            File.ReadAllText(dir);
-            var Project = new Project();
+            File.ReadAllText(dir); 
+            var Project = new Project(SingerManager.DefaultSinger);
             Project.Dir = dir;
             Project.Current.IsNew = false;
 
@@ -71,22 +74,22 @@ namespace PianoRoll.View
 
         private void ImportUst(string dir, bool IsNewProject = true)
         {
-            if (IsNewProject) Project.Current = new Project();
-            var part = Ust.Import(dir, out var tempo, out var singerDir);
-            Project.Tempo = tempo;
-            var track = new Track(singerDir);
+            if (IsNewProject) Project.Current = new Project(SingerManager.DefaultSinger);
+            var part = Ust.Current.Import(dir, out var tempo, out var singerDir);
+            Settings.Current.Tempo = tempo;
+            var track = new Track(Project.Current.DefaultSinger);
             part.RefreshPhonemes();
             track.AddPart(part);
             PartEditor.Part = part;
-            Settings.LastFile = dir;
+            Settings.Current.LastFile = dir;
             ImportTrack(track);
         }
 
         private void New()
         {
             Clear();
-            TransitionTool.Load(Settings.TransitionTool);
-            var project = new Project();
+            TransitionTool.Current.Load(Settings.Current.TransitionTool);
+            var project = new Project(SingerManager.DefaultSinger);
             var track = project.AddTrack();
             var part = track.AddPart();
             Playlist.AddTrack(track);
@@ -98,8 +101,8 @@ namespace PianoRoll.View
 
         private void InitElements()
         {
-            Tempo.Content = $"{Project.Tempo.ToString("f2")} BPM";
-            BeatInfo.Content = $"{Project.BeatPerBar}/4, 1/{Project.BeatPerBar * Project.BeatUnit}";
+            Tempo.Content = $"{Settings.Current.Tempo.ToString("f2")} BPM";
+            BeatInfo.Content = $"{Settings.Current.BeatPerBar}/4, 1/{Settings.Current.BeatPerBar * Settings.Current.BeatUnit}";
             PartEditor.Resize();
         }
 
@@ -141,9 +144,9 @@ namespace PianoRoll.View
 
         protected override void OnClosed(EventArgs e)
         {
-            Settings.LastV = PartEditor.scrollViewer.VerticalOffset;
-            Settings.LastH = PartEditor.scrollViewer.HorizontalOffset;
-            Settings.Save();
+            Settings.Current.LastV = PartEditor.scrollViewer.VerticalOffset;
+            Settings.Current.LastH = PartEditor.scrollViewer.HorizontalOffset;
+            Settings.Current.Save();
             base.OnClosed(e);
             Application.Current.Shutdown();
         }
@@ -152,7 +155,7 @@ namespace PianoRoll.View
         {
             var dialog = new TempoDialog();
             dialog.ShowDialog();
-            Tempo.Content = Project.Tempo.ToString("f2");
+            Tempo.Content = Settings.Current.Tempo.ToString("f2");
         }
 
         private void PartEditor_MouseMove(object sender, MouseEventArgs e)
@@ -163,22 +166,22 @@ namespace PianoRoll.View
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            Render.Send(PartEditor.Part);
+            Render.Current.Send(PartEditor.Part);
         }
 
         private void StopPlayButton_Click(object sender, RoutedEventArgs e)
         {
-            Render.Stop();
+            Render.Current.Stop();
         }
 
         private void PausePlayButton_Click(object sender, RoutedEventArgs e)
         {
-            Render.Pause();
+            Render.Current.Pause();
         }
 
         private void PlayRenderedButton_Click(object sender, RoutedEventArgs e)
         {
-            Render.Play();
+            Render.Current.Play();
         }
 
         private void Tempo_Click(object sender, MouseButtonEventArgs e)
@@ -289,6 +292,7 @@ namespace PianoRoll.View
         private void ProjectButton_Click(object sender, RoutedEventArgs e)
         {
             var projectDialog = new ProjectDialog();
+            projectDialog.Init(SingerManager);
             projectDialog.ShowDialog();
         }
 

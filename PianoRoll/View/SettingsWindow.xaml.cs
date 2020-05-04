@@ -29,14 +29,14 @@ namespace PianoRoll.View
             WavTools.ItemsSource = WavToolList;
             Resamplers.SelectedIndex = 1;
             WavTools.SelectedIndex = 1;
-            VoicePath.Text = Settings.VoicebankDirectory;
+            VoicePath.Text = Settings.Current.VoicebankDirectory;
             InitVoicebanks();
         }
 
         private void InitLists()
         {
             // Process the list of files found in the directory.
-            var fileEntries = Directory.GetFiles(Path.GetDirectoryName(Settings.Resampler));
+            var fileEntries = Directory.GetFiles(Path.GetDirectoryName(Settings.Current.Resampler));
             foreach (var fileName in fileEntries)
                 if (fileName.EndsWith(".exe"))
                 {
@@ -49,9 +49,9 @@ namespace PianoRoll.View
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            Settings.Resampler = Path.Combine(Path.GetDirectoryName(Settings.Resampler),
+            Settings.Current.Resampler = Path.Combine(Path.GetDirectoryName(Settings.Current.Resampler),
                 Resamplers.SelectedItem + ".exe");
-            Settings.AppendTool = Path.Combine(Path.GetDirectoryName(Settings.Resampler),
+            Settings.Current.AppendTool = Path.Combine(Path.GetDirectoryName(Settings.Current.Resampler),
                 WavTools.SelectedItem + ".exe");
             Close();
         }
@@ -59,7 +59,7 @@ namespace PianoRoll.View
         private void InitVoicebanks()
         {
             VoicebankList = new List<string>();
-            foreach (var path in Directory.GetDirectories(Settings.VoicebankDirectory))
+            foreach (var path in Directory.GetDirectories(Settings.Current.VoicebankDirectory))
             {
                 var charpath = Path.Combine(path, "character.txt");
                 var hasChar = false;

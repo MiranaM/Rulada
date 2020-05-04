@@ -11,12 +11,12 @@ namespace PianoRoll.View
         public TempoDialog()
         {
             InitializeComponent();
-            NewTempo.Text = Project.Tempo.ToString();
+            NewTempo.Text = Settings.Current.Tempo.ToString();
         }
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            if (double.TryParse(NewTempo.Text, out var tempo)) Project.Tempo = tempo;
+            if (double.TryParse(NewTempo.Text, out var tempo)) Settings.Current.Tempo = tempo;
             Close();
         }
 

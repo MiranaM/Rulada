@@ -37,7 +37,7 @@ namespace PianoRoll.Control
 
         private void DrawPositionMarker()
         {
-            Head = new Polygon {Fill = Schemes.positionMarkerHead};
+            Head = new Polygon {Fill = Schemes.Current.positionMarkerHead };
             Head.Points.Add(new Point(10, 0));
             Head.Points.Add(new Point(10, 5));
             Head.Points.Add(new Point(0, 15));
@@ -45,7 +45,7 @@ namespace PianoRoll.Control
             Head.Points.Add(new Point(-10, 0));
             Line = new Line
             {
-                Stroke = Schemes.positionMarkerLine,
+                Stroke = Schemes.Current.positionMarkerLine,
                 X1 = 0,
                 X2 = 0,
                 Y1 = 0,
@@ -66,8 +66,8 @@ namespace PianoRoll.Control
         public void MoveTo(long sample)
         {
             var ms = sample / 44.1;
-            long tick = MusicMath.MillisecondToTick(ms);
-            var x = MusicMath.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
+            long tick = MusicMath.Current.MillisecondToTick(ms);
+            var x = MusicMath.Current.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
             MoveTo(x);
         }
 
@@ -83,13 +83,13 @@ namespace PianoRoll.Control
 
         public async void MoveAsync2()
         {
-            for (long i = 0; i < Render.PlayerLength; i += 100)
+            for (long i = 0; i < Render.Current.PlayerLength; i += 100)
             {
                 await Task.Delay(100);
                 var ms = i / 44.1;
-                long tick = MusicMath.MillisecondToTick(ms);
-                var x = MusicMath.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
-                MoveTo(Render.PlayerPosition);
+                long tick = MusicMath.Current.MillisecondToTick(ms);
+                var x = MusicMath.Current.GetNoteXPosition(tick) - PartEditor.ScrollPosition.X;
+                MoveTo(Render.Current.PlayerPosition);
             }
         }
 
@@ -102,13 +102,13 @@ namespace PianoRoll.Control
         {
             return Task.Run(() =>
             {
-                while (Render.PlayerPosition < Render.PlayerLength)
+                while (Render.Current.PlayerPosition < Render.Current.PlayerLength)
                 {
                     Thread.Sleep(100);
                     Dispatcher.CurrentDispatcher.Invoke(() =>
                     {
                         // MoveTo(Render.PlayerPosition);
-                        PartEditor.Instance.Debug1.Content = Render.PlayerPosition.ToString();
+                        PartEditor.Instance.Debug1.Content = Render.Current.PlayerPosition.ToString();
                     });
                 }
 

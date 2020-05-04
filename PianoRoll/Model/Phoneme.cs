@@ -10,7 +10,7 @@
         public double Preutter { set; get; }
         public double Overlap { set; get; }
 
-        public static Phoneme GetDefault(string alias = "")
+        public Phoneme GetDefault(string alias = "")
         {
             var phoneme = new Phoneme
             {

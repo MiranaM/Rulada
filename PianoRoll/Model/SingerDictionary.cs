@@ -12,7 +12,7 @@ namespace PianoRoll.Model
                 return;
             if (singer.VoicebankType == null)
                 return;
-            var dir = Path.Combine(Settings.Local, "Dict", singer.VoicebankType + ".dict");
+            var dir = Path.Combine(Settings.Current.Local, "Dict", singer.VoicebankType + ".dict");
             if (!File.Exists(dir))
                 return;
             Open(dir);
@@ -61,7 +61,7 @@ namespace PianoRoll.Model
         private const char SEPARATOR = '\t';
 
         private static bool enabled;
-        private static Dictionary<string, string> dict;
+        private Dictionary<string, string> dict;
 
         private void Open(string dir)
         {

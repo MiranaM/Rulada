@@ -8,9 +8,6 @@ namespace PianoRoll.Model
 {
     public class Singer
     {
-        public static List<Singer> Singers = new List<Singer>();
-        public static Dictionary<string, Singer> SingerNames = new Dictionary<string, Singer>();
-
         public string Name { get; private set; }
         public string Author { get; private set; }
         public string Image { get; private set; }
@@ -23,33 +20,7 @@ namespace PianoRoll.Model
         public bool IsEnabled { get; private set; }
         public SingerDictionary SingerDictionary;
 
-        public static void FindSingers()
-        {
-            foreach (var dir in Directory.EnumerateDirectories(Settings.VoicebankDirectory)) Load(dir);
-        }
 
-        public static Singer Find(string name)
-        {
-            if (SingerNames.ContainsKey(name))
-                return SingerNames[name];
-            return null;
-        }
-
-        public static Singer Load(string dir)
-        {
-            if (dir.StartsWith("%VOICE%"))
-            {
-                var name = dir.Replace("%VOICE%", "");
-                if (SingerNames.ContainsKey(name)) return SingerNames[name];
-                dir = Path.Combine(Settings.VoicebankDirectory, name);
-            }
-
-            var singer = new Singer(dir);
-            if (SingerNames.ContainsKey(singer.Name)) return SingerNames[singer.Name];
-
-            singer.Add();
-            return singer;
-        }
 
         public bool IsVowel(string phoneme)
         {
@@ -77,7 +48,7 @@ namespace PianoRoll.Model
                 || phoneme == "k'"
             )
                 value = 80;
-            return MusicMath.TickToMillisecond(value);
+            return MusicMath.Current.TickToMillisecond(value);
         }
 
         public double GetRestLength(string phoneme)
@@ -86,17 +57,11 @@ namespace PianoRoll.Model
             return 60;
         }
 
-        private Singer(string dir)
+        public Singer(string dir)
         {
             Dir = dir;
             CheckVoicebank();
             CharLoad();
-        }
-
-        private void Add()
-        {
-            Singers.Add(this);
-            SingerNames[Name] = this;
         }
 
         private void CheckVoicebank()

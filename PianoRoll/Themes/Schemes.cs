@@ -3,53 +3,75 @@ using System.Windows.Media;
 
 namespace PianoRoll.Themes
 {
-    public static class Schemes
+    public class Schemes
     {
-        public static SolidColorBrush blackNoteChannelBrush =
+        #region singleton base
+
+        private static Schemes current;
+        private Schemes()
+        {
+
+        }
+
+        public static Schemes Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    current = new Schemes();
+                }
+                return current;
+            }
+        }
+
+        #endregion
+
+        public SolidColorBrush blackNoteChannelBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#e2e0df"));
 
-        public static SolidColorBrush noteSeparatorBrush =
+        public SolidColorBrush noteSeparatorBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#c9cac9"));
 
-        public static SolidColorBrush measureSeparatorBrush =
+        public SolidColorBrush measureSeparatorBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#7aa38e"));
 
-        public static SolidColorBrush beatSeparatorBrush =
+        public SolidColorBrush beatSeparatorBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#c9cac9"));
 
-        public static SolidColorBrush pitchBrush =
+        public SolidColorBrush pitchBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#ff8c75"));
 
-        public static SolidColorBrush pitchSecondBrush =
+        public SolidColorBrush pitchSecondBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#24aaed"));
 
-        public static SolidColorBrush unknownBrush =
+        public SolidColorBrush unknownBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#772211"));
 
-        public static SolidColorBrush pianoBlackNote =
+        public SolidColorBrush pianoBlackNote =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#556064"));
 
-        public static SolidColorBrush pianoNoteNames =
+        public SolidColorBrush pianoNoteNames =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#b5b5b5"));
 
-        public static SolidColorBrush foreBrush =
+        public SolidColorBrush foreBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#90FFFF"));
 
-        public static SolidColorBrush partBackgroundBrush =
+        public SolidColorBrush partBackgroundBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#334444"));
 
-        public static SolidColorBrush partNoteBrush =
+        public SolidColorBrush partNoteBrush =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#60AAAA"));
 
-        public static SolidColorBrush black = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#000000"));
+        public SolidColorBrush black = new SolidColorBrush((Color) ColorConverter.ConvertFromString("#000000"));
 
-        public static SolidColorBrush positionMarkerHead =
+        public SolidColorBrush positionMarkerHead =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#888888"));
 
-        public static SolidColorBrush positionMarkerLine =
+        public SolidColorBrush positionMarkerLine =
             new SolidColorBrush((Color) ColorConverter.ConvertFromString("#77000000"));
 
-        public static LinearGradientBrush noteBrush = new LinearGradientBrush
+        public LinearGradientBrush noteBrush = new LinearGradientBrush
         {
             StartPoint = new Point(0.5, 0),
             EndPoint = new Point(0.5, 1),

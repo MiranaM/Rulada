@@ -1,10 +1,32 @@
 ﻿namespace PianoRoll.Model
 {
-    public static class TransitionTool
+    public class TransitionTool
     {
-        private static bool IsDefault;
+        #region singleton base
 
-        public static void Load(string dir)
+        private static TransitionTool current;
+        private TransitionTool()
+        {
+
+        }
+
+        public static TransitionTool Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    current = new TransitionTool();
+                }
+                return current;
+            }
+        }
+
+        #endregion
+
+        private bool IsDefault;
+
+        public void Load(string dir)
         {
             if (dir == "Default")
                 Default();
@@ -12,16 +34,16 @@
                 Open(dir);
         }
 
-        private static void Default()
+        private void Default()
         {
             IsDefault = true;
         }
 
-        private static void Open(string dir)
+        private void Open(string dir)
         {
         }
 
-        public static string Process(Note note)
+        public string Process(Note note)
         {
             if (IsDefault)
             {
@@ -44,7 +66,7 @@
             return note.Lyric;
         }
 
-        public static string GetRest(string phoneme)
+        public string GetRest(string phoneme)
         {
             // TODO: do right way
             return phoneme + " -";

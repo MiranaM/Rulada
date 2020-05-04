@@ -290,7 +290,7 @@ namespace PianoRoll.Model
 
         private double InterpolateVibrato(VibratoExpression vibrato, double posMs, long noteLength)
         {
-            var lengthMs = vibrato.Length / 100 * MusicMath.TickToMillisecond(noteLength);
+            var lengthMs = vibrato.Length / 100 * MusicMath.Current.TickToMillisecond(noteLength);
             var inMs = lengthMs * vibrato.In / 100;
             var outMs = lengthMs * vibrato.Out / 100;
 
@@ -310,7 +310,7 @@ namespace PianoRoll.Model
             BuildPitchInfo(note, out var pitchInfo);
             var pitchesP = BuildPitch(pitchInfo);
             if (pitchInfo.Start > 0) throw new Exception();
-            var offset = -pitchInfo.Start / Settings.IntervalTick;
+            var offset = -pitchInfo.Start / Settings.Current.IntervalTick;
             pitches = Interpolate(pitchesP, pitches, offset);
             note.PitchBend.Array = pitches;
         }
@@ -324,14 +324,14 @@ namespace PianoRoll.Model
             foreach (var pp in note.PitchBend.Points) pps.Add(pp);
             if (pps.Count == 0)
             {
-                var offsetY = prevNote == null ? -10 : MusicMath.GetYOffset(note, prevNote);
-                pps.Add(new PitchPoint(MusicMath.TickToMillisecond(-40), offsetY));
-                pps.Add(new PitchPoint(MusicMath.TickToMillisecond(40), 0));
+                var offsetY = prevNote == null ? -10 : MusicMath.Current.GetYOffset(note, prevNote);
+                pps.Add(new PitchPoint(MusicMath.Current.TickToMillisecond(-40), offsetY));
+                pps.Add(new PitchPoint(MusicMath.Current.TickToMillisecond(40), 0));
             }
 
             // end and start ms
             var startMs = pps.First().X < -phoneme.Preutter ? pps.First().X : -phoneme.Preutter;
-            double endMs = MusicMath.TickToMillisecond(note.Length);
+            double endMs = MusicMath.Current.TickToMillisecond(note.Length);
 
             // 1 halftone value
             var val = 10;
@@ -341,8 +341,8 @@ namespace PianoRoll.Model
             if (pps.First().X > startMs) pps.Insert(0, new PitchPoint(startMs, pps.First().Y));
             if (pps.Last().X < endMs) pps.Add(new PitchPoint(endMs, pps.Last().Y));
 
-            var start = (int) MusicMath.SnapMs(pps.First().X);
-            var end = (int) MusicMath.SnapMs(pps.Last().X);
+            var start = (int) MusicMath.Current.SnapMs(pps.First().X);
+            var end = (int) MusicMath.Current.SnapMs(pps.Last().X);
 
             // combine all
             pitchInfo.Start = start;
@@ -365,13 +365,13 @@ namespace PianoRoll.Model
 
             if (note.Vibrato != null && note.Vibrato.Depth != 0)
             {
-                vibratoInfo.End = MusicMath.TickToMillisecond(note.Length);
+                vibratoInfo.End = MusicMath.Current.TickToMillisecond(note.Length);
                 vibratoInfo.Start = vibratoInfo.End * (1 - note.Vibrato.Length / 100);
             }
 
             if (prevNote != null && prevNote.Vibrato != null && prevNote.Vibrato.Depth != 0)
             {
-                vibratoPrevInfo.Start = -MusicMath.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
+                vibratoPrevInfo.Start = -MusicMath.Current.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
                 vibratoPrevInfo.End = 0;
             }
         }
@@ -379,7 +379,7 @@ namespace PianoRoll.Model
         public int[] BuildPitch(PitchInfo pitchInfo)
         {
             var pitches = new List<int>();
-            var interv = Settings.IntervalTick;
+            var interv = Settings.Current.IntervalTick;
             var i = -1;
             double xl = 0; // x local
             var dir = -99; // up or down
@@ -408,8 +408,8 @@ namespace PianoRoll.Model
                     dir = pitchInfo.PitchPoints[i + 1].Y == pitchInfo.PitchPoints[i].Y ? 0 : dir;
                     C = pitchInfo.PitchPoints[i + 1].Y;
                     xl = 0;
-                    nextX = (int) (pitchInfo.PitchPoints[i + 1].X / interv - 0.5 * Settings.IntervalMs);
-                    nextX -= (int) (nextX % Settings.IntervalMs);
+                    nextX = (int) (pitchInfo.PitchPoints[i + 1].X / interv - 0.5 * Settings.Current.IntervalMs);
+                    nextX -= (int) (nextX % Settings.Current.IntervalMs);
                     thisX = (int) Math.Ceiling((double) x / interv);
                     IsNextPointTime = thisX >= nextX;
                     IsLastPoint = i + 2 == pitchInfo.PitchPoints.Length;
@@ -432,19 +432,19 @@ namespace PianoRoll.Model
         public int[] BuildVibrato(VibratoInfo vibratoInfo, VibratoInfo vibratoPrevInfo)
         {
             var pitches = new List<int>();
-            var interv = Settings.IntervalTick;
+            var interv = Settings.Current.IntervalTick;
             for (var x = 0; x <= vibratoInfo.Length; x += interv)
             {
                 double y = 0;
                 //Apply vibratos
-                if (MusicMath.TickToMillisecond(x) < vibratoPrevInfo.End &&
-                    MusicMath.TickToMillisecond(x) >= vibratoPrevInfo.Start && vibratoPrevInfo.Vibrato != null)
+                if (MusicMath.Current.TickToMillisecond(x) < vibratoPrevInfo.End &&
+                    MusicMath.Current.TickToMillisecond(x) >= vibratoPrevInfo.Start && vibratoPrevInfo.Vibrato != null)
                     y += InterpolateVibrato(vibratoPrevInfo.Vibrato,
-                        MusicMath.TickToMillisecond(x) - vibratoPrevInfo.Start, vibratoPrevInfo.Length);
+                        MusicMath.Current.TickToMillisecond(x) - vibratoPrevInfo.Start, vibratoPrevInfo.Length);
 
-                if (MusicMath.TickToMillisecond(x) < vibratoInfo.End &&
-                    MusicMath.TickToMillisecond(x) >= vibratoInfo.Start)
-                    y += InterpolateVibrato(vibratoInfo.Vibrato, MusicMath.TickToMillisecond(x) - vibratoInfo.Start,
+                if (MusicMath.Current.TickToMillisecond(x) < vibratoInfo.End &&
+                    MusicMath.Current.TickToMillisecond(x) >= vibratoInfo.Start)
+                    y += InterpolateVibrato(vibratoInfo.Vibrato, MusicMath.Current.TickToMillisecond(x) - vibratoInfo.Start,
                         vibratoInfo.Length);
 
                 pitches.Add((int) Math.Round(y));
@@ -477,10 +477,10 @@ namespace PianoRoll.Model
             BuildPitchInfo(noteNext, out var pitchNextInfo);
             var thisPitch = note.PitchBend.Array;
             var nextPitch = noteNext.PitchBend.Array;
-            var length = (int) MusicMath.SnapTick(-pitchNextInfo.Start / Settings.IntervalTick);
+            var length = (int)MusicMath.Current.SnapTick(-pitchNextInfo.Start / Settings.Current.IntervalTick);
             var start = thisPitch.Length - length;
             if (start <= 0) return;
-            var C = MusicMath.GetYOffset(note, noteNext);
+            var C = MusicMath.Current.GetYOffset(note, noteNext);
             for (var k = 0; k < length; k++)
             {
                 var x1 = k + start;

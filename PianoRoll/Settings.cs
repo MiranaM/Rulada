@@ -1,47 +1,84 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using PianoRoll.Util;
 
 namespace PianoRoll
 {
-    public static class Settings
+    public class Settings
     {
-        public static string SettingsFile = @"settings";
+        #region singleton base
+
+        private static Settings current;
+        private Settings()
+        {
+            Read();
+        }
+
+        public static Settings Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    current = new Settings();
+                }
+                return current;
+            }
+        }
+
+        #endregion
+
+        public string SettingsFile = @"settings";
 
         // take from settings
-        public static string Local;
-        public static string VoicebankDirectory;
-        public static string DefaultVoicebank;
-        public static string DefaultVoicebankType;
-        public static string AppendTool;
-        public static string TransitionTool;
-        public static string Resampler;
-        public static string LastFile;
-        public static double LastV;
-        public static double LastH;
-        public static string DefaultLyric;
+        public string Local;
+        public string VoicebankDirectory;
+        public string DefaultVoicebank;
+        public string DefaultVoicebankType;
+        public string AppendTool;
+        public string TransitionTool;
+        public string Resampler;
+        public string LastFile;
+        public double LastV;
+        public double LastH;
+        public string DefaultLyric;
+
+        //Project default settings
+        public double Tempo = 120;
+        public int BeatPerBar = 4;
+        public int BeatUnit = 8;
+
+        public double xScale = 1;
+        public double yScale = 15;
+
+        public double MinNoteLengthTick => Resolution / BeatUnit * xScale;
+
+
 
         // in local folder
-        public static string CacheFolder;
-        public static string Bat;
-        public static string Output;
+        public string CacheFolder;
+        public string Bat;
+        public string Output;
 
-        public static int IntervalTick = 5;
+        public int IntervalTick = 5;
 
-        public static double IntervalMs => (int) MusicMath.TickToMillisecond(IntervalTick);
+        public double IntervalMs => (int) MusicMath.Current.TickToMillisecond(IntervalTick);
 
-        public static int SkipOnRender = 1;
+        public int SkipOnRender = 1;
 
-        public static int Resolution = 480;
-        public static int Octaves = 7;
+        public int Resolution = 480;
+        public int Octaves = 7;
 
-        public static void Read()
+        private void Read()
         {
-            if (!File.Exists(SettingsFile)) File.Create(SettingsFile);
+            if (!File.Exists(SettingsFile))
+                File.Create(SettingsFile);
             var lines = File.ReadAllLines(SettingsFile, Encoding.UTF8);
             foreach (var line in lines)
             {
-                if (line.StartsWith("Local=") && line.Length > "Local=".Length) Local = line.Substring("Local=".Length);
+                if (line.StartsWith("Local=") && line.Length > "Local=".Length)
+                    Local = line.Substring("Local=".Length);
                 if (line.StartsWith("VoicebankDirectory=") && line.Length > "VoicebankDirectory=".Length)
                     VoicebankDirectory = line.Substring("VoicebankDirectory=".Length).Replace("%Local%", Local);
                 if (line.StartsWith("DefaultVoicebank=") && line.Length > "DefaultVoicebank=".Length)
@@ -65,6 +102,8 @@ namespace PianoRoll
                 if (line.StartsWith("DefaultLyric=") && line.Length > "DefaultLyric=".Length)
                     DefaultLyric = line.Substring("DefaultLyric=".Length);
             }
+            if (VoicebankDirectory == String.Empty || DefaultVoicebank == String.Empty)
+                throw new Exception("НЕ РАБОТАЕТ");
 
             if (!File.Exists(LastFile)) LastFile = null;
             CacheFolder = Path.Combine(Local, @"Cache\");
@@ -73,7 +112,7 @@ namespace PianoRoll
             if (!Directory.Exists(CacheFolder)) Directory.CreateDirectory(CacheFolder);
         }
 
-        public static void Save()
+        public void Save()
         {
             if (!File.Exists(SettingsFile)) File.Create(SettingsFile);
             //var lines = new[]

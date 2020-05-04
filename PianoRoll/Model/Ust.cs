@@ -25,6 +25,30 @@ namespace PianoRoll.Model
 
     internal class Number
     {
+
+        #region singleton base
+
+        private static Number current;
+        private Number()
+        {
+
+        }
+
+        public static Number Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    current = new Number();
+                }
+                return current;
+            }
+        }
+
+        #endregion
+
+
         public const string Next = "[#NEXT]";
         public const string Prev = "[#PREV]";
         public const string Insert = "[#INSERT]";
@@ -33,7 +57,7 @@ namespace PianoRoll.Model
         public const string Setting = "[#SETTING]";
         public const string TrackEnd = "[#TRACKEND]";
 
-        public static bool IsNote(string number)
+        public bool IsNote(string number)
         {
             if (number.Length < 6) return false;
             if (number == Next) return true;
@@ -44,13 +68,34 @@ namespace PianoRoll.Model
 
     internal class Ust
     {
-        public static Part Import(string dir, bool importProject = true)
+        #region singleton base
+
+        private static Ust current;
+        private Ust()
+        {
+
+        }
+
+        public static Ust Current
+        {
+            get
+            {
+                if (current == null)
+                {
+                    current = new Ust();
+                }
+                return current;
+            }
+        }
+
+        #endregion
+        public Part Import(string dir, bool importProject = true)
         {
             var part = Import(dir, out var tempo, out var singerDir);
             return part;
         }
 
-        public static Part Import(string dir, out double tempo, out string singerDir)
+        public Part Import(string dir, out double tempo, out string singerDir)
         {
             var track = Project.Current.AddTrack();
             var part = track.AddPart();
@@ -74,7 +119,7 @@ namespace PianoRoll.Model
                 throw new Exception("Error UST reading");
             i++;
 
-            while (i < lines.Length && !Number.IsNote(lines[i]))
+            while (i < lines.Length && !Number.Current.IsNote(lines[i]))
             {
                 if (lines[i].StartsWith("UstVersion="))
                     if (double.TryParse(lines[i].Substring("UstVersion=".Length), out var v))
@@ -93,7 +138,7 @@ namespace PianoRoll.Model
                 // skip number
                 i++;
                 var pitchData = new USTPitchData(true);
-                while (!Number.IsNote(lines[i]) && lines[i] != Number.TrackEnd)
+                while (!Number.Current.IsNote(lines[i]) && lines[i] != Number.TrackEnd)
                 {
                     var line = lines[i];
                     var parameter = line.Split(new[] {'='}, 2)[0];
@@ -158,7 +203,7 @@ namespace PianoRoll.Model
             return part;
         }
 
-        public static void PitchFromUst(USTPitchData data, ref Note note)
+        public void PitchFromUst(USTPitchData data, ref Note note)
         {
             if (data.PBS == "")
             {

@@ -32,12 +32,12 @@ namespace PianoRoll.Control
             CreateHeader(y);
             CreateContent(y, w, Header.Height);
             Header.TrackName.Content = $"Track {Project.Current.Tracks.Count}";
-            var i = Project.Current.SingerNames.IndexOf(Track.Singer.Name);
-            Header.VoicebankName.Content = $"{i + 1}: {Track.Singer.Name}";
+            Header.VoicebankName.Content = Track.Singer.Name;
             if (Track.Singer.Image != null)
             {
                 var imagepath = Path.Combine(Track.Singer.Dir, Track.Singer.Image);
-                if (File.Exists(imagepath)) Header.Avatar.Source = new BitmapImage(new Uri(imagepath));
+                if (File.Exists(imagepath))
+                    Header.Avatar.Source = new BitmapImage(new Uri(imagepath));
             }
 
             AddParts(Track.Parts);
@@ -52,7 +52,7 @@ namespace PianoRoll.Control
 
         private void CreateContent(double y, double w, double h)
         {
-            Content = new Rectangle {Height = h, Width = w, Fill = Schemes.black};
+            Content = new Rectangle {Height = h, Width = w, Fill = Schemes.Current.black };
             Content.SetValue(Canvas.TopProperty, y);
             Content.SetValue(Canvas.LeftProperty, 5.0);
         }

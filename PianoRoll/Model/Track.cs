@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using PianoRoll.Control;
 
 namespace PianoRoll.Model
@@ -11,16 +12,11 @@ namespace PianoRoll.Model
         public double Volume;
         public Singer Singer;
 
-        public Track()
+        public Track(Singer singer)
         {
-            Singer = Project.Current.AddSinger(Settings.DefaultVoicebank);
-            Singer.Load();
-        }
-
-        public Track(string singerDir)
-        {
-            Singer = Project.Current.AddSinger(singerDir);
-            Singer.Load();
+            Singer = singer;
+            if (!Singer.IsEnabled) 
+                throw new Exception("dsdasdf");
         }
 
         public Part AddPart()
