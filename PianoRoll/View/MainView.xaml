@@ -109,15 +109,25 @@
             Grid.Row="1"
             Width="60"
             Height="27"
-            Margin="70,0,0,0"
-            Click="PlaylistButton_Click"
+                Margin="70,0,0,0"
+            Visibility="Collapsed"
+                Click="PlaylistButton_Click"
             Content="PLAYLIST"
-            Style="{DynamicResource RuladaButtonStyle}" />
+                Style="{DynamicResource RuladaButtonStyle}" />
+        <Button x:Name="ShowRenderPartButton"
+                Grid.Row="1"
+                Width="100"
+                Height="27"
+                Margin="70,0,0,0"
+                Click="ShowRenderPartButton_OnClick"
+                Content="SHOW RENDER"
+                Style="{DynamicResource RuladaButtonStyle}" />
         <Button
             x:Name="PartButton"
             Grid.Row="1"
-            Width="60"
-            Height="27"
+                Width="60"
+            Visibility="Collapsed"
+                Height="27"
             Margin="135,0,0,0"
             Click="PartButton_Click"
             Content="PART"
@@ -213,7 +223,12 @@
             Margin="0,1,0,1"
             Background="#FF001122"
             MouseMove="PartEditor_MouseMove"
-            Visibility="Visible" />
+                            Visibility="Visible" />
+        <control:RenderPartView x:Name="RenderPartView"
+                            Grid.Row="2"
+                            Margin="0,1,0,1"
+                            Background="#FF001122"
+                            Visibility="Collapsed" />
         <control:Playlist
             x:Name="Playlist"
             Grid.Row="2"

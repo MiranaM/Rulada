@@ -76,6 +76,12 @@
       <DependentUpon>Playlist.xaml</DependentUpon>
     </Compile>
     <Compile Include="Control\PositionMarker.cs" />
+    <Compile Include="Control\RenderNoteView.xaml.cs">
+      <DependentUpon>RenderNoteView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Control\RenderPartView.xaml.cs">
+      <DependentUpon>RenderPartView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Control\SoundTrackControl.cs" />
     <Compile Include="Control\SoundTrackHeader.xaml.cs">
       <DependentUpon>SoundTrackHeader.xaml</DependentUpon>
@@ -122,6 +128,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Control\Playlist.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\RenderNoteView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Control\RenderPartView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

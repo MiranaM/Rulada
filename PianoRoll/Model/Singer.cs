@@ -47,7 +47,7 @@ namespace PianoRoll.Model
                 || phoneme == "sh'"
                 || phoneme == "k'"
             )
-                value = 80;
+                value = 150;
             return MusicMath.Current.TickToMillisecond(value);
         }
 
