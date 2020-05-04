@@ -108,6 +108,7 @@ namespace PianoRoll.Control
 
         public void DrawNotes()
         {
+            // BUG: crash when open another project
             if (NoteCanvas.Children.Count != NoteControls.Count)
                 throw new Exception();
 
