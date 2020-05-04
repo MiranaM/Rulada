@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using PianoRoll.Control;
@@ -150,6 +151,7 @@ namespace PianoRoll.Model
                     continue;
                 }
 
+                var fromPrevCount = consonantsQueue.Count;
                 for (var i = 0; i < vowelIndex; i++)
                 {
                     consonantsQueue.Add(phonemes[i]);
@@ -161,7 +163,8 @@ namespace PianoRoll.Model
                     var phoneme = consonantsQueue[i];
                     var length = Track.Singer.GetConsonantLength(phoneme);
                     addedLength += length;
-                    newNotes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime - addedLength, length, phoneme, note));
+                    var parent = i < consonantsQueue.Count - fromPrevCount && prevNote != null ? prevNote : note;
+                    newNotes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime - addedLength, length, phoneme, parent));
                 }
                 consonantsQueue.Clear();
 
