@@ -194,7 +194,8 @@ namespace PianoRoll.Model
         public void Delete()
         {
             Part.Delete(this);
-            NoteControl.Delete();
+            if (!IsRender)
+                NoteControl.Delete();
         }
 
         /// <summary>
@@ -321,19 +322,20 @@ namespace PianoRoll.Model
 
         private void SetEnvelope(string[] value)
         {
+            var numberFormat = new CultureInfo("ja-JP").NumberFormat;
             envelope = new Envelope
             {
-                p1 = double.Parse(value[0], new CultureInfo("ja-JP").NumberFormat),
-                p2 = double.Parse(value[1], new CultureInfo("ja-JP").NumberFormat),
-                p3 = double.Parse(value[2], new CultureInfo("ja-JP").NumberFormat),
-                v1 = double.Parse(value[3], new CultureInfo("ja-JP").NumberFormat),
-                v2 = double.Parse(value[4], new CultureInfo("ja-JP").NumberFormat),
-                v3 = double.Parse(value[5], new CultureInfo("ja-JP").NumberFormat),
-                v4 = double.Parse(value[6], new CultureInfo("ja-JP").NumberFormat),
+                p1 = double.Parse(value[0], numberFormat),
+                p2 = double.Parse(value[1], numberFormat),
+                p3 = double.Parse(value[2], numberFormat),
+                v1 = double.Parse(value[3], numberFormat),
+                v2 = double.Parse(value[4], numberFormat),
+                v3 = double.Parse(value[5], numberFormat),
+                v4 = double.Parse(value[6], numberFormat),
                 // 7 -- %
                 p4 = value.Length > 7 ? double.Parse(value[8]) : 0,
-                p5 = value.Length > 9 ? double.Parse(value[9], new CultureInfo("ja-JP").NumberFormat) : 0,
-                v5 = value.Length > 9 ? double.Parse(value[10], new CultureInfo("ja-JP").NumberFormat) : 100
+                p5 = value.Length > 9 ? double.Parse(value[9], numberFormat) : 0,
+                v5 = value.Length > 9 ? double.Parse(value[10], numberFormat) : 100
             };
             hasEnvelope = true;
         }

@@ -58,7 +58,8 @@ namespace PianoRoll.Model
         public void BuildPitch()
         {
             Recalculate();
-            foreach (var note in Notes) Pitch.BuildPitchData(note);
+            foreach (var note in Notes)
+                Pitch.BuildPitchData(note);
             AveragePitch();
             PitchTrimStart();
             PitchTrimEnd();

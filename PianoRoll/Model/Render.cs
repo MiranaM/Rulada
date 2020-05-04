@@ -175,8 +175,6 @@ namespace PianoRoll.Model
         /// </summary>
         public static void SendToAppendTool(Note note, string filename)
         {
-            var Part = Project.Current.Tracks[0].Parts[0];
-            string lyric = note.Lyric;
             var next = Part.GetNextNote(note);
             var offset = note.Pre;
             if (next != null)
