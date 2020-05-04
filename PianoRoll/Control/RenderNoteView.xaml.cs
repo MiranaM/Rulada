@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using PianoRoll.Model;
+using PianoRoll.Util;
 
 namespace PianoRoll.Control
 {
@@ -25,11 +27,21 @@ namespace PianoRoll.Control
         private double BorderWidth = 4;
         public RenderPartView PartEditor;
 
+        public Note Note;
+
         public RenderNoteView(RenderPartView partEditor)
         {
             PartEditor = partEditor;
             InitializeComponent();
             minheight = PartEditor.yScale;
+        }
+
+        public void SetNote(Note note)
+        {
+            Note = note;
+            Phoneme.Content = note.Phonemes;
+            Canvas.SetLeft(this, MusicMath.GetNoteXPosition(note.AbsoluteTime));
+            Width = MusicMath.MillisecondToTick(note.Length);
         }
     }
 }
