@@ -130,8 +130,7 @@ namespace PianoRoll.Model
 
             foreach (var note in Notes)
             {
-                if (ProcessRestNotesForRenderBuild(prevNote, note, consonantsQueue, notes, singer))
-                    prevNote = null;
+                prevNote = ProcessRestNotesForRenderBuild(prevNote, note, consonantsQueue, notes, singer);
 
                 var phonemes = note.Phonemes.Split(' ');
                 var vowelIndex = -1;
@@ -150,14 +149,15 @@ namespace PianoRoll.Model
                     continue;
                 }
 
-                for (var i = vowelIndex - 1; i >= 0; i--)
+                for (var i = 0; i < vowelIndex; i++)
                 {
                     consonantsQueue.Add(phonemes[i]);
                 }
 
                 var newNotes = new List<Note>();
-                foreach (var phoneme in consonantsQueue)
+                for (var i = consonantsQueue.Count - 1; i >= 0; i--)
                 {
+                    var phoneme = consonantsQueue[i];
                     var length = Track.Singer.GetConsonantLength(phoneme);
                     addedLength += length;
                     newNotes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime - addedLength, length, phoneme, note));
@@ -166,7 +166,8 @@ namespace PianoRoll.Model
 
                 newNotes.Reverse();
                 notes.AddRange(newNotes);
-                notes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime, note.Length, phonemes[vowelIndex], note));
+                var vowel = CreateRenderNote(RenderPart, note.AbsoluteTime, note.Length, phonemes[vowelIndex], note);
+                notes.Add(vowel);
 
                 for (int i = vowelIndex + 1; i < phonemes.Length; i++)
                 {
@@ -175,34 +176,41 @@ namespace PianoRoll.Model
 
                 if (prevNote != null)
                 {
+                    if (!prevNote.IsRender)
+                        throw  new Exception();
                     // BUG: will be crash for short notes.
-                    prevNote.AbsoluteTime -= addedLength;
+                    prevNote.Length -= addedLength;
                 }
 
                 addedLength = 0;
-                prevNote = note;
+                if (!vowel.IsRender)
+                    throw new Exception();
+                prevNote = vowel;
             }
 
             ProcessRestNotesForRenderBuild(prevNote, null, consonantsQueue, notes, singer);
 
+            long prevAbs = 0;
             foreach (var note in notes)
             {
                 var transitioned = TransitionTool.Process(note);
                 note.Phoneme = Track.Singer.FindPhoneme(transitioned);
 
                 var prev = note.GetPrev();
-                if (prev != null)
+                var neededAbs = note.AbsoluteTime - prevAbs;
+                if (prev == null)
                     ReportRenderBuild(" ");
-                ReportRenderBuild($"{note.Length}\t\t{note}");
+                ReportRenderBuild($"{note.AbsoluteTime}\t{note.Length}({neededAbs})\t{note}");
+                prevAbs = note.AbsoluteTime;
             }
         }
 
         #region private
 
-        private bool ProcessRestNotesForRenderBuild(Note prevNote, Note note, List<string> consonantsQueue, List<Note> notes, Singer singer)
+        private Note ProcessRestNotesForRenderBuild(Note prevNote, Note note, List<string> consonantsQueue, List<Note> notes, Singer singer)
         {
             if (RenderPart.Notes.Count == 0)
-                return true;
+                return null;
             if (prevNote != null && (note == null || prevNote.AbsoluteTime + prevNote.Length < note.AbsoluteTime))
             {
                 var last = RenderPart.Notes[RenderPart.Notes.Count - 1];
@@ -215,10 +223,15 @@ namespace PianoRoll.Model
                 }
                 consonantsQueue.Clear();
                 notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, singer.GetRestLength(last.Phonemes), TransitionTool.GetRest(last.Phonemes), prevNote));
-                return true;
+
+                if (!last.IsRender)
+                    throw new Exception();
+                return last;
             }
 
-            return false;
+            if (!prevNote.IsRender)
+                throw new Exception();
+            return prevNote;
         }
 
         private Note CreateRenderNote(Part renderPart, double absoluteTime, double length, string phoneme, Note parent)
