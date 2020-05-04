@@ -67,7 +67,7 @@ namespace PianoRoll.Control
         public void SetText(string lyric, string phoneme)
         {
             Lyric.Content = lyric;
-            Phoneme.Content = phoneme;
+            Phoneme.Content = $"[{phoneme}]";
             EditLyric.Text = lyric;
         }
 
@@ -107,7 +107,6 @@ namespace PianoRoll.Control
             DragCompletedEventArgs e)
         {
             note.Length = Width / PartEditor.xScale;
-            Mouse.OverrideCursor = Cursors.Arrow;
             OnNoteChanged();
         }
 
@@ -115,14 +114,12 @@ namespace PianoRoll.Control
             DragStartedEventArgs e)
         {
             WidthInit = Width;
-            Mouse.OverrideCursor = Cursors.SizeWE;
         }
 
         private void ThumbResizeRight_DragCompleted(object sender,
             DragCompletedEventArgs e)
         {
             note.Length = Width / PartEditor.xScale;
-            Mouse.OverrideCursor = Cursors.Arrow;
             OnNoteChanged();
         }
 
@@ -135,7 +132,6 @@ namespace PianoRoll.Control
             DragStartedEventArgs e)
         {
             WidthInit = Width;
-            Mouse.OverrideCursor = Cursors.SizeWE;
         }
 
         private void ThumbMove_DragDelta(object sender, DragDeltaEventArgs e)

@@ -150,6 +150,11 @@ namespace PianoRoll.Model
             PitchBend = new PitchBendExpression();
         }
 
+        public override string ToString()
+        {
+            return $"{Lyric} [{Phonemes}] {{{Phoneme?.Alias}}}";
+        }
+
         public Note(Part part)
         {
             Part = part;

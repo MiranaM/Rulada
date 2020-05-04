@@ -131,10 +131,10 @@ namespace PianoRoll.Model
                     var last = prevNote;
                     foreach (var phoneme in consonantsQueue)
                     {
-                        notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, Track.Singer.GetConsonantLength(phoneme), phoneme));
+                        notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, Track.Singer.GetConsonantLength(phoneme), phoneme, prevNote));
                     }
                     consonantsQueue.Clear();
-                    notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, singer.GetRestLength(last.Phonemes), TransitionTool.GetRest(last.Phonemes)));
+                    notes.Add(CreateRenderNote(RenderPart, last.AbsoluteTime + last.Length, singer.GetRestLength(last.Phonemes), TransitionTool.GetRest(last.Phonemes), prevNote));
                     prevNote = null;
                 }
 
@@ -165,13 +165,13 @@ namespace PianoRoll.Model
                 {
                     var length = Track.Singer.GetConsonantLength(phoneme);
                     addedLength += length;
-                    newNotes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime - addedLength, length, phoneme));
+                    newNotes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime - addedLength, length, phoneme, note));
                 }
                 consonantsQueue.Clear();
 
                 newNotes.Reverse();
                 notes.AddRange(newNotes);
-                notes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime, note.Length, phonemes[vowelIndex]));
+                notes.Add(CreateRenderNote(RenderPart, note.AbsoluteTime, note.Length, phonemes[vowelIndex], note));
 
                 for (int i = vowelIndex + 1; i < phonemes.Length; i++)
                 {
@@ -197,13 +197,15 @@ namespace PianoRoll.Model
 
         #region private
 
-        private List<Note> _notes;
-
-        private Note CreateRenderNote(Part renderPart, double absoluteTime, double length, string phoneme)
+        private Note CreateRenderNote(Part renderPart, double absoluteTime, double length, string phoneme, Note parent)
         {
             var note = new Note(renderPart, length, phoneme);
             note.AbsoluteTime = absoluteTime;
+            note.Lyric = phoneme;
             note.IsRender = true;
+            note.Intensity = parent.Intensity;
+            note.NoteNum = parent.NoteNum;
+            note.Modulation = parent.Modulation;
             return note;
         }
 

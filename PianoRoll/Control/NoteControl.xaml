@@ -17,9 +17,9 @@
                                                          AncestorType={x:Type local:NoteControl}},
                                                          Path= Width}" >
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="8" />
                 <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="4" />
+                <ColumnDefinition Width="8" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Name="LyricRow"
@@ -31,19 +31,23 @@
             </Grid.RowDefinitions>
 
             <Label x:Name="Lyric"
-                   Grid.Column="1"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
                    Grid.Row="0"
                    Height="30"
                    Margin="1,0,0,0"
                    Padding="0,0,0,0"
+                   Cursor="IBeam"
                    VerticalAlignment="Center"
                    MouseRightButtonUp="ThumbMove_MouseRightButtonUp"
+                   MouseLeftButtonDown="ThumbMove_MouseRightButtonUp"
                    VerticalContentAlignment="Center"
                    Content="sample"
                    FontSize="12"
                    Foreground="#FF16121F" />
             <Label x:Name="Phoneme"
-                   Grid.Column="1"
+                   Grid.Column="0"
+                   Grid.ColumnSpan="2"
                    Grid.Row="2"
                    Height="30"
                    Margin="1,0,0,0"
@@ -52,11 +56,12 @@
                    VerticalContentAlignment="Center"
                    Content="[a]"
                    FontSize="12"
-                   Foreground="#FF16121F" />
+                   Foreground="#FF6692AF" />
             <Thumb x:Name="ThumbResizeLeft"
                    Grid.Column="0"
                    Grid.Row="1"
                    HorizontalAlignment="Stretch"
+                   Cursor="SizeWE"
                    VerticalAlignment="Stretch"
                    DragCompleted="ThumbResizeLeft_DragCompleted"
                    DragDelta="ThumbResizeLeft_DragDelta"
@@ -76,6 +81,7 @@
                    DragCompleted="ThumbResizeRight_DragCompleted"
                    DragDelta="ThumbResizeRight_DragDelta"
                    DragStarted="ThumbResizeRight_DragStarted"
+                   Cursor="SizeWE"
                    MouseRightButtonUp="ThumbMove_MouseRightButtonUp">
                 <Thumb.Template>
                     <ControlTemplate>
@@ -90,6 +96,7 @@
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
                    DragCompleted="ThumbMove_DragCompleted"
+                   Cursor="Hand"
                    DragDelta="ThumbMove_DragDelta"
                    DragStarted="ThumbMove_DragStarted"
                    MouseRightButtonUp="ThumbMove_MouseRightButtonUp">
@@ -118,8 +125,8 @@
                 </Thumb.Style>
             </Thumb>
             <TextBox x:Name="EditLyric"
-                     Grid.Column="1"
-                     Grid.Row="0"
+                     Grid.Column="0"
+                     Grid.ColumnSpan="2"
                      Width="60"
                      Margin="0"
                      Padding="0,-5,0,-5"
