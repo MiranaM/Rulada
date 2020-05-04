@@ -75,14 +75,23 @@ namespace PianoRoll.Control
         private void ConfirmLyric()
         {
             EditLyric.Visibility = Visibility.Hidden;
-            var texts = EditLyric.Text.Split(' ');
-            var noteToSet = note;
-            var i = 0;
-            while (noteToSet != null && i < texts.Length)
+            var text = EditLyric.Text;
+            if (text.Substring(0, 1) == "/")
             {
-                noteToSet.NewLyric(texts[i]);
-                i++;
-                noteToSet = noteToSet.GetNext();
+                note.Lyric = text;
+                note.Phonemes = text.Substring(1);
+            }
+            else
+            {
+                var texts = text.Split(' ');
+                var noteToSet = note;
+                var i = 0;
+                while (noteToSet != null && i < texts.Length)
+                {
+                    noteToSet.NewLyric(texts[i]);
+                    i++;
+                    noteToSet = noteToSet.GetNext();
+                }
             }
             // possible BUG: need OnNoteChanged on all of them?
             OnNoteChanged();
@@ -95,7 +104,8 @@ namespace PianoRoll.Control
 
         private void EditLyric_LostFocus(object sender, RoutedEventArgs e)
         {
-            ConfirmLyric();
+            if (EditLyric.Visibility == Visibility.Visible)
+                ConfirmLyric();
         }
 
         private void ThumbResizeLeft_DragDelta(object sender, DragDeltaEventArgs e)

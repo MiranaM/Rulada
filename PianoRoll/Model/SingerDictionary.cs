@@ -20,6 +20,9 @@ namespace PianoRoll.Model
 
         public string Process(string lyric)
         {
+            if (lyric.StartsWith("/"))
+                return lyric.Substring(1);
+
             if (enabled)
             {
                 if (!dict.ContainsKey(lyric))
