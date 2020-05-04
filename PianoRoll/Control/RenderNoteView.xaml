@@ -14,43 +14,31 @@
               Width="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                      AncestorType={x:Type local:RenderNoteView}},
                      Path= Width}">
-            <Thumb x:Name="ThumbMove"
-                   BorderBrush="#FF213321"
-                   HorizontalAlignment="Stretch"
-                   VerticalAlignment="Stretch">
-                <Thumb.Style>
-                    <Style>
-                        <Setter Property="Thumb.Background"
-                                Value="#FF5DAE76" />
-                        <Setter Property="Thumb.Opacity"
-                                Value="1" />
-                        <Setter Property="Thumb.Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Border BorderBrush="{TemplateBinding BorderBrush}"
-                                            BorderThickness="1"
-                                        Background="{TemplateBinding Background}" />
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="Thumb.IsEnabled"
-                                     Value="False">
-                                <Setter Property="Thumb.Background"
-                                        Value="#AA4757" />
-                            </Trigger>
-                        </Style.Triggers>
-                    </Style>
-                </Thumb.Style>
-            </Thumb>
+            <Grid.RowDefinitions>
+                <RowDefinition Name="NoteRow"
+                               Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                     AncestorType={x:Type local:RenderNoteView}},
+                     Path=Height, FallbackValue=14}"></RowDefinition>
+                <RowDefinition Name="LyricRow" Height="15"></RowDefinition>
+            </Grid.RowDefinitions>
+            <Grid x:Name="ThumbMove"
+                  Background="#665D7E76"
+                  Grid.Row="0"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+                <Rectangle Height="2"
+                           Fill="#FF5DAE76"
+                           VerticalAlignment="Bottom"></Rectangle>
+            </Grid>
             <Label x:Name="Phoneme"
                    Margin="0,0,0,0"
                    Padding="2,0,5,0"
+                   Grid.Row="1"
                    VerticalAlignment="Stretch"
                    VerticalContentAlignment="Center"
                    HorizontalAlignment="Left"
                    Width="Auto"
-                   Content="[a]"
+                   Content="a"
                    FontSize="12"
                    Foreground="#FF005000" />
         </Grid>
