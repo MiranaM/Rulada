@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace PianoRoll.Model
 {
@@ -53,7 +54,7 @@ namespace PianoRoll.Model
         {
             var track = Project.Current.AddTrack();
             var part = track.AddPart();
-            var lines = File.ReadAllLines(dir);
+            var lines = File.ReadAllLines(dir, Encoding.GetEncoding(932));
             double version;
             tempo = -1;
             singerDir = "";
