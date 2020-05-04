@@ -125,6 +125,7 @@
         </ScrollViewer>
         <Canvas
             Name="PositionMarkerCanvas"
+            Visibility="Hidden"
             Grid.Row="2"
             Grid.Column="1"
             Width="43" />
