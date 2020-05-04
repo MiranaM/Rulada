@@ -377,6 +377,7 @@ namespace PianoRoll.Control
 
         private void CreatePiano()
         {
+            // TODO: scroll with view
             for (var note = 0; note < Settings.Current.Octaves * 12; note++)
             {
                 if (note % 12 == 1 // C#
