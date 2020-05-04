@@ -39,9 +39,10 @@ namespace PianoRoll.Control
         public void SetNote(Note note)
         {
             Note = note;
-            Phoneme.Content = note.Phonemes;
+            if (note.HasPhoneme)
+                Phoneme.Content = note.Phoneme.Alias;
             Canvas.SetLeft(this, MusicMath.GetNoteXPosition(note.AbsoluteTime));
-            Width = MusicMath.MillisecondToTick(note.Length);
+            Width = note.Length * PartEditor.xScale;
         }
     }
 }
