@@ -147,7 +147,7 @@ namespace PianoRoll.Model
             return list.ToArray();
         }
 
-        public static void SendToResampler(Note note, string tempfilename)
+        public static void SendToResampler(Note note, string tempFilename)
         {
             var pitchBase64 = Base64.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.SkipOnRender));
             var phoneme = note.HasPhoneme? note.Phoneme : note.DefaultPhoneme;
@@ -155,7 +155,7 @@ namespace PianoRoll.Model
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n\r\n",
                 Settings.Resampler, 
                 Path.Combine(Part.Track.Singer.Dir, phoneme.File), 
-                tempfilename,
+                tempFilename,
                 MusicMath.NoteNum2String(note.NoteNum - 12), 
                 note.Velocity, 
                 Part.Flags + note.Flags, 
@@ -183,22 +183,23 @@ namespace PianoRoll.Model
                 offset += next.Ovl;
             }
 
+            var envelope = new Envelope(note);
             var sign = offset >= 0 ? "+" : "-";
             var length = $"{note.Length}@{Project.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
             string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", 
                 note.Stp, // STP,
                 length, //note.RequiredLength, 
-                note.Envelope.p1, 
-                note.Envelope.p2, 
-                note.Envelope.p3, 
-                note.Envelope.v1, 
-                note.Envelope.v2,
-                note.Envelope.v3,
-                note.Envelope.v4, 
+                envelope.p1, 
+                envelope.p2, 
+                envelope.p3, 
+                envelope.v1, 
+                envelope.v2,
+                envelope.v3,
+                envelope.v4, 
                 note.Ovl, //note.Phoneme.Overlap,
-                note.Envelope.p4, 
-                note.Envelope.p5, 
-                note.Envelope.v5);
+                envelope.p4, 
+                envelope.p5, 
+                envelope.v5);
             var request = $"\"{Settings.AppendTool}\" \"{Settings.Output}\" \"{filename}\" {ops} \r\n";
             File.AppendAllText(Settings.Bat, request);
         }

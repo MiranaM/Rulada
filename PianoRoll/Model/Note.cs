@@ -33,7 +33,23 @@ namespace PianoRoll.Model
             v4 = 0;
             v5 = 100;
             var next = note.GetNext();
-            if (next != null) p3 = next.Ovl;
+            if (next != null)
+                p3 = next.Ovl;
+            ResolveLength(note.Length);
+        }
+
+        private void ResolveLength(double length)
+        {
+            if (length <= 0)
+                throw new Exception();
+            var first = Math.Max(p1, p2);
+            while (first + p3 > length)
+            {
+                p1 /= 1.5;
+                p2 /= 1.5;
+                p3 /= 1.5;
+                first = Math.Max(p1, p2);
+            }
         }
     }
 
@@ -205,6 +221,11 @@ namespace PianoRoll.Model
         {
             AbsoluteTime = MusicMath.SnapAbsoluteTime(AbsoluteTime);
             Length = MusicMath.SnapAbsoluteTime(Length);
+        }
+
+        public void UpdateEnvelope()
+        {
+            Envelope = new Envelope(this);
         }
 
         public void RecalculatePreOvl()

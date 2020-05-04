@@ -197,6 +197,7 @@ namespace PianoRoll.Model
                 var transitioned = TransitionTool.Process(note);
                 note.Phoneme = Track.Singer.FindPhoneme(transitioned);
 
+                // report
                 var prev = note.GetPrev();
                 var neededAbs = note.AbsoluteTime - prevAbs;
                 if (prev == null)
