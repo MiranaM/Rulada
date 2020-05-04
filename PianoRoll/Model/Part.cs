@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using PianoRoll.Control;
 using PianoRoll.Util;
@@ -188,6 +189,11 @@ namespace PianoRoll.Model
             {
                 var transitioned = TransitionTool.Process(note);
                 note.Phoneme = Track.Singer.FindPhoneme(transitioned);
+
+                var prev = note.GetPrev();
+                if (prev != null)
+                    ReportRenderBuild(" ");
+                ReportRenderBuild($"{note.Length}\t\t{note}");
             }
         }
 
@@ -227,6 +233,11 @@ namespace PianoRoll.Model
             note.NoteNum = parent.NoteNum;
             note.Modulation = parent.Modulation;
             return note;
+        }
+
+        private void ReportRenderBuild(string message)
+        {
+            Console.WriteLine("Render build: " + message);
         }
 
         private void AddNote(Note note)

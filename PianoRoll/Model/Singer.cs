@@ -64,7 +64,7 @@ namespace PianoRoll.Model
         public double GetConsonantLength(string phoneme)
         {
             // TODO: do right way
-            return 100;
+            return 60;
         }
 
         public double GetRestLength(string phoneme)
