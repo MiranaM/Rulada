@@ -119,9 +119,9 @@ namespace PianoRoll.Model
 
         public string Phonemes { get; set; }
 
-        public double Pre { get; private set; }
-        public double Ovl { get; private set; }
-        public double Stp { get; private set; }
+        public double Pre { get; set; }
+        public double Ovl { get; set; }
+        public double Stp { get; set; }
         public double StraightPre => Pre - Ovl;
         public double LengthAdd { get; private set; }
 
