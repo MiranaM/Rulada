@@ -27,6 +27,16 @@ namespace PianoRoll.Model
         {
 
         }
+
+        public override Note GetPrev()
+        {
+            throw new Exception();
+        }
+
+        public override Note GetNext()
+        {
+            throw new Exception();
+        }
     }
 
     public class RenderNoteParent : RenderNote
@@ -81,11 +91,11 @@ namespace PianoRoll.Model
             if (RenderLength < MIN_FREE_VOWEL_LENGTH)
                 throw new Exception();
 
-            ResolvePositions();
-
             RenderLength = Length - ChildrenLength;
             if (RenderLength < MIN_FREE_VOWEL_LENGTH)
                 throw new Exception();
+
+            ResolvePositions();
         }
 
         public void ResolveLengths(Singer singer)

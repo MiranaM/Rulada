@@ -187,11 +187,6 @@ namespace PianoRoll.Model
             note.NoteNum = pitchParent.NoteNum;
             note.Modulation = pitchParent.Modulation;
 
-
-            // report
-            var prev = note.GetPrev();
-            if (prev == null)
-                ReportRenderBuild(" ");
             ReportRenderBuild($"{note.AbsoluteTime}\t{note.Length}\t{note}");
         }
 

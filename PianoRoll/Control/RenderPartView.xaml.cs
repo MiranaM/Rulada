@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -271,9 +272,10 @@ namespace PianoRoll.Control
 
             if (Part == null) return;
 
-            var i = 0;
-            foreach (var note in Part.Notes)
+            for (var i = 0; i < Part.Notes.Count; i++)
             {
+                var note = Part.Notes[i];
+                var next = Part.Notes.ElementAtOrDefault(i + 1);
                 RenderNoteView noteControl;
                 if (i < NoteControls.Count)
                     noteControl = NoteControls[i];
@@ -283,11 +285,10 @@ namespace PianoRoll.Control
                     NoteCanvas.Children.Add(noteControl);
                     NoteControls.Add(noteControl);
                 }
-                MakeNote(noteControl, note.NoteNum, note.FinalPosition, note.FinalLength);
-                noteControl.SetNote((RenderNote)note);
-                lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
 
-                i++;
+                MakeNote(noteControl, note.NoteNum, note.FinalPosition, note.FinalLength);
+                noteControl.SetNote((RenderNote) note, (RenderNote)next);
+                lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
             }
         }
 
