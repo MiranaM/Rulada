@@ -205,10 +205,10 @@ namespace PianoRoll.Model
         {
             var len = note.FinalLength;
             double requiredLength = len + note.Pre;
-            if (next != null)
-                requiredLength -= next.StraightPre;
+            //if (next != null)
+            //    requiredLength -= next.StraightPre;
 
-            //requiredLength = Math.Ceiling((requiredLength + note.Stp + 25) / 50) * 50;
+            requiredLength = Math.Ceiling((requiredLength + note.Stp + 25) / 50) * 50;
             return (int)requiredLength;
         }
 
@@ -219,17 +219,11 @@ namespace PianoRoll.Model
         {
             var offset = note.Pre;
             if (next != null)
-            {
-                offset -= next.Pre;
-                offset += next.Ovl;
-            }
+                offset -= next.StraightPre;
 
             var envelope = note.Envelope;
             var sign = offset >= 0 ? "+" : "-";
             var length = $"{note.RenderLength}@{Settings.Current.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
-            var lengthCheck = GetRequiredLength(note, next);
-            if (lengthCheck <= 0)
-                throw new Exception();
             string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", 
                 note.Stp, // STP,
                 length, //note.RequiredLength, 

@@ -30,7 +30,7 @@ namespace PianoRoll.Model
             foreach (var note in SourcePart.Notes)
             {
                 prevRenderNote = ProcessRestNotesForRenderBuild( prevNote, note, consonantsQueue, notes, prevVowel, prevRenderNote);
-                if (prevRenderNote == null)
+                if (prevNote == null || prevNote.AbsoluteTime + prevNote.Length < note.AbsoluteTime)
                     prevVowel = null;
 
                 var phonemes = note.Phonemes.Split(' ');
@@ -60,7 +60,7 @@ namespace PianoRoll.Model
                 vowel.Length = note.Length;
                 vowel.AbsoluteTime = note.AbsoluteTime;
                 FillRenderNote(vowel, phonemes[vowelIndex], note);
-                var lengthParent = prevVowel != null ? prevVowel : vowel;
+                var lengthParent = prevVowel ?? vowel;
                 var newNotes = new List<RenderNote>();
                 for (var i = consonantsQueue.Count - 1; i >= 0; i--)
                 {
