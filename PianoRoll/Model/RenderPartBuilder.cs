@@ -127,14 +127,18 @@ namespace PianoRoll.Model
                 if (note is RenderNoteParent parent)
                 {
                     parent.ResolveLengths(Singer);
-
-                    if (prevParent != null && parent.GetEditorNote().FinalPosition ==
-                        prevParent.GetEditorNote().FinalPosition + prevParent.GetEditorNote().FinalLength)
-                    {
-                        prevParent.AttachNextParent(parent);
-                    }
+                    TryAttachNextParent(parent, prevParent);
                     prevParent = parent;
                 }
+            }
+        }
+
+        private void TryAttachNextParent(RenderNoteParent parent, RenderNoteParent prevParent)
+        {
+            if (prevParent != null && parent.GetEditorNote().FinalPosition ==
+                prevParent.GetEditorNote().FinalPosition + prevParent.GetEditorNote().FinalLength)
+            {
+                prevParent.AttachNextParent(parent);
             }
         }
 

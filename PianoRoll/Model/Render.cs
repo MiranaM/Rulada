@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using NAudio.Wave;
@@ -70,27 +71,28 @@ namespace PianoRoll.Model
             if (!File.Exists(Settings.Current.Bat)) File.Create(Settings.Current.Bat);
             var deleteCommand = $"del \"{Settings.Current.CacheFolder}\\*.wav\"\r\n";
             File.WriteAllText(Settings.Current.Bat, deleteCommand);
-            var i = 1;
             long renderPosition = 0;
-            foreach (var note in Part.Notes)
+            for (var i = 0; i < Part.Notes.Count; i++)
             {
-                var renderNote = (RenderNote) note;
-                var oto = renderNote.SafeOto;
-                var tempFilename = Path.Combine(Settings.Current.CacheFolder, $"{i}");
-                tempFilename += $"_{oto.Alias}_{renderNote.NoteNum}_{renderNote.RenderLength}.wav";
+                var note = (RenderNote)Part.Notes[i];
+                var next = (RenderNote)Part.Notes.ElementAtOrDefault(i + 1);
+                var oto = note.SafeOto;
+                var index = (i + 1).ToString();
+                index = index.PadLeft(4, '0');
+                var tempFilename = Path.Combine(Settings.Current.CacheFolder, $"{index}");
+                tempFilename += $"_{oto.Alias}_{note.NoteNum}_{note.RenderLength}.wav";
                 // Send Rest
-                if (renderNote.RenderPosition > renderPosition)
+                if (note.RenderPosition > renderPosition)
                 {
-                    long resttime = renderNote.RenderPosition - renderPosition;
+                    long resttime = note.RenderPosition - renderPosition;
                     SendToAppendTool(resttime, $"{i}_Rest.wav");
                     renderPosition += resttime;
                 }
 
                 // Send
-                SendToResampler(renderNote, tempFilename);
-                SendToAppendTool(renderNote, tempFilename);
-                renderPosition += renderNote.RenderLength;
-                i++;
+                SendToResampler(note, next, tempFilename);
+                SendToAppendTool(note, next, tempFilename);
+                renderPosition += note.RenderLength;
             }
 
             File.AppendAllText(Settings.Current.Bat,
@@ -176,7 +178,7 @@ namespace PianoRoll.Model
             return list.ToArray();
         }
 
-        public void SendToResampler(RenderNote note, string tempFilename)
+        public void SendToResampler(RenderNote note, RenderNote next, string tempFilename)
         {
             var pitchBase64 = Base64.Current.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.Current.SkipOnRender));
             var oto = note.SafeOto;
@@ -189,7 +191,7 @@ namespace PianoRoll.Model
                 note.Velocity, 
                 Part.Flags + note.Flags, 
                 oto.Offset,
-                (int) GetRequiredLength(note), 
+                (int) GetRequiredLength(note, next), 
                 oto.Consonant, 
                 oto.Cutoff, 
                 note.Intensity, 
@@ -199,28 +201,22 @@ namespace PianoRoll.Model
             File.AppendAllText(Settings.Current.Bat, request);
         }
 
-        private int GetRequiredLength(RenderNote note)
+        private int GetRequiredLength(RenderNote note, RenderNote next)
         {
-            var next = Part.GetNextNote(note);
-            var prev = Part.GetPrevNote(note);
             var len = note.FinalLength;
             double requiredLength = len + note.Pre;
             if (next != null)
-            {
-                requiredLength -= next.SafeOto.Preutter;
-                requiredLength += next.SafeOto.Overlap;
-            }
+                requiredLength -= next.StraightPre;
 
-            requiredLength = Math.Ceiling((requiredLength + note.Stp + 25) / 50) * 50;
+            //requiredLength = Math.Ceiling((requiredLength + note.Stp + 25) / 50) * 50;
             return (int)requiredLength;
         }
 
         /// <summary>
         ///     Send Note to AppendTool
         /// </summary>
-        public void SendToAppendTool(RenderNote note, string filename)
+        public void SendToAppendTool(RenderNote note, RenderNote next,  string filename)
         {
-            var next = Part.GetNextNote(note);
             var offset = note.Pre;
             if (next != null)
             {
@@ -231,6 +227,9 @@ namespace PianoRoll.Model
             var envelope = note.Envelope;
             var sign = offset >= 0 ? "+" : "-";
             var length = $"{note.RenderLength}@{Settings.Current.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
+            var lengthCheck = GetRequiredLength(note, next);
+            if (lengthCheck <= 0)
+                throw new Exception();
             string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", 
                 note.Stp, // STP,
                 length, //note.RequiredLength, 

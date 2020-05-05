@@ -46,6 +46,7 @@ namespace PianoRoll.Model
         public Note EditorNote;
         public int ChildrenLength;
         public RenderNoteParent NextParent;
+        public RenderNoteParent PrevParent;
 
         public RenderNoteParent(Part part, Note editorNote) : base(part)
         {
@@ -75,6 +76,7 @@ namespace PianoRoll.Model
         public void AttachNextParent(RenderNoteParent renderNote)
         {
             NextParent = renderNote;
+            renderNote.PrevParent = this;
             var lastChild = Children.LastOrDefault();
             if (lastChild != null)
             {
