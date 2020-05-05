@@ -210,7 +210,8 @@ namespace PianoRoll.Model
                 offset += next.Ovl;
             }
 
-            var envelope = new Envelope(note);
+            note.Envelope = new Envelope(note);
+            var envelope = note.Envelope;
             var sign = offset >= 0 ? "+" : "-";
             var length = $"{note.Length}@{Settings.Current.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
             string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", 
