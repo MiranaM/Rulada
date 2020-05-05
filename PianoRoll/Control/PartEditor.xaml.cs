@@ -91,6 +91,8 @@ namespace PianoRoll.Control
 
         public void Clear()
         {
+            while (NoteControls.Count > 0)
+                DeleteNoteControl(NoteControls[0]);
             GridCanvas.Children.Clear();
             NoteCanvas.Children.Clear();
             NoteBackgroundCanvas.Children.Clear();
