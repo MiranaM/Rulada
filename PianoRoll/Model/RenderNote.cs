@@ -27,6 +27,16 @@ namespace PianoRoll.Model
         {
 
         }
+
+        public override Note GetPrev()
+        {
+            throw new Exception();
+        }
+
+        public override Note GetNext()
+        {
+            throw new Exception();
+        }
     }
 
     public class RenderNoteParent : RenderNote
@@ -36,6 +46,7 @@ namespace PianoRoll.Model
         public Note EditorNote;
         public int ChildrenLength;
         public RenderNoteParent NextParent;
+        public RenderNoteParent PrevParent;
 
         public RenderNoteParent(Part part, Note editorNote) : base(part)
         {
@@ -65,6 +76,7 @@ namespace PianoRoll.Model
         public void AttachNextParent(RenderNoteParent renderNote)
         {
             NextParent = renderNote;
+            renderNote.PrevParent = this;
             var lastChild = Children.LastOrDefault();
             if (lastChild != null)
             {
@@ -81,11 +93,11 @@ namespace PianoRoll.Model
             if (RenderLength < MIN_FREE_VOWEL_LENGTH)
                 throw new Exception();
 
-            ResolvePositions();
-
             RenderLength = Length - ChildrenLength;
             if (RenderLength < MIN_FREE_VOWEL_LENGTH)
                 throw new Exception();
+
+            ResolvePositions();
         }
 
         public void ResolveLengths(Singer singer)

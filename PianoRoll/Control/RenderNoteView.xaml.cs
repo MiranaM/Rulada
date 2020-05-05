@@ -36,7 +36,7 @@ namespace PianoRoll.Control
             minheight = PartEditor.yScale;
         }
 
-        public void SetNote(RenderNote note)
+        public void SetNote(RenderNote note, RenderNote next)
         {
             Note = note;
             if (note.RenderPosition <= 0 || note.RenderLength <= 0)
@@ -45,7 +45,6 @@ namespace PianoRoll.Control
             if (note.HasOto)
                 Phoneme.Content = note.SafeOto.Alias;
             var envelope = note.Envelope;
-            var next = note.GetNext();
 
             var attack = MusicMath.Current.MillisecondToTick(envelope.p1);
             var preutterance = MusicMath.Current.MillisecondToTick(envelope.p2);
@@ -78,6 +77,11 @@ namespace PianoRoll.Control
             Canvas.SetLeft(this, MusicMath.Current.GetNoteXPosition(note.FinalPosition));
             Canvas.SetTop(this, MusicMath.Current.GetNoteYPosition(note.NoteNum));
             Width = note.FinalLength * PartEditor.xScale;
+        }
+
+        public override string ToString()
+        {
+            return $"{Note} {{RenderNoteView}}";
         }
     }
 }

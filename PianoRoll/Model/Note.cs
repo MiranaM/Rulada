@@ -84,12 +84,12 @@ namespace PianoRoll.Model
 
         #endregion
 
-        public Note GetNext()
+        public virtual Note GetNext()
         {
             return Part.GetNextNote(this);
         }
 
-        public Note GetPrev()
+        public virtual Note GetPrev()
         {
             return Part.GetPrevNote(this);
         }

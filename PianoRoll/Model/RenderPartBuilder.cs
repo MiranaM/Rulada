@@ -30,7 +30,7 @@ namespace PianoRoll.Model
             foreach (var note in SourcePart.Notes)
             {
                 prevRenderNote = ProcessRestNotesForRenderBuild( prevNote, note, consonantsQueue, notes, prevVowel, prevRenderNote);
-                if (prevRenderNote == null)
+                if (prevNote == null || prevNote.AbsoluteTime + prevNote.Length < note.AbsoluteTime)
                     prevVowel = null;
 
                 var phonemes = note.Phonemes.Split(' ');
@@ -60,7 +60,7 @@ namespace PianoRoll.Model
                 vowel.Length = note.Length;
                 vowel.AbsoluteTime = note.AbsoluteTime;
                 FillRenderNote(vowel, phonemes[vowelIndex], note);
-                var lengthParent = prevVowel != null ? prevVowel : vowel;
+                var lengthParent = prevVowel ?? vowel;
                 var newNotes = new List<RenderNote>();
                 for (var i = consonantsQueue.Count - 1; i >= 0; i--)
                 {
@@ -127,14 +127,18 @@ namespace PianoRoll.Model
                 if (note is RenderNoteParent parent)
                 {
                     parent.ResolveLengths(Singer);
-
-                    if (prevParent != null && parent.GetEditorNote().FinalPosition ==
-                        prevParent.GetEditorNote().FinalPosition + prevParent.GetEditorNote().FinalLength)
-                    {
-                        prevParent.AttachNextParent(parent);
-                    }
+                    TryAttachNextParent(parent, prevParent);
                     prevParent = parent;
                 }
+            }
+        }
+
+        private void TryAttachNextParent(RenderNoteParent parent, RenderNoteParent prevParent)
+        {
+            if (prevParent != null && parent.GetEditorNote().FinalPosition ==
+                prevParent.GetEditorNote().FinalPosition + prevParent.GetEditorNote().FinalLength)
+            {
+                prevParent.AttachNextParent(parent);
             }
         }
 
@@ -187,11 +191,6 @@ namespace PianoRoll.Model
             note.NoteNum = pitchParent.NoteNum;
             note.Modulation = pitchParent.Modulation;
 
-
-            // report
-            var prev = note.GetPrev();
-            if (prev == null)
-                ReportRenderBuild(" ");
             ReportRenderBuild($"{note.AbsoluteTime}\t{note.Length}\t{note}");
         }
 
