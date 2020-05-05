@@ -42,6 +42,8 @@ namespace PianoRoll.Model
         private Part Part;
         private bool IsPlaying;
 
+        public RenderPartBuilder RenderPartBuilder = new RenderPartBuilder();
+
         public long PlayerPosition => output.Position;
 
         public long PlayerLength => output.Length;
@@ -53,7 +55,7 @@ namespace PianoRoll.Model
         public void Send(Part part)
         {
             OnRenderComplited += OnRenderCompleted_Render;
-            part.BuildRenderPart();
+            RenderPartBuilder.BuildRenderPart(part);
             Part = part.RenderPart;
             position = 0;
             Part.BuildPitch();
