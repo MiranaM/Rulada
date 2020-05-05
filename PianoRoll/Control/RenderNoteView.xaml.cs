@@ -46,19 +46,29 @@ namespace PianoRoll.Control
 
             var attack = MusicMath.Current.MillisecondToTick(envelope.p1);
             var preutterance = MusicMath.Current.MillisecondToTick(envelope.p2);
-            var length = MusicMath.Current.MillisecondToTick(note.Length);
+            var length = note.Length;
             var decay = MusicMath.Current.MillisecondToTick(envelope.p3);
             var straightPreutterance = preutterance - attack;
             var cutoff = 0;
             if (next != null)
             {
-                cutoff = MusicMath.Current.MillisecondToTick(next.Pre - next.Ovl);
+                cutoff = MusicMath.Current.MillisecondToTick(next.StraightPre);
             }
 
             Overlap.Width = attack;
             Canvas.SetLeft(Overlap, -preutterance);
-            Sustain.Width = length + straightPreutterance - decay - cutoff;
-            Canvas.SetLeft(Sustain, -straightPreutterance);
+            var sustain = length + straightPreutterance - decay - cutoff;
+            if (sustain >= 0)
+            {
+                Sustain.Width = sustain;
+                Canvas.SetLeft(Sustain, -straightPreutterance);
+                Sustain.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                NoteMainBorder.Background = new SolidColorBrush(Color.FromArgb(140,255, 0, 0));
+                Sustain.Visibility = Visibility.Hidden;
+            }
             Decay.Width = decay;
             Canvas.SetLeft(Decay, length - decay - cutoff);
             

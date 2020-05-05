@@ -113,8 +113,6 @@ namespace PianoRoll.Model
                     i++;
                 }
             }
-
-            RecalculatePreOvl();
         }
 
         public void TrimNotes()
@@ -131,13 +129,6 @@ namespace PianoRoll.Model
                     index--;
                 }
             }
-        }
-
-        public void RecalculatePreOvl()
-        {
-
-            foreach (var note in Notes)
-                note.RecalculatePreOvl();
         }
 
         public void Delete(Note note)
@@ -228,6 +219,7 @@ namespace PianoRoll.Model
             {
                 var transitioned = TransitionTool.Current.Process(note);
                 note.Phoneme = Track.Singer.FindPhoneme(transitioned);
+                note.RecalculatePreOvl();
 
                 // report
                 var prev = note.GetPrev();
@@ -236,6 +228,12 @@ namespace PianoRoll.Model
                     ReportRenderBuild(" ");
                 ReportRenderBuild($"{note.AbsoluteTime}\t{note.Length}({neededAbs})\t{note}");
                 prevAbs = note.AbsoluteTime;
+            }
+
+            foreach (var note in Notes)
+            {
+                note.Envelope = new Envelope(note);
+                note.Envelope.Check(note);
             }
         }
 

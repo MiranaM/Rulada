@@ -35,21 +35,14 @@ namespace PianoRoll.Model
             var next = note.GetNext();
             if (next != null)
                 p3 = next.Ovl;
-            ResolveLength(MusicMath.Current.TickToMillisecond(note.Length));
         }
 
-        private void ResolveLength(double length)
+        public void Check(Note note)
         {
-            if (length <= 0)
+            var next = note.GetNext();
+            var sustain = MusicMath.Current.TickToMillisecond(note.Length) + note.StraightPre - next?.StraightPre;
+            if (sustain <= 0)
                 throw new Exception();
-            var first = Math.Max(p1, p2);
-            while (first + p3 > length)
-            {
-                p1 /= 1.5;
-                p2 /= 1.5;
-                p3 /= 1.5;
-                first = Math.Max(p1, p2);
-            }
         }
     }
 
@@ -130,6 +123,7 @@ namespace PianoRoll.Model
         public double Pre { get; private set; }
         public double Ovl { get; private set; }
         public double Stp { get; private set; }
+        public double StraightPre => Pre - Ovl;
         public double LengthAdd { get; private set; }
 
         public Envelope GetEnvelope()

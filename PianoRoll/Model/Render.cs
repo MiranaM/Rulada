@@ -56,7 +56,6 @@ namespace PianoRoll.Model
             part.BuildRenderPart();
             Part = part.RenderPart;
             position = 0;
-            Part.RecalculatePreOvl();
             Part.BuildPitch();
             if (output != null)
                 output.Close();
@@ -210,7 +209,6 @@ namespace PianoRoll.Model
                 offset += next.Ovl;
             }
 
-            note.Envelope = new Envelope(note);
             var envelope = note.Envelope;
             var sign = offset >= 0 ? "+" : "-";
             var length = $"{note.Length}@{Settings.Current.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";

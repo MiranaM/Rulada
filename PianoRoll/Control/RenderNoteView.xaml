@@ -25,7 +25,8 @@
                   Grid.Row="0"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
-                <Border BorderBrush="#55005500" BorderThickness="1" Background="#22005500">
+                <Border x:Name="NoteMainBorder">
+                    <Rectangle Fill="#FF005500" Height="2" VerticalAlignment="Bottom" Margin="0,0,1,0"></Rectangle>
                 </Border>
                 <Canvas Name="EnvelopeContainer"
                         HorizontalAlignment="Stretch"
@@ -36,41 +37,73 @@
                             Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type local:RenderNoteView}},
                              Path=ActualHeight, FallbackValue=14}">
-                        <Line Stroke="#FFFF88FF"
-                              X1="0"
-                              X2="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
-                             AncestorType={x:Type Canvas}},
-                             Path=ActualWidth, FallbackValue=30}"
-                              Y1="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                        <Polygon 
+                            Stroke="#FFFF88FF"
+                            Fill="#44FF88FF"
+                            Stretch="Fill"
+                            Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type Canvas}},
                              Path=ActualHeight, FallbackValue=14}"
-                              Y2="0" />
+                            Width="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type Canvas}},
+                             Path=ActualWidth, FallbackValue=14}">
+                            <Polygon.Points>
+                                <Point X="0"
+                                       Y="14" />
+                                <Point X="14"
+                                       Y="0" />
+                                <Point X="14"
+                                       Y="14" />
+                            </Polygon.Points>
+                        </Polygon>
                     </Canvas>
                     <Canvas Name="Sustain"
                             Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                      AncestorType={x:Type local:RenderNoteView}},
                      Path=ActualHeight, FallbackValue=14}">
-                        <Line Stroke="#FF000000"
-                              X1="0"
-                              X2="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                        <Polygon Stroke="#FFAAAA00"
+                                 Fill="#22AAAA00"
+                                 Stretch="Fill"
+                                 Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type Canvas}},
-                             Path=ActualWidth, FallbackValue=30}"
-                              Y1="0"
-                              Y2="0" />
+                             Path=ActualHeight, FallbackValue=14}"
+                                 Width="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             AncestorType={x:Type Canvas}},
+                             Path=ActualWidth, FallbackValue=14}">
+                            <Polygon.Points>
+                                <Point X="0"
+                                       Y="0" />
+                                <Point X="14"
+                                       Y="0" />
+                                <Point X="14"
+                                       Y="14" />
+                                <Point X="0"
+                                       Y="14" />
+                            </Polygon.Points>
+                            </Polygon>
                     </Canvas>
                     <Canvas Name="Decay"
                             Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                      AncestorType={x:Type local:RenderNoteView}},
                      Path=ActualHeight, FallbackValue=14}">
-                        <Line Stroke="#FF88FFFF"
-                              X1="0"
-                              X2="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                        <Polygon Stroke="#FF22AAAA"
+                                 Fill="#2222AAAA"
+                                 Stretch="Fill"
+                                 Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type Canvas}},
-                             Path=ActualWidth, FallbackValue=30}"
-                              Y1="0"
-                              Y2="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                             Path=ActualHeight, FallbackValue=14}"
+                                 Width="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type Canvas}},
-                             Path=ActualHeight, FallbackValue=14}" />
+                             Path=ActualWidth, FallbackValue=14}">
+                            <Polygon.Points>
+                                <Point X="0"
+                                       Y="0" />
+                                <Point X="0"
+                                       Y="14" />
+                                <Point X="14"
+                                       Y="14" />
+                            </Polygon.Points>
+                        </Polygon>
                     </Canvas>
                 </Canvas>
             </Grid>

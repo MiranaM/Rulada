@@ -36,9 +36,9 @@ namespace PianoRoll.Model
         public double GetConsonantLength(string phoneme)
         {
             // TODO: do right way
-            var value = 40;
+            var value = 50;
             if (phoneme == "r" || phoneme == "r'")
-                value = 20;
+                value = 30;
             else if (phoneme == "ch"
                 || phoneme == "t'"
                 || phoneme == "ts"
