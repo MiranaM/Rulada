@@ -129,7 +129,7 @@ namespace PianoRoll.Control
                 }
                 MakeNote(noteControl, note.NoteNum, note.AbsoluteTime, note.Length);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
-                note.NoteControl = noteControl;
+                note.SetNoteControl(noteControl);
 
                 i++;
             }

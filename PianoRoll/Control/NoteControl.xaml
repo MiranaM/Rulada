@@ -69,9 +69,9 @@
                    HorizontalAlignment="Stretch"
                    Cursor="Cross"
                    VerticalAlignment="Stretch"
-                   DragCompleted="ThumbResizeLeft_DragCompleted"
+                   DragCompleted="ThumbResize_DragCompleted"
                    DragDelta="ThumbResizeLeft_DragDelta"
-                   DragStarted="ThumbResizeLeft_DragStarted"
+                   DragStarted="ThumbResize_DragStarted"
                    MouseRightButtonUp="ThumbMove_MouseRightButtonUp">
                 <Thumb.Template>
                     <ControlTemplate>
@@ -84,9 +84,9 @@
                    Grid.Column="2"
                    HorizontalAlignment="Stretch"
                    VerticalAlignment="Stretch"
-                   DragCompleted="ThumbResizeRight_DragCompleted"
+                   DragCompleted="ThumbResize_DragCompleted"
                    DragDelta="ThumbResizeRight_DragDelta"
-                   DragStarted="ThumbResizeRight_DragStarted"
+                   DragStarted="ThumbResize_DragStarted"
                    Cursor="SizeWE"
                    MouseRightButtonUp="ThumbMove_MouseRightButtonUp">
                 <Thumb.Template>

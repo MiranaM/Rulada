@@ -122,7 +122,7 @@ namespace PianoRoll.Model
                 var note = Notes[index];
                 var next = note.GetNext();
                 if (next != null && note.Length > next.AbsoluteTime - note.AbsoluteTime)
-                    note.Length = next.AbsoluteTime - note.AbsoluteTime;
+                    note.Length = (int)(next.AbsoluteTime - note.AbsoluteTime);
                 if (note.Length <= 0)
                 {
                     note.Delete();
@@ -227,9 +227,9 @@ namespace PianoRoll.Model
 
             }
 
-            foreach (var note in Notes)
+            foreach (var note in notes)
             {
-                note.Envelope = new Envelope(note);
+                note.CreateEnvelope();
                 note.Envelope.Check(note);
             }
         }
@@ -268,10 +268,10 @@ namespace PianoRoll.Model
             if (length <= 0 || absoluteTime <= 0)
                 throw new Exception();
             var note = new Note(renderPart);
-            note.Length = length;
-            note.AbsoluteTime = absoluteTime;
-            note.Phonemes = phoneme;
+            note.Length = (int)length;
+            note.AbsoluteTime = (long)absoluteTime;
             note.Lyric = phoneme;
+            note.Phonemes = phoneme;
             note.IsRender = true;
             note.Intensity = parent.Intensity;
             note.NoteNum = parent.NoteNum;

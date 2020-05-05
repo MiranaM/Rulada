@@ -50,53 +50,16 @@ namespace PianoRoll.Model
     {
         #region variables
 
-        private int length;
-        private string lyric;
-        private int noteNum;
-        private long absoluteTime;
-        private Envelope envelope;
-        private VibratoExpression vibrato;
-        private string phonemes;
-
         public bool IsRender;
 
         public Part Part;
 
-        public dynamic Length
-        {
-            get => length;
-            set => length = (int)value;
-        }
-
-        public dynamic Lyric
-        {
-            get => lyric;
-            set => SetLyric(value);
-        }
-
-        public dynamic NoteNum
-        {
-            get => noteNum;
-            set => SetNoteNum(value);
-        }
-
-        public dynamic Envelope
-        {
-            get => GetEnvelope();
-            set => SetEnvelope(value);
-        }
-
-        public dynamic AbsoluteTime
-        {
-            get => absoluteTime;
-            set => absoluteTime = (long) value;
-        }
-
-        public dynamic Vibrato
-        {
-            get => vibrato;
-            set => SetVibrato(value);
-        }
+        public int Length { get; set; }
+        public long AbsoluteTime { get; set; }
+        public int NoteNum { get; set; }
+        public string Lyric { get; set; }
+        public Envelope Envelope { get; private set; }
+        public VibratoExpression Vibrato { get; set; }
 
         public double RequiredLength => GetRequiredLength();
 
@@ -106,11 +69,7 @@ namespace PianoRoll.Model
         public string Flags { get; set; }
         public PitchBendExpression PitchBend { get; set; }
 
-        public NoteControl NoteControl
-        {
-            get => noteControl;
-            set => SetNoteControl(value);
-        }
+        public NoteControl NoteControl { get; private set; }
 
         public Oto Oto { get; set; }
         public Oto SafeOto => Oto != null ? Oto : DefaultOto;
@@ -123,16 +82,8 @@ namespace PianoRoll.Model
         public double Ovl { get; set; }
         public double Stp { get; set; }
         public double StraightPre => Pre - Ovl;
-        public double LengthAdd { get; private set; }
-
-        public Envelope GetEnvelope()
-        {
-            return hasEnvelope ? envelope : new Envelope(this);
-        }
 
         public bool HasOto => Oto != null;
-        private NoteControl noteControl;
-        private bool hasEnvelope;
 
         #endregion
 
@@ -144,19 +95,6 @@ namespace PianoRoll.Model
         public Note GetPrev()
         {
             return Part.GetPrevNote(this);
-        }
-
-        public Note(Part part, double lengthAdd, string phonemes)
-        {
-            Part = part;
-            LengthAdd = lengthAdd;
-            this.phonemes = phonemes;
-            Modulation = 0;
-            Intensity = 100;
-            Velocity = 100;
-            Length = Settings.Current.Resolution;
-            Lyric = Settings.Current.DefaultLyric;
-            PitchBend = new PitchBendExpression();
         }
 
         public override string ToString()
@@ -175,13 +113,24 @@ namespace PianoRoll.Model
             PitchBend = new PitchBendExpression();
         }
 
-        public void NewLyric(string lyric)
+        public void SetNewLyric(string lyric)
         {
-            Lyric = lyric;
+            ProcessLyric(lyric);
             if (Phonemes != string.Empty)
                 NoteControl.SetText(Lyric, Phonemes);
             else
                 NoteControl.SetText(Lyric);
+        }
+
+        public void ProcessLyric(string lyric)
+        {
+            Lyric = lyric;
+            var temp = lyric;
+            if (PartEditor.UseDict)
+                Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
+            if (PartEditor.UseTrans)
+                temp = TransitionTool.Current.Process(this);
+            Oto = Part.Track.Singer.FindOto(temp != string.Empty ? temp : Phonemes);
         }
 
         public void SubmitPosLen()
@@ -205,13 +154,8 @@ namespace PianoRoll.Model
         /// </summary>
         public void Snap()
         {
-            AbsoluteTime = MusicMath.Current.SnapAbsoluteTime(AbsoluteTime);
-            Length = MusicMath.Current.SnapAbsoluteTime(Length);
-        }
-
-        public void UpdateEnvelope()
-        {
-            Envelope = new Envelope(this);
+            AbsoluteTime = (long)MusicMath.Current.SnapAbsoluteTime(AbsoluteTime);
+            Length = (int)MusicMath.Current.SnapAbsoluteTime(Length);
         }
 
         public void RecalculatePreOvl()
@@ -268,33 +212,15 @@ namespace PianoRoll.Model
             return AbsoluteTime + Length == next.AbsoluteTime;
         }
 
-        #region private
-
-        private void SetNoteNum(int value)
+        public void CreateEnvelope()
         {
-            noteNum = value;
+            Envelope = new Envelope(this);
         }
 
-        private void SetNoteNum(double value)
-        {
-            noteNum = (int)value;
-        }
-
-        private void SetNoteNum(float value)
-        {
-            noteNum = (int)value;
-        }
-
-        private void SetEnvelope(Envelope value)
-        {
-            envelope = value;
-            hasEnvelope = true;
-        }
-
-        private void SetEnvelope(string value)
+        public void SetEnvelope(string value)
         {
             var ops = value.Split(',');
-            envelope = new Envelope
+            Envelope = new Envelope
             {
                 p1 = double.Parse(ops[0]),
                 p2 = double.Parse(ops[1]),
@@ -308,13 +234,12 @@ namespace PianoRoll.Model
                 p5 = ops.Length > 9 ? double.Parse(ops[9]) : 0,
                 v5 = ops.Length > 9 ? double.Parse(ops[10]) : 100
             };
-            hasEnvelope = true;
         }
 
-        private void SetEnvelope(string[] value)
+        public void SetEnvelope(string[] value)
         {
             var numberFormat = new CultureInfo("ja-JP").NumberFormat;
-            envelope = new Envelope
+            Envelope = new Envelope
             {
                 p1 = double.Parse(value[0], numberFormat),
                 p2 = double.Parse(value[1], numberFormat),
@@ -328,15 +253,14 @@ namespace PianoRoll.Model
                 p5 = value.Length > 9 ? double.Parse(value[9], numberFormat) : 0,
                 v5 = value.Length > 9 ? double.Parse(value[10], numberFormat) : 100
             };
-            hasEnvelope = true;
         }
 
-        private void SetVibrato(VibratoExpression value)
+        public void SetVibrato(VibratoExpression value)
         {
-            vibrato = value;
+            Vibrato = value;
         }
 
-        private void SetVibrato(string vbr)
+        public void SetVibrato(string vbr)
         {
             var cultureInfo = new CultureInfo("ja-JP");
             var value = vbr.Split(',');
@@ -345,33 +269,24 @@ namespace PianoRoll.Model
             {
                 vibrato.Length = double.Parse(value[0], cultureInfo);
                 vibrato.Period = double.Parse(value[1], cultureInfo);
-                vibrato.Depth  = double.Parse(value[2], cultureInfo);
-                vibrato.In     = double.Parse(value[3], cultureInfo);
-                vibrato.Out    = double.Parse(value[4], cultureInfo);
-                vibrato.Shift  = double.Parse(value[5], cultureInfo);
-                vibrato.Drift  = double.Parse(value[6], cultureInfo);
+                vibrato.Depth = double.Parse(value[2], cultureInfo);
+                vibrato.In = double.Parse(value[3], cultureInfo);
+                vibrato.Out = double.Parse(value[4], cultureInfo);
+                vibrato.Shift = double.Parse(value[5], cultureInfo);
+                vibrato.Drift = double.Parse(value[6], cultureInfo);
             }
 
-            this.vibrato = vibrato;
+            Vibrato = vibrato;
         }
 
-        private void SetLyric(string lyric)
-        {
-            this.lyric = lyric;
-            var temp = lyric;
-            if (PartEditor.UseDict)
-                Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
-            if (PartEditor.UseTrans)
-                temp = TransitionTool.Current.Process(this);
-            Oto = Part.Track.Singer.FindOto(temp);
-        }
-
-        private void SetNoteControl(NoteControl noteControl)
+        public void SetNoteControl(NoteControl noteControl)
         {
             noteControl.note = this;
-            this.noteControl = noteControl;
-            NewLyric(Lyric);
+            NoteControl = noteControl;
+            SetNewLyric(Lyric);
         }
+
+        #region private
 
         private Oto GetDefaultOto(string alias = "")
         {

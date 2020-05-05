@@ -150,7 +150,7 @@ namespace PianoRoll.Model
                             note.Lyric = value;
                             break;
                         case "Length":
-                            note.Length = double.Parse(value, numberFormat);
+                            note.Length = (int)double.Parse(value, numberFormat);
                             break;
                         case "STP":
                             note.Stp = double.Parse(value, numberFormat);
@@ -159,7 +159,7 @@ namespace PianoRoll.Model
                             note.NoteNum = int.Parse(value, numberFormat) - 12;
                             break;
                         case "Envelope":
-                            note.Envelope = value;
+                            note.SetEnvelope(value);
                             break;
                         case "Velocity":
                             note.Velocity = int.Parse(value, numberFormat);
@@ -174,7 +174,7 @@ namespace PianoRoll.Model
                             note.Flags = value;
                             break;
                         case "VBR":
-                            note.Vibrato = value;
+                            note.SetVibrato(value);
                             break;
                         case "PBS":
                             pitchData.PBS = value;

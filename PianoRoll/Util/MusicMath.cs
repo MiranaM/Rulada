@@ -257,6 +257,16 @@ namespace PianoRoll.Util
         }
 
         /// <summary>
+        ///     X Position to Width
+        /// </summary>
+        /// <param name="x"></param>
+        /// <returns></returns>
+        public int GetNoteLength(double x)
+        {
+            return (int)(x / Settings.Current.xScale);
+        }
+
+        /// <summary>
         ///     Absolute Time to X Position
         /// </summary>
         /// <param name="absoluteTime"></param>

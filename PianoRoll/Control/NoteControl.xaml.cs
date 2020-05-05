@@ -56,7 +56,7 @@ namespace PianoRoll.Control
         public Note note;
 
         // зафиксить текст lyric, вызывается из Note
-        // чтобы отправить на изменение, нужно Note.NewLyric(lyric),
+        // чтобы отправить на изменение, нужно Note.SetNewLyric(lyric),
         // чтобы также обработать текст
         public void SetText(string lyric)
         {
@@ -90,7 +90,7 @@ namespace PianoRoll.Control
                 var i = 0;
                 while (noteToSet != null && i < texts.Length)
                 {
-                    noteToSet.NewLyric(texts[i]);
+                    noteToSet.SetNewLyric(texts[i]);
                     i++;
                     noteToSet = noteToSet.GetNext();
                 }
@@ -113,9 +113,14 @@ namespace PianoRoll.Control
 
         private bool TryResize(double offset)
         {
-            if (Width + offset > 0)
+            return TrySetWidth(Width + offset);
+        }
+
+        private bool TrySetWidth(double width)
+        {
+            if (width > 0)
             {
-                Width += offset;
+                Width = width;
                 return true;
             }
             else
@@ -137,27 +142,14 @@ namespace PianoRoll.Control
             TryResize(e.HorizontalChange);
         }
 
-        private void ThumbResizeLeft_DragCompleted(object sender,
+        private void ThumbResize_DragCompleted(object sender,
             DragCompletedEventArgs e)
         {
-            note.Length = Width / Settings.Current.xScale;
+            note.Length = MusicMath.Current.GetNoteLength(Width);
             OnNoteChanged();
         }
 
-        private void ThumbResizeLeft_DragStarted(object sender,
-            DragStartedEventArgs e)
-        {
-            WidthInit = Width;
-        }
-
-        private void ThumbResizeRight_DragCompleted(object sender,
-            DragCompletedEventArgs e)
-        {
-            note.Length = Width / Settings.Current.xScale;
-            OnNoteChanged();
-        }
-
-        private void ThumbResizeRight_DragStarted(object sender,
+        private void ThumbResize_DragStarted(object sender,
             DragStartedEventArgs e)
         {
             WidthInit = Width;
@@ -190,7 +182,7 @@ namespace PianoRoll.Control
             var x = Canvas.GetLeft(this) + currentMousePosition.X;
             var y = Canvas.GetTop(this) + currentMousePosition.Y;
             double time = MusicMath.Current.GetNoteXPosition(note.AbsoluteTime);
-            note.Length = MusicMath.Current.GetAbsoluteTime(x - time);
+            note.Length = MusicMath.Current.MillisecondToTick(x - time);
             PartEditor.AddNote(x, y);
             // OnNoteChanged is already called in "add note"
         }
@@ -198,7 +190,8 @@ namespace PianoRoll.Control
         private void ThumbMove_DragStarted(object sender, DragStartedEventArgs e)
         {
             WidthInit = Width;
-            if (Keyboard.IsKeyDown(Key.LeftCtrl)) AddNote(Mouse.GetPosition(this));
+            if (Keyboard.IsKeyDown(Key.LeftCtrl))
+                AddNote(Mouse.GetPosition(this));
         }
 
         private void ThumbMove_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
