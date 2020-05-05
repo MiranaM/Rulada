@@ -54,7 +54,7 @@ namespace PianoRoll
         public double xScale = 1;
         public double yScale = 15;
 
-        public const double MIN_GRID_WIDTH = 100;
+        public const double MIN_GRID_WIDTH = 20; // px
         public double MinNoteLengthTick => RESOLUTION / BeatUnit * xScale;
 
         public Dictionary<string, int> NotesLengths = new Dictionary<string, int>

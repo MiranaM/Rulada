@@ -10,6 +10,7 @@ using PianoRoll.Model;
 using PianoRoll.Model.Pitch;
 using PianoRoll.Themes;
 using PianoRoll.Util;
+using static PianoRoll.Settings;
 
 namespace PianoRoll.Control
 {
@@ -246,22 +247,33 @@ namespace PianoRoll.Control
             DrawUnitGrid();
         }
 
+
         private void DrawUnitGrid()
         {
             var width = lastPosition > minWidth ? lastPosition : minWidth;
-            for (double n = 0; n < width; n += Settings.Current.MinNoteLengthTick)
-                if (n % Settings.RESOLUTION != 0)
+
+            double gridStep = Settings.Current.MinNoteLengthTick;
+
+            while (gridStep < Settings.MIN_GRID_WIDTH / Settings.Current.xScale)
+            {
+                gridStep *= 2;
+            }
+
+            var unitLines = new List<Polyline>();
+            for (double n = 0; n < width; n += gridStep)
+                if (Math.Abs((n) % RESOLUTION) > 0.01)
                 {
                     var line = new Polyline();
-                    line.StrokeDashArray.Add(yScale / 3);
-                    line.StrokeDashArray.Add(yScale / 3);
+                    line.StrokeDashArray.Add(Settings.Current.yScale / 3);
+                    line.StrokeDashArray.Add(Settings.Current.yScale / 3);
                     line.StrokeDashCap = PenLineCap.Triangle;
                     line.StrokeEndLineCap = PenLineCap.Triangle;
                     line.StrokeStartLineCap = PenLineCap.Triangle;
-                    line.Points.Add(new Point(n * xScale, 0));
-                    line.Points.Add(new Point(n * xScale, Settings.Current.Octaves * 12 * yScale));
+                    line.Points.Add(new Point(n * Settings.Current.xScale, 0));
+                    line.Points.Add(new Point(n * Settings.Current.xScale, Settings.Current.Octaves * 12 * Settings.Current.yScale));
                     line.Stroke = Schemes.Current.beatSeparatorBrush;
                     GridCanvas.Children.Add(line);
+                    unitLines.Add(line);
                 }
         }
 

@@ -48,9 +48,7 @@ namespace PianoRoll.Control
             Instance = this;
             OnPartChanged += OnPartChanged_Part;
             //xScale = 480.0 / Settings.RESOLUTION;
-            minWidth = minBars *
-                       Settings.Current.BeatPerBar 
-                       * RESOLUTION;
+            minWidth = minBars * Settings.Current.BeatPerBar * RESOLUTION;
             InitializeComponent();
             DrawInit();
             Loaded += OnLoaded_Part;
@@ -235,13 +233,14 @@ namespace PianoRoll.Control
 
             double gridStep = Settings.Current.MinNoteLengthTick;
 
-            while (gridStep < Settings.MIN_GRID_WIDTH)
+            while (gridStep < Settings.MIN_GRID_WIDTH / Settings.Current.xScale)
             {
                 gridStep *= 2;
             }
 
+            var unitLines = new List<Polyline>();
             for (double n = 0; n < width; n += gridStep)
-                if (Math.Abs(n % RESOLUTION) > 0.01)
+                if (Math.Abs((n) % RESOLUTION) > 0.01)
                 {
                     var line = new Polyline();
                     line.StrokeDashArray.Add(Settings.Current.yScale / 3);
@@ -253,6 +252,7 @@ namespace PianoRoll.Control
                     line.Points.Add(new Point(n * Settings.Current.xScale, Settings.Current.Octaves * 12 * Settings.Current.yScale));
                     line.Stroke = Schemes.Current.beatSeparatorBrush;
                     GridCanvas.Children.Add(line);
+                    unitLines.Add(line);
                 }
         }
 
