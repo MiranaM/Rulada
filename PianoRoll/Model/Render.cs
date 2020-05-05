@@ -68,15 +68,15 @@ namespace PianoRoll.Model
                 File.Delete(Settings.Current.Output + ".whd");
 
             if (!File.Exists(Settings.Current.Bat)) File.Create(Settings.Current.Bat);
-            var delcommand = $"del \"{Settings.Current.CacheFolder}\\*.wav\"\r\n";
-            File.WriteAllText(Settings.Current.Bat, delcommand);
+            var deleteCommand = $"del \"{Settings.Current.CacheFolder}\\*.wav\"\r\n";
+            File.WriteAllText(Settings.Current.Bat, deleteCommand);
             var i = 1;
             long renderPosition = 0;
             foreach (var note in Part.Notes)
             {
                 var oto = note.SafeOto;
-                var tempfilename = Path.Combine(Settings.Current.CacheFolder, $"{i}");
-                tempfilename += $"_{oto.Alias}_{note.NoteNum}_{note.Length}.wav";
+                var tempFilename = Path.Combine(Settings.Current.CacheFolder, $"{i}");
+                tempFilename += $"_{oto.Alias}_{note.NoteNum}_{note.Length}.wav";
                 // Send Rest
                 if (note.AbsoluteTime > renderPosition)
                 {
@@ -86,8 +86,8 @@ namespace PianoRoll.Model
                 }
 
                 // Send
-                SendToResampler(note, tempfilename);
-                SendToAppendTool(note, tempfilename);
+                SendToResampler(note, tempFilename);
+                SendToAppendTool(note, tempFilename);
                 renderPosition += note.Length;
                 i++;
             }
