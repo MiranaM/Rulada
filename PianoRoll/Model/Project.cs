@@ -19,11 +19,7 @@ namespace PianoRoll.Model
         public Project(Singer defaultSinger)
         {
             DefaultSinger = defaultSinger;
-            Current = this;
         }
-
-        public static Project Current;
-
 
         public Track AddTrack()
         {

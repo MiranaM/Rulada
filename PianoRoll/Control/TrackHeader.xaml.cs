@@ -1,5 +1,6 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Input;
+using PianoRoll.Model;
 using PianoRoll.View;
 
 namespace PianoRoll.Control
@@ -9,14 +10,18 @@ namespace PianoRoll.Control
     /// </summary>
     public partial class TrackHeader : UserControl
     {
-        public TrackHeader()
+
+        public TrackHeader(Singer singer)
         {
+            this.singer = singer;
             InitializeComponent();
         }
 
+        private Singer singer;
+
         private void ShowSingerDialog()
         {
-            var dialog = new SingerDialog();
+            var dialog = new SingerDialog(singer);
             dialog.Show();
         }
 

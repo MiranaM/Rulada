@@ -15,17 +15,19 @@ namespace PianoRoll.View
     public partial class MainWindow : Window
     {
         public SingerManager SingerManager;
+        public Project Project;
+
         public MainWindow()
         {
 
             InitializeComponent();
             SingerManager = new SingerManager();
             New();
-            
-            // if (Settings.LastFile != null) ImportUst(Settings.LastFile);
-            // else New();
-            
-            SetPosition();
+        }
+
+        private void SetProject()
+        {
+            Playlist.Init(Project);
         }
 
         private void SetPosition()
@@ -48,9 +50,9 @@ namespace PianoRoll.View
             Clear();
             var xmlReader = XmlReader.Create(new StringReader(dir));
             File.ReadAllText(dir); 
-            var Project = new Project(SingerManager.DefaultSinger);
+            Project = new Project(SingerManager.DefaultSinger);
             Project.Dir = dir;
-            Project.Current.IsNew = false;
+            Project.IsNew = false;
 
             // temp
             var track = Project.AddTrack();
@@ -67,37 +69,40 @@ namespace PianoRoll.View
         {
             Clear();
             Playlist.AddTrack(track);
-            Project.Current.AddTrack(track);
+            Project.AddTrack(track);
             PartEditor.DrawNotes();
             InitElements();
         }
 
-        private void ImportUst(string dir, bool IsNewProject = true)
+        private void ImportUst(string dir)
         {
-            if (IsNewProject)
-                Project.Current = new Project(SingerManager.DefaultSinger);
-            var part = Ust.Current.Import(dir, out var tempo, out var singerDir);
-            Settings.Current.Tempo = tempo;
-            var track = new Track(Project.Current.DefaultSinger);
-            track.AddPart(part);
+            Clear();
+            Project = new Project(SingerManager.DefaultSinger);
+            SetProject();
+            var track = new Track(Project.DefaultSinger);
+            var part = track.AddPart();
+
+            Ust.Current.Import(part, dir);
             PartEditor.Clear();
             PartEditor.Part = part;
             Settings.Current.LastFile = dir;
             ImportTrack(track);
+            SetPosition();
         }
 
         private void New()
         {
-            Clear();
             TransitionTool.Current.Load(Settings.Current.TransitionTool);
-            var project = new Project(SingerManager.DefaultSinger);
-            var track = project.AddTrack();
+            Project = new Project(SingerManager.DefaultSinger);
+            SetProject();
+            var track = Project.AddTrack();
             var part = track.AddPart();
             Playlist.AddTrack(track);
             PartEditor.Part = part;
             PartEditor.DrawPart();
             PartEditor.DrawNotes();
             InitElements();
+            SetPosition();
         }
 
         private void InitElements()
@@ -114,8 +119,8 @@ namespace PianoRoll.View
             textWritter.WriteStartElement("srnx");
             textWritter.WriteEndElement();
             textWritter.Close();
-            Project.Current.Dir = dir;
-            Project.Current.IsNew = false;
+            Project.Dir = dir;
+            Project.IsNew = false;
         }
 
         private string ShowOpenFileDialog(string filter)
@@ -233,7 +238,7 @@ namespace PianoRoll.View
 
         private void MenuItemSave_Click(object sender, RoutedEventArgs e)
         {
-            if (Project.Current.IsNew)
+            if (Project.IsNew)
             {
                 var dir = ShowSaveFileDialog("Sirin Files (*.srnx)|*.srnx|All Files (*.*)|*.*");
                 if (dir == "")
@@ -242,7 +247,7 @@ namespace PianoRoll.View
             }
             else
             {
-                Save(Project.Current.Dir);
+                Save(Project.Dir);
             }
         }
 
@@ -277,7 +282,7 @@ namespace PianoRoll.View
         private void ProjectButton_Click(object sender, RoutedEventArgs e)
         {
             var projectDialog = new ProjectDialog();
-            projectDialog.Init(SingerManager);
+            projectDialog.Init(SingerManager, Project);
             projectDialog.ShowDialog();
         }
 

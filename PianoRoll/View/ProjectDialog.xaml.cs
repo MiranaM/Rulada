@@ -15,10 +15,10 @@ namespace PianoRoll.View
 
         }
 
-        public void Init(SingerManager singerManager)
+        public void Init(SingerManager singerManager, Project project)
         {
             InitSingers(singerManager);
-            InitTitle();
+            InitTitle(project);
         }
 
         public void InitSingers(SingerManager singerManager)
@@ -48,11 +48,11 @@ namespace PianoRoll.View
             //}
         }
 
-        public void InitTitle()
+        public void InitTitle(Project project)
         {
             //CoverAuthor.Content = Project.Current.Title;
             //SongAuthor;
-            SongName.Content = Project.Current.Title;
+            SongName.Content = project.Title;
         }
     }
 }

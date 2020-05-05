@@ -12,17 +12,17 @@ namespace PianoRoll.View
     /// </summary>
     public partial class SingerDialog : Window
     {
-        private readonly Part part;
+        private readonly Singer singer;
 
-        public SingerDialog()
+        public SingerDialog(Singer singer)
         {
-            part = Project.Current.Tracks[0].Parts[0];
+            this.singer = singer;
             InitializeComponent();
-            Name.Content = part.Track.Singer.Name;
-            Author.Content = $"Author: {part.Track.Singer.Author}";
-            if (part.Track.Singer.Image != null)
+            Name.Content = singer.Name;
+            Author.Content = $"Author: {singer.Author}";
+            if (singer.Image != null)
             {
-                var imagepath = Path.Combine(part.Track.Singer.Dir, part.Track.Singer.Image);
+                var imagepath = Path.Combine(singer.Dir, singer.Image);
                 if (File.Exists(imagepath)) Avatar.Source = new BitmapImage(new Uri(imagepath));
             }
 
@@ -32,7 +32,7 @@ namespace PianoRoll.View
         private void DrawOto()
         {
             OtoView.Items.Clear();
-            foreach (var phoneme in part.Track.Singer.Otos)
+            foreach (var phoneme in singer.Otos)
             {
                 var line = new[]
                 {

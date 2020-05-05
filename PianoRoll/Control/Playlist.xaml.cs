@@ -24,6 +24,8 @@ namespace PianoRoll.Control
         private double minHeight = 300;
         private double lastHeigth = 5;
 
+        public Project Project;
+
         public Playlist()
         {
             xScale = 80.0 / Settings.Current.Resolution;
@@ -31,6 +33,11 @@ namespace PianoRoll.Control
             InitializeComponent();
             ContentCanvas.Loaded += SetMinSizes;
             DrawGrid();
+        }
+
+        public void Init(Project project)
+        {
+            Project = project;
         }
 
         public void SetMinSizes(object sender, RoutedEventArgs e)
@@ -41,7 +48,7 @@ namespace PianoRoll.Control
 
         public void AddTrack()
         {
-            var trackControll = new TrackControl(lastHeigth, minWidth);
+            var trackControll = new TrackControl(lastHeigth, minWidth, Project.AddTrack(), Project.Tracks.Count);
             lastHeigth += 80 + 5.0;
             HeaderCanvas.Children.Add(trackControll.Header);
             ContentCanvas.Children.Add(trackControll.Content);
@@ -50,19 +57,19 @@ namespace PianoRoll.Control
 
         public void AddTrack(Track track)
         {
-            var trackControll = new TrackControl(lastHeigth, minWidth, track);
+            var trackControl = new TrackControl(lastHeigth, minWidth, track, Project.Tracks.Count);
             lastHeigth += 80 + 5.0;
-            HeaderCanvas.Children.Add(trackControll.Header);
-            ContentCanvas.Children.Add(trackControll.Content);
+            HeaderCanvas.Children.Add(trackControl.Header);
+            ContentCanvas.Children.Add(trackControl.Content);
             Resize();
         }
 
         public void AddSoundTrack()
         {
-            var trackControll = new SoundTrackControl(lastHeigth, minWidth);
+            var trackControl = new SoundTrackControl(lastHeigth, minWidth, Project.AddSoundTrack());
             lastHeigth += 80 + 5.0;
-            HeaderCanvas.Children.Add(trackControll.Header);
-            ContentCanvas.Children.Add(trackControll.Content);
+            HeaderCanvas.Children.Add(trackControl.Header);
+            ContentCanvas.Children.Add(trackControl.Content);
             Resize();
         }
 
@@ -124,12 +131,12 @@ namespace PianoRoll.Control
 
         private void AddSoundTrack_Click(object sender, RoutedEventArgs e)
         {
-            AddSoundTrack(Project.Current.AddSoundTrack());
+            AddSoundTrack(Project.AddSoundTrack());
         }
 
         private void AddTrackButton_Click(object sender, RoutedEventArgs e)
         {
-            AddTrack(Project.Current.AddTrack());
+            AddTrack(Project.AddTrack());
         }
     }
 }
