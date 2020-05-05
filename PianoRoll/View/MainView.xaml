@@ -260,20 +260,6 @@
                 <MenuItem Click="MenuItemSettings_Click" Header="_Настройки..." />
                 <MenuItem Click="MenuItemExit_Click" Header="_Выход" />
             </MenuItem>
-            <MenuItem Header="_Кривая высоты">
-                <MenuItem
-                    Name="PitchOff"
-                    Click="MenuItemPitchOff_Click"
-                    Header="_Убрать питч" />
-                <MenuItem
-                    Name="DrawPitch"
-                    Click="MenuItemDrawPitch_Click"
-                    Header="_Питч нот" />
-                <MenuItem
-                    Name="DrawPartPitch"
-                    Click="MenuItemDrawPartPitch_Click"
-                    Header="_Питч партии" />
-            </MenuItem>
         </Menu>
     </Grid>
 </Window>

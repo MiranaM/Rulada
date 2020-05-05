@@ -189,22 +189,6 @@ namespace PianoRoll.View
             ShowTempoDialog();
         }
 
-        private void MenuItemPitchOff_Click(object sender, RoutedEventArgs e)
-        {
-            PartEditor.PitchOff();
-        }
-
-        private void MenuItemDrawPitch_Click(object sender, RoutedEventArgs e)
-        {
-            PartEditor.Part.BuildPitch();
-            PartEditor.DrawPitch();
-        }
-
-        private void MenuItemDrawPartPitch_Click(object sender, RoutedEventArgs e)
-        {
-            PartEditor.DrawPartPitch();
-        }
-
         private void MenuItemSettings_Click(object sender, RoutedEventArgs e)
         {
             //SettingsWindow settings = new SettingsWindow();            
