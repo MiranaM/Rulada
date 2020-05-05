@@ -59,15 +59,16 @@ namespace PianoRoll.Control
 
         public void DrawPitch()
         {
-            PitchOff();
+            ClearPitch();
             Part.BuildPitch();
             var i = 0;
             foreach (var note in Part.Notes)
             {
-                if (!note.HasOto) continue;
-                var x0 = MusicMath.Current.GetNoteXPosition(note.AbsoluteTime);
+                if (!note.HasOto)
+                    continue;
+                var x0 = MusicMath.Current.GetNoteXPosition(note.FinalPosition);
                 var y0 = MusicMath.Current.GetNoteYPosition(note.NoteNum) + Settings.Current.yScale / 2;
-                var pitchSource = GetPitchSource(note, x0, y0);
+                var pitchSource = GetPitchSource((RenderNote)note, x0, y0);
                 DrawPitchPath(pitchSource, x0, y0, i);
                 var points = GetPitchPoints(note.PitchBend.Points, x0, y0, i);
                 foreach (var ellipse in points)
@@ -81,7 +82,7 @@ namespace PianoRoll.Control
         /// </summary>
         public void DrawPartPitch()
         {
-            PitchOff();
+            ClearPitch();
             //Part.BuildPartPitch();
             var i = 0;
             var x0 = MusicMath.Current.GetNoteXPosition(Part.Notes[i].AbsoluteTime);
@@ -149,11 +150,11 @@ namespace PianoRoll.Control
             return pitchSource;
         }
 
-        public string GetPitchSource(Note note, double x0, double y0)
+        public string GetPitchSource(RenderNote note, double x0, double y0)
         {
             var c = yScale;
             var pitchData = note.PitchBend.Array;
-            PitchController.Current.BuildPitchInfo(note, out var pitchInfo);
+            var pitchInfo = note.PitchInfo;
             // double val = pitchInfo.Start;
             var val = -note.SafeOto.Preutter;
             var xP = MusicMath.Current.MillisecondToTick(val) * xScale;
@@ -282,15 +283,15 @@ namespace PianoRoll.Control
                     NoteCanvas.Children.Add(noteControl);
                     NoteControls.Add(noteControl);
                 }
-                MakeNote(noteControl, note.NoteNum, note.AbsoluteTime, note.Length);
-                noteControl.SetNote(note);
+                MakeNote(noteControl, note.NoteNum, note.FinalPosition, note.FinalLength);
+                noteControl.SetNote((RenderNote)note);
                 lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
 
                 i++;
             }
         }
 
-        public void PitchOff()
+        public void ClearPitch()
         {
             PitchCanvas.Children.Clear();
             PitchPointCanvas.Children.Clear();

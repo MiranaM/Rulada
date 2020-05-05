@@ -74,21 +74,22 @@ namespace PianoRoll.Model
             long renderPosition = 0;
             foreach (var note in Part.Notes)
             {
-                var oto = note.SafeOto;
+                var renderNote = (RenderNote) note;
+                var oto = renderNote.SafeOto;
                 var tempFilename = Path.Combine(Settings.Current.CacheFolder, $"{i}");
-                tempFilename += $"_{oto.Alias}_{note.NoteNum}_{note.Length}.wav";
+                tempFilename += $"_{oto.Alias}_{renderNote.NoteNum}_{renderNote.RenderLength}.wav";
                 // Send Rest
-                if (note.AbsoluteTime > renderPosition)
+                if (renderNote.RenderPosition > renderPosition)
                 {
-                    long resttime = note.AbsoluteTime - renderPosition;
+                    long resttime = renderNote.RenderPosition - renderPosition;
                     SendToAppendTool(resttime, $"{i}_Rest.wav");
                     renderPosition += resttime;
                 }
 
                 // Send
-                SendToResampler(note, tempFilename);
-                SendToAppendTool(note, tempFilename);
-                renderPosition += note.Length;
+                SendToResampler(renderNote, tempFilename);
+                SendToAppendTool(renderNote, tempFilename);
+                renderPosition += renderNote.RenderLength;
                 i++;
             }
 
@@ -175,7 +176,7 @@ namespace PianoRoll.Model
             return list.ToArray();
         }
 
-        public void SendToResampler(Note note, string tempFilename)
+        public void SendToResampler(RenderNote note, string tempFilename)
         {
             var pitchBase64 = Base64.Current.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.Current.SkipOnRender));
             var oto = note.SafeOto;
@@ -188,7 +189,7 @@ namespace PianoRoll.Model
                 note.Velocity, 
                 Part.Flags + note.Flags, 
                 oto.Offset,
-                (int) note.RequiredLength, 
+                (int) GetRequiredLength(note), 
                 oto.Consonant, 
                 oto.Cutoff, 
                 note.Intensity, 
@@ -198,10 +199,26 @@ namespace PianoRoll.Model
             File.AppendAllText(Settings.Current.Bat, request);
         }
 
+        private int GetRequiredLength(RenderNote note)
+        {
+            var next = Part.GetNextNote(note);
+            var prev = Part.GetPrevNote(note);
+            var len = note.FinalLength;
+            double requiredLength = len + note.Pre;
+            if (next != null)
+            {
+                requiredLength -= next.SafeOto.Preutter;
+                requiredLength += next.SafeOto.Overlap;
+            }
+
+            requiredLength = Math.Ceiling((requiredLength + note.Stp + 25) / 50) * 50;
+            return (int)requiredLength;
+        }
+
         /// <summary>
         ///     Send Note to AppendTool
         /// </summary>
-        public void SendToAppendTool(Note note, string filename)
+        public void SendToAppendTool(RenderNote note, string filename)
         {
             var next = Part.GetNextNote(note);
             var offset = note.Pre;
@@ -213,7 +230,7 @@ namespace PianoRoll.Model
 
             var envelope = note.Envelope;
             var sign = offset >= 0 ? "+" : "-";
-            var length = $"{note.Length}@{Settings.Current.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
+            var length = $"{note.RenderLength}@{Settings.Current.Tempo}{sign}{Math.Abs(offset).ToString("f0")}";
             string ops = string.Format("{0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} {11} {12}", 
                 note.Stp, // STP,
                 length, //note.RequiredLength, 

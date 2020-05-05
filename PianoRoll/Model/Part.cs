@@ -58,8 +58,13 @@ namespace PianoRoll.Model
 
         public void BuildPitch()
         {
-            foreach (var note in Notes)
-                PitchController.Current.BuildPitchData(note);
+            for (var index = 0; index < Notes.Count; index++)
+            {
+                var note = Notes[index];
+                var prevNote = Notes.ElementAtOrDefault(index - 1);
+                var nextNote = Notes.ElementAtOrDefault(index + 1);
+                PitchController.Current.BuildPitchData(note, prevNote, nextNote);
+            }
         }
 
         public void AddNote(long startTime, int noteNum)

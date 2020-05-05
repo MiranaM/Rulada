@@ -128,8 +128,8 @@ namespace PianoRoll.Control
                     NoteControls.Add(noteControl);
                     noteControl.OnNoteDeleted += DeleteNoteControl;
                 }
-                MakeNote(noteControl, note.NoteNum, note.AbsoluteTime, note.Length);
-                lastPosition = Math.Max(lastPosition, lastPosition + note.Length);
+                MakeNote(noteControl, note.NoteNum, note.FinalPosition, note.FinalLength);
+                lastPosition = Math.Max(lastPosition, lastPosition + note.FinalLength);
                 note.SetNoteControl(noteControl);
 
                 i++;

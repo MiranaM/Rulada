@@ -43,30 +43,31 @@
         {
         }
 
-        public string Process(Note note)
+        public string Process(RenderNote note, RenderNote prev, bool isConnectedLeft)
         {
+            var editorNote = note.GetEditorNote();
             if (IsDefault)
             {
-                if (!note.IsConnectedLeft() && note.Lyric[0] != '-')
+                if (!editorNote.IsConnectedLeft() && note.Lyric[0] != '-')
                     return "-" + note.Lyric;
                 return note.Lyric;
             }
 
             if (note.Part.Track.Singer.VoicebankType == "Arpasing RUS" && !note.Phonemes.Contains("-"))
             {
-                if (!note.IsConnectedLeft())
+                if (!isConnectedLeft)
                 {
                     return "- " + note.Phonemes;
                 }
 
-                var prevph = note.GetPrev().Phonemes;
+                var prevph = prev.Phonemes;
                 return $"{prevph} {note.Phonemes}";
             }
 
             return note.Lyric;
         }
 
-        public string GetRest(string phoneme)
+        public string GetExhaleLength(string phoneme)
         {
             // TODO: do right way
             return phoneme + " -";

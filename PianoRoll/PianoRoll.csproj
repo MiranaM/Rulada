@@ -102,6 +102,7 @@
     <Compile Include="Model\Pitch\VibratoInfo.cs" />
     <Compile Include="Model\Render.cs" />
     <Compile Include="Model\Project.cs" />
+    <Compile Include="Model\RenderNote.cs" />
     <Compile Include="Model\RenderPartBuilder.cs" />
     <Compile Include="Model\SingerDictionary.cs" />
     <Compile Include="Model\SingerManager.cs" />

@@ -45,34 +45,37 @@ namespace PianoRoll.Model.Pitch
             return value;
         }
 
-        public void BuildPitchData(Note note)
+        public void BuildPitchData(Note note, Note prevNote, Note nextNote)
         {
-            BuildVibratoInfo(note, out var vibratoInfo, out var vibratoPrevInfo);
+            BuildVibratoInfo(note, prevNote, nextNote, out var vibratoInfo, out var vibratoPrevInfo);
             var pitches = BuildVibrato(vibratoInfo, vibratoPrevInfo);
-            BuildPitchInfo(note, out var pitchInfo);
+            var pitchInfo = BuildPitchInfo(note, prevNote, nextNote);
             var pitchesP = BuildPitch(pitchInfo);
-            if (pitchInfo.Start > 0) throw new Exception();
+            if (pitchInfo.Start > 0)
+                throw new Exception();
             var offset = -pitchInfo.Start / Settings.Current.IntervalTick;
             pitches = Interpolate(pitchesP, pitches, offset);
             note.PitchBend.Array = pitches;
+            var renderNote = (RenderNote) note;
+            renderNote.PitchInfo = pitchInfo;
+            renderNote.VibratoInfo = vibratoInfo;
         }
 
-        public void BuildPitchInfo(Note note, out PitchInfo pitchInfo)
+        public PitchInfo BuildPitchInfo(Note note, Note prevNote, Note nextNote)
         {
+            var pitchInfo = new PitchInfo();
             var autoPitchLength = 40;
             var autoPitchOffset = -20;
             var firstNoteRaise = 10;
 
-            var prevNote = note.IsConnectedLeft() ? note.GetPrev() : null;
-            var nextNote = note.IsConnectedRight() ? note.GetNext() : null;
             var oto = note.SafeOto;
             var pps = new List<PitchPoint>();
             foreach (var pp in note.PitchBend.Points)
                 pps.Add(pp);
             if (pps.Count == 0)
             {
-                var offsetY = prevNote == null ? -firstNoteRaise : GetPitchDiff(note.NoteNum, prevNote.NoteNum);
-                pps.Add(new PitchPoint(MusicMath.Current.TickToMillisecond(autoPitchOffset), offsetY));
+                var offsetY = prevNote == null ? firstNoteRaise : GetPitchDiff(note.NoteNum, prevNote.NoteNum);
+                pps.Add(new PitchPoint(MusicMath.Current.TickToMillisecond(autoPitchOffset), -offsetY));
                 pps.Add(new PitchPoint(MusicMath.Current.TickToMillisecond(autoPitchOffset + autoPitchLength), 0));
                 note.PitchBend.Data = pps;
             }
@@ -81,12 +84,7 @@ namespace PianoRoll.Model.Pitch
 
             // end and start ms
             var startMs = pps.First().X < -oto.Preutter ? pps.First().X : -oto.Preutter;
-            double endMs = MusicMath.Current.TickToMillisecond(note.Length) - cutoffFromNext;
-
-            // 1 halftone value
-            var val = 10;
-            if (prevNote != null && note.IsConnectedLeft())
-                pps.First().Y = (prevNote.NoteNum - note.NoteNum) * val;
+            double endMs = MusicMath.Current.TickToMillisecond(note.FinalLength) - cutoffFromNext;
 
             // if not all the length involved, add end and/or start pitch points
             if (pps.First().X > startMs)
@@ -101,35 +99,39 @@ namespace PianoRoll.Model.Pitch
             pitchInfo.Start = start;
             pitchInfo.End = end;
             pitchInfo.PitchPoints = pps.ToArray();
+            return pitchInfo;
+        }
+
+        public int GetOnePitchValue()
+        {
+            return 10;
         }
 
         public double GetPitchDiff(int noteNum1, int noteNum2)
         {
-            return Math.Abs(noteNum1 - noteNum2) * 100;
+            return (noteNum1 - noteNum2) * GetOnePitchValue();
         }
 
-        public void BuildVibratoInfo(Note note, out VibratoInfo vibratoInfo, out VibratoInfo vibratoPrevInfo)
+        public void BuildVibratoInfo(Note note, Note prevNote, Note nextNote, out VibratoInfo vibratoInfo, out VibratoInfo vibratoPrevInfo)
         {
-            var prevNote = note.GetPrev();
-            var nextNote = note.GetNext();
-            vibratoInfo = new VibratoInfo {Start = 0, End = 0, Vibrato = note.Vibrato, Length = note.Length};
+            vibratoInfo = new VibratoInfo {Start = 0, End = 0, Vibrato = note.Vibrato, Length = note.FinalLength};
             if (prevNote != null)
                 vibratoPrevInfo = new VibratoInfo
                 {
-                    Start = 0, End = 0, Vibrato = prevNote.Vibrato, Length = prevNote.Length
+                    Start = 0, End = 0, Vibrato = prevNote.Vibrato, Length = prevNote.FinalLength
                 };
             else
                 vibratoPrevInfo = new VibratoInfo {Start = 0, End = 0, Vibrato = null, Length = 0};
 
             if (note.Vibrato != null && note.Vibrato.Depth != 0)
             {
-                vibratoInfo.End = MusicMath.Current.TickToMillisecond(note.Length);
+                vibratoInfo.End = MusicMath.Current.TickToMillisecond(note.FinalLength);
                 vibratoInfo.Start = vibratoInfo.End * (1 - note.Vibrato.Length / 100);
             }
 
             if (prevNote != null && prevNote.Vibrato != null && prevNote.Vibrato.Depth != 0)
             {
-                vibratoPrevInfo.Start = -MusicMath.Current.TickToMillisecond(prevNote.Length) * prevNote.Vibrato.Length / 100;
+                vibratoPrevInfo.Start = -MusicMath.Current.TickToMillisecond(prevNote.FinalLength) * prevNote.Vibrato.Length / 100;
                 vibratoPrevInfo.End = 0;
             }
         }

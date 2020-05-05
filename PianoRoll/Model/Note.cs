@@ -21,7 +21,7 @@ namespace PianoRoll.Model
         public double v4;
         public double v5;
 
-        public Envelope(Note note)
+        public Envelope(Note note, Note next = null)
         {
             p1 = note.Ovl;
             p2 = note.Pre;
@@ -33,15 +33,13 @@ namespace PianoRoll.Model
             v3 = 60;
             v4 = 0;
             v5 = 100;
-            var next = note.GetNext();
             if (next != null)
                 p3 = next.Ovl;
         }
 
-        public void Check(Note note)
+        public void Check(Note note, Note next)
         {
-            var next = note.GetNext();
-            var sustain = MusicMath.Current.TickToMillisecond(note.Length) + note.StraightPre - next?.StraightPre;
+            var sustain = MusicMath.Current.TickToMillisecond(note.FinalLength) + note.StraightPre - next?.StraightPre;
             if (sustain <= 0)
                 throw new Exception();
         }
@@ -51,7 +49,7 @@ namespace PianoRoll.Model
     {
         #region variables
 
-        public bool IsRender;
+        public virtual bool IsRender => false;
 
         public Part Part;
 
@@ -61,8 +59,6 @@ namespace PianoRoll.Model
         public string Lyric { get; set; }
         public Envelope Envelope { get; private set; }
         public VibratoExpression Vibrato { get; set; }
-
-        public double RequiredLength => GetRequiredLength();
 
         public int Velocity { get; set; }
         public int Intensity { get; set; }
@@ -129,10 +125,13 @@ namespace PianoRoll.Model
             var temp = lyric;
             if (PartEditor.UseDict)
                 Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
-            if (PartEditor.UseTrans)
-                temp = TransitionTool.Current.Process(this);
+            if (PartEditor.UseTrans && this is RenderNote renderNote)
+                temp = TransitionTool.Current.Process(renderNote, null,false);
             Oto = Part.Track.Singer.FindOto(temp != string.Empty ? temp : Phonemes);
         }
+
+        public virtual int FinalLength => Length;
+        public virtual long FinalPosition => AbsoluteTime;
 
         public void SubmitPosLen()
         {
@@ -159,49 +158,25 @@ namespace PianoRoll.Model
             Length = (int)MusicMath.Current.SnapAbsoluteTime(Length);
         }
 
-        public void RecalculatePreOvl()
+        public void RecalculatePreOvl(Note notePrev)
         {
-            var notePrev = Part.GetPrevNote(this);
             var oto = SafeOto;
             Pre = oto.Preutter;
             Ovl = oto.Overlap;
             Stp = 0;
-            double length = MusicMath.Current.TickToMillisecond(Length);
-            if (notePrev != null && MusicMath.Current.TickToMillisecond(Length) / 2 < Pre - Ovl)
-            {
-                Pre = oto.Preutter / (oto.Preutter - oto.Overlap) * (length / 2);
-                Ovl = oto.Overlap / (oto.Preutter - oto.Overlap) * (length / 2);
-                if (Pre < 0 || Ovl < 0)
-                    throw new Exception();
-                Stp = 0;// phoneme.Preutter - Pre;
-                if (Pre > oto.Preutter || Ovl > oto.Overlap)
-                    throw new Exception("Да еб вашу мать");
-            }
-        }
-
-        public double GetRequiredLength()
-        {
-            var next = Part.GetNextNote(this);
-            var prev = Part.GetPrevNote(this);
-            var len = MusicMath.Current.TickToMillisecond(Length);
-            double requiredLength = len + Pre;
-            if (next != null)
-            {
-                requiredLength -= next.SafeOto.Preutter;
-                requiredLength += next.SafeOto.Overlap;
-            }
-
-            requiredLength = Math.Ceiling((requiredLength + Stp + 25) / 50) * 50;
-            return requiredLength;
         }
 
         public bool IsConnectedLeft()
         {
             // true если нет паузы после предыдущей ноты
-            var prev = GetPrev();
+            return IsConnectedLeft(GetPrev());
+        }
+
+        public bool IsConnectedLeft(Note prev)
+        {
             if (prev == null)
                 return false;
-            return prev.AbsoluteTime + prev.Length == AbsoluteTime;
+            return prev.FinalPosition + prev.FinalLength == FinalPosition;
         }
 
         public bool IsConnectedRight()
@@ -210,12 +185,12 @@ namespace PianoRoll.Model
             var next = GetNext();
             if (next == null)
                 return false;
-            return AbsoluteTime + Length == next.AbsoluteTime;
+            return FinalPosition + FinalLength == next.FinalPosition;
         }
 
-        public void CreateEnvelope()
+        public void CreateEnvelope(Note next = null)
         {
-            Envelope = new Envelope(this);
+            Envelope = new Envelope(this, next);
         }
 
         public void SetEnvelope(string value)

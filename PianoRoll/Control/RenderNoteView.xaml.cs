@@ -27,7 +27,7 @@ namespace PianoRoll.Control
         private double BorderWidth = 4;
         public RenderPartView PartEditor;
 
-        public Note Note;
+        public RenderNote Note;
 
         public RenderNoteView(RenderPartView partEditor)
         {
@@ -36,9 +36,12 @@ namespace PianoRoll.Control
             minheight = PartEditor.yScale;
         }
 
-        public void SetNote(Note note)
+        public void SetNote(RenderNote note)
         {
             Note = note;
+            if (note.RenderPosition <= 0 || note.RenderLength <= 0)
+                throw new Exception();
+
             if (note.HasOto)
                 Phoneme.Content = note.SafeOto.Alias;
             var envelope = note.Envelope;
@@ -46,7 +49,7 @@ namespace PianoRoll.Control
 
             var attack = MusicMath.Current.MillisecondToTick(envelope.p1);
             var preutterance = MusicMath.Current.MillisecondToTick(envelope.p2);
-            var length = note.Length;
+            var length = note.RenderLength;
             var decay = MusicMath.Current.MillisecondToTick(envelope.p3);
             var straightPreutterance = preutterance - attack;
             var cutoff = 0;
@@ -72,9 +75,9 @@ namespace PianoRoll.Control
             Decay.Width = decay;
             Canvas.SetLeft(Decay, length - decay - cutoff);
             
-            Canvas.SetLeft(this, MusicMath.Current.GetNoteXPosition(note.AbsoluteTime));
+            Canvas.SetLeft(this, MusicMath.Current.GetNoteXPosition(note.FinalPosition));
             Canvas.SetTop(this, MusicMath.Current.GetNoteYPosition(note.NoteNum));
-            Width = note.Length * PartEditor.xScale;
+            Width = note.FinalLength * PartEditor.xScale;
         }
     }
 }
