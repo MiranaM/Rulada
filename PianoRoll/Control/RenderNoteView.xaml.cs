@@ -78,5 +78,10 @@ namespace PianoRoll.Control
             Canvas.SetTop(this, MusicMath.Current.GetNoteYPosition(note.NoteNum));
             Width = note.FinalLength * PartEditor.xScale;
         }
+
+        public override string ToString()
+        {
+            return $"{Note} {{RenderNoteView}}";
+        }
     }
 }
