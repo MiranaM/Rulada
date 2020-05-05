@@ -232,8 +232,16 @@ namespace PianoRoll.Control
         private void DrawUnitGrid()
         {
             var width = lastPosition > minWidth ? lastPosition : minWidth;
-            for (double n = 0; n < width; n += Settings.Current.MinNoteLengthTick)
-                if (n % Settings.RESOLUTION != 0)
+
+            double gridStep = Settings.Current.MinNoteLengthTick;
+
+            while (gridStep < Settings.MIN_GRID_WIDTH)
+            {
+                gridStep *= 2;
+            }
+
+            for (double n = 0; n < width; n += gridStep)
+                if (Math.Abs(n % RESOLUTION) > 0.01)
                 {
                     var line = new Polyline();
                     line.StrokeDashArray.Add(Settings.Current.yScale / 3);
