@@ -46,15 +46,15 @@ namespace PianoRoll.Control
                 Phoneme.Content = note.SafeOto.Alias;
             var envelope = note.Envelope;
 
-            var attack = MusicMath.Current.MillisecondToTick(envelope.p1);
-            var preutterance = MusicMath.Current.MillisecondToTick(envelope.p2);
-            var length = note.RenderLength;
-            var decay = MusicMath.Current.MillisecondToTick(envelope.p3);
+            var attack = MusicMath.Current.MillisecondToTick(envelope.p1) * PartEditor.xScale;
+            var preutterance = MusicMath.Current.MillisecondToTick(envelope.p2) * PartEditor.xScale;
+            var length = note.RenderLength * PartEditor.xScale;
+            var decay = MusicMath.Current.MillisecondToTick(envelope.p3) * PartEditor.xScale;
             var straightPreutterance = preutterance - attack;
-            var cutoff = 0;
+            double cutoff = 0;
             if (next != null)
             {
-                cutoff = MusicMath.Current.MillisecondToTick(next.StraightPre);
+                cutoff = MusicMath.Current.MillisecondToTick(next.StraightPre) * PartEditor.xScale;
             }
 
             Overlap.Width = attack;

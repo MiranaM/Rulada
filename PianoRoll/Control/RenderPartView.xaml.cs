@@ -19,8 +19,8 @@ namespace PianoRoll.Control
     /// </summary>
     public partial class RenderPartView : UserControl
     {
-        public double xScale = 480 / Settings.RESOLUTION;
-        public double yScale = 15;
+        public double xScale => Settings.Current.xScale;
+        public double yScale => Settings.Current.yScale;
 
         public Part Part;
         private long lastPosition;
@@ -350,14 +350,14 @@ namespace PianoRoll.Control
 
         private void ZoomUpButton_Click(object sender, RoutedEventArgs e)
         {
-            xScale = xScale * 2;
+            Settings.Current.xScale = xScale * 2;
             DrawNotes();
             DrawPart();
         }
 
         private void ZoomOutButton_Click(object sender, RoutedEventArgs e)
         {
-            xScale = xScale / 2;
+            Settings.Current.xScale = xScale / 2;
             DrawNotes();
             DrawPart();
         }
