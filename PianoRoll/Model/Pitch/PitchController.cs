@@ -74,6 +74,7 @@ namespace PianoRoll.Model.Pitch
                 var offsetY = prevNote == null ? -firstNoteRaise : GetPitchDiff(note.NoteNum, prevNote.NoteNum);
                 pps.Add(new PitchPoint(MusicMath.Current.TickToMillisecond(autoPitchOffset), offsetY));
                 pps.Add(new PitchPoint(MusicMath.Current.TickToMillisecond(autoPitchOffset + autoPitchLength), 0));
+                note.PitchBend.Data = pps;
             }
 
             var cutoffFromNext = nextNote != null ? nextNote.StraightPre : 0;

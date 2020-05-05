@@ -104,12 +104,12 @@ namespace PianoRoll.Control
             PitchCanvas.Children.Add(pitchPath);
         }
 
-        public Ellipse[] GetPitchPoints(List<PitchPoint> PitchPoints, double x0, double y0, int i = 0)
+        public Ellipse[] GetPitchPoints(List<PitchPoint> pitchPoints, double x0, double y0, int i = 0)
         {
             double radius = 5;
             var m = 22.6;
             var ellipses = new List<Ellipse>();
-            foreach (var point in PitchPoints)
+            foreach (var point in pitchPoints)
             {
                 var itt = Math.DivRem(i, 2, out var res);
                 var ellipse = new Ellipse

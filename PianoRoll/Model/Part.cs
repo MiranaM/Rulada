@@ -113,48 +113,5 @@ namespace PianoRoll.Model
         {
             Notes.Remove(note);
         }
-
-
-        #region private
-
-        private void PitchTrimStart()
-        {
-            foreach (var note in Notes)
-            {
-                if (note.PitchBend == null || note.PitchBend.Array == null) continue;
-                var lenms = MusicMath.Current.TickToMillisecond(note.Length) + note.Pre;
-                var lentick = MusicMath.Current.MillisecondToTick(lenms);
-                var len = lentick / Settings.Current.IntervalTick;
-                if (note.PitchBend.Array.Length > len)
-                {
-                    int tokick = note.PitchBend.Array.Length - len;
-                    note.PitchBend.Array = note.PitchBend.Array.Skip(tokick).ToArray();
-                }
-            }
-        }
-
-        private void PitchTrimEnd()
-        {
-            for (var i = 0; i < Notes.Count - 1; i++)
-            {
-                var note = Notes[i];
-                var noteNext = Notes[i + 1];
-                if (note.PitchBend == null || note.PitchBend.Array == null)
-                    continue;
-                if (noteNext.PitchBend == null || noteNext.PitchBend.Array == null)
-                    continue;
-                if (noteNext.Ovl >= noteNext.Pre)
-                    continue;
-                var cutoffMs = MusicMath.Current.MillisecondToTick(noteNext.Pre);
-                var cutoffTick = cutoffMs / Settings.Current.IntervalTick;
-                if (note.PitchBend.Array.Length > cutoffTick)
-                {
-                    var toKick = cutoffTick;
-                    note.PitchBend.Array = note.PitchBend.Array.Skip(toKick).ToArray();
-                }
-            }
-        }
-
-        #endregion
     }
 }
