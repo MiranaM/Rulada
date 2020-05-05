@@ -97,7 +97,7 @@ namespace PianoRoll.Control
             var pitchPath = new Path
             {
                 Stroke = res == 0 ? Schemes.Current.pitchBrush : Schemes.Current.pitchSecondBrush,
-                StrokeThickness = 1,
+                StrokeThickness = 2,
                 Data = Geometry.Parse(pitchSource)
             };
             PitchCanvas.Children.Add(pitchPath);

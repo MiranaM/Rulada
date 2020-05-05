@@ -73,6 +73,7 @@ namespace PianoRoll.Control
             Canvas.SetLeft(Decay, length - decay - cutoff);
             
             Canvas.SetLeft(this, MusicMath.Current.GetNoteXPosition(note.AbsoluteTime));
+            Canvas.SetTop(this, MusicMath.Current.GetNoteYPosition(note.NoteNum));
             Width = note.Length * PartEditor.xScale;
         }
     }

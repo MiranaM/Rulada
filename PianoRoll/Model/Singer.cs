@@ -35,10 +35,12 @@ namespace PianoRoll.Model
 
         public double GetConsonantLength(string phoneme)
         {
+            // probably defines the way we configure utau
+            // probably PRE is fixed and OVL is not
             // TODO: do right way
-            var value = 50;
+            var value = 50; // oto: ovl 30 pre 40
             if (phoneme == "r" || phoneme == "r'")
-                value = 30;
+                value = 30; // oto: ovl 20 pre 15
             else if (phoneme == "ch"
                 || phoneme == "t'"
                 || phoneme == "ts"
@@ -47,7 +49,7 @@ namespace PianoRoll.Model
                 || phoneme == "sh'"
                 || phoneme == "k'"
             )
-                value = 150;
+                value = 150; // oto: ovl 110 pre 20
             return MusicMath.Current.TickToMillisecond(value);
         }
 

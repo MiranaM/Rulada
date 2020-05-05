@@ -7,27 +7,26 @@
              mc:Ignorable="d"
              d:DesignHeight="14"
              d:DesignWidth="160">
-    <Canvas
-        Name="MainCanvas">
+    <Canvas>
         <Grid x:Name="grid"
+              Canvas.Top="-15"
               HorizontalAlignment="Stretch"
               Width="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                      AncestorType={x:Type local:RenderNoteView}},
                      Path= Width}">
             <Grid.RowDefinitions>
+                <RowDefinition Name="EnvelopeRow"
+                               Height="15" />
                 <RowDefinition Name="NoteRow"
                                Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                      AncestorType={x:Type local:RenderNoteView}},
                      Path=Height, FallbackValue=14}" />
                 <RowDefinition Name="LyricRow" Height="15" />
             </Grid.RowDefinitions>
-            <Grid x:Name="NoteMain"
+            <Grid x:Name="EnvelopeContainerGrid"
                   Grid.Row="0"
                   HorizontalAlignment="Stretch"
                   VerticalAlignment="Stretch">
-                <Border x:Name="NoteMainBorder">
-                    <Rectangle Fill="#FF005500" Height="2" VerticalAlignment="Bottom" Margin="0,0,1,0"></Rectangle>
-                </Border>
                 <Canvas Name="EnvelopeContainer"
                         HorizontalAlignment="Stretch"
                         Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
@@ -37,14 +36,13 @@
                             Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type local:RenderNoteView}},
                              Path=ActualHeight, FallbackValue=14}">
-                        <Polygon 
-                            Stroke="#FFFF88FF"
-                            Fill="#44FF88FF"
-                            Stretch="Fill"
-                            Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                        <Polygon Stroke="#FFFF88FF"
+                                 Fill="#11FF88FF"
+                                 Stretch="Fill"
+                                 Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type Canvas}},
                              Path=ActualHeight, FallbackValue=14}"
-                            Width="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
+                                 Width="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type Canvas}},
                              Path=ActualWidth, FallbackValue=14}">
                             <Polygon.Points>
@@ -62,7 +60,7 @@
                      AncestorType={x:Type local:RenderNoteView}},
                      Path=ActualHeight, FallbackValue=14}">
                         <Polygon Stroke="#FFAAAA00"
-                                 Fill="#22AAAA00"
+                                 Fill="#11AAAA00"
                                  Stretch="Fill"
                                  Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type Canvas}},
@@ -80,14 +78,14 @@
                                 <Point X="0"
                                        Y="14" />
                             </Polygon.Points>
-                            </Polygon>
+                        </Polygon>
                     </Canvas>
                     <Canvas Name="Decay"
                             Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                      AncestorType={x:Type local:RenderNoteView}},
                      Path=ActualHeight, FallbackValue=14}">
                         <Polygon Stroke="#FF22AAAA"
-                                 Fill="#2222AAAA"
+                                 Fill="#1122AAAA"
                                  Stretch="Fill"
                                  Height="{Binding RelativeSource={ RelativeSource Mode=FindAncestor,
                              AncestorType={x:Type Canvas}},
@@ -107,10 +105,20 @@
                     </Canvas>
                 </Canvas>
             </Grid>
+            <Grid x:Name="NoteMain"
+                  Grid.Row="1"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Stretch">
+                <Border x:Name="NoteMainBorder">
+                    <Rectangle Fill="#99225522"
+                               Stroke="#FF005500"
+                               Margin="0,0,0,0" />
+                </Border>
+            </Grid>
             <Label x:Name="Phoneme"
                    Margin="0,0,0,0"
                    Padding="2,0,5,0"
-                   Grid.Row="1"
+                   Grid.Row="2"
                    VerticalAlignment="Stretch"
                    VerticalContentAlignment="Center"
                    HorizontalAlignment="Left"

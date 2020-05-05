@@ -227,7 +227,9 @@ namespace PianoRoll.Model
             {
                 Pre = phoneme.Preutter / (phoneme.Preutter - phoneme.Overlap) * (length / 2);
                 Ovl = phoneme.Overlap / (phoneme.Preutter - phoneme.Overlap) * (length / 2);
-                Stp = phoneme.Preutter - Pre;
+                if (Pre < 0 || Ovl < 0)
+                    throw new Exception();
+                Stp = 0;// phoneme.Preutter - Pre;
                 if (Pre > phoneme.Preutter || Ovl > phoneme.Overlap)
                     throw new Exception("Да еб вашу мать");
             }

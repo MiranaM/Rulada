@@ -203,6 +203,8 @@ namespace PianoRoll.Model
                         throw  new Exception();
                     // BUG: will be crash for short notes.
                     prevVowel.Length -= addedLength;
+                    if (prevVowel.Length <= 0)
+                        throw new Exception();
                 }
 
                 addedLength = 0;
@@ -214,20 +216,15 @@ namespace PianoRoll.Model
 
             ProcessRestNotesForRenderBuild(prevNote, null, consonantsQueue, notes, singer);
 
-            long prevAbs = 0;
             foreach (var note in notes)
             {
                 var transitioned = TransitionTool.Current.Process(note);
-                note.Phoneme = Track.Singer.FindPhoneme(transitioned);
+                var phoneme = Track.Singer.FindPhoneme(transitioned);
+                if (phoneme.Overlap <= 0 || phoneme.Preutter <= 0)
+                    throw new Exception();
+                note.Phoneme = phoneme;
                 note.RecalculatePreOvl();
 
-                // report
-                var prev = note.GetPrev();
-                var neededAbs = note.AbsoluteTime - prevAbs;
-                if (prev == null)
-                    ReportRenderBuild(" ");
-                ReportRenderBuild($"{note.AbsoluteTime}\t{note.Length}({neededAbs})\t{note}");
-                prevAbs = note.AbsoluteTime;
             }
 
             foreach (var note in Notes)
@@ -268,6 +265,8 @@ namespace PianoRoll.Model
 
         private Note CreateRenderNote(Part renderPart, double absoluteTime, double length, string phoneme, Note parent)
         {
+            if (length <= 0 || absoluteTime <= 0)
+                throw new Exception();
             var note = new Note(renderPart);
             note.Length = length;
             note.AbsoluteTime = absoluteTime;
@@ -277,6 +276,14 @@ namespace PianoRoll.Model
             note.Intensity = parent.Intensity;
             note.NoteNum = parent.NoteNum;
             note.Modulation = parent.Modulation;
+
+
+            // report
+            var prev = note.GetPrev();
+            if (prev == null)
+                ReportRenderBuild(" ");
+            ReportRenderBuild($"{note.AbsoluteTime}\t{note.Length}\t{note}");
+
             return note;
         }
 
