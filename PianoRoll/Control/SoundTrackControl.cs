@@ -15,13 +15,6 @@ namespace PianoRoll.Control
         public bool IsMuted = false;
         public bool IsSolo = false;
 
-        public SoundTrackControl(double y, double w)
-        {
-            Track = Project.Current.AddSoundTrack();
-            CreateHeader(y);
-            CreateContent(y, w, Header.Height);
-        }
-
         public SoundTrackControl(double y, double w, SoundTrack track)
         {
             Track = track;

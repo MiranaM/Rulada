@@ -19,19 +19,12 @@ namespace PianoRoll.Control
         public bool IsMuted = false;
         public bool IsSolo = false;
 
-        public TrackControl(double y, double w)
-        {
-            Track = Project.Current.AddTrack();
-            CreateHeader(y);
-            CreateContent(y, w, Header.Height);
-        }
-
-        public TrackControl(double y, double w, Track track)
+        public TrackControl(double y, double w, Track track, int tracksCount)
         {
             Track = track;
             CreateHeader(y);
             CreateContent(y, w, Header.Height);
-            Header.TrackName.Content = $"Track {Project.Current.Tracks.Count}";
+            Header.TrackName.Content = $"Track {tracksCount}";
             Header.VoicebankName.Content = Track.Singer.Name;
             if (Track.Singer.Image != null)
             {
@@ -45,7 +38,7 @@ namespace PianoRoll.Control
 
         private void CreateHeader(double y)
         {
-            Header = new TrackHeader();
+            Header = new TrackHeader(Track.Singer);
             Header.SetValue(Canvas.TopProperty, y);
             Header.SetValue(Canvas.LeftProperty, 5.0);
         }

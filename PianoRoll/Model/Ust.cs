@@ -90,20 +90,13 @@ namespace PianoRoll.Model
         }
 
         #endregion
-        public Part Import(string dir, bool importProject = true)
-        {
-            var part = Import(dir, out var tempo, out var singerDir);
-            return part;
-        }
 
-        public Part Import(string dir, out double tempo, out string singerDir)
+        public void Import(Part part, string dir)
         {
-            var track = Project.Current.AddTrack();
-            var part = track.AddPart();
             var lines = File.ReadAllLines(dir, Encoding.GetEncoding(932));
             double version;
-            tempo = -1;
-            singerDir = "";
+            double tempo = -1;
+            var singerDir = "";
             long absoluteTime = 0;
             var culture = new CultureInfo("ja-JP");
             var numberFormat = culture.NumberFormat;
@@ -201,7 +194,7 @@ namespace PianoRoll.Model
                 if (note.Lyric.Trim(' ') != "R" && note.Lyric.Trim(' ') != "") part.Notes.Add(note);
             }
 
-            return part;
+            Settings.Current.Tempo = tempo;
         }
 
         public void PitchFromUst(USTPitchData data, ref Note note)
