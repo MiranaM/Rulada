@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using PianoRoll.Model;
+using PianoRoll.Model.Pitch;
 using PianoRoll.Themes;
 using PianoRoll.Util;
 

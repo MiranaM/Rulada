@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows.Controls;
 using PianoRoll.Control;
+using PianoRoll.Model.Pitch;
 using PianoRoll.Util;
 
 namespace PianoRoll.Model

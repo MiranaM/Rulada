@@ -92,6 +92,14 @@
     </Compile>
     <Compile Include="ModelView\NoteControlModelView.cs" />
     <Compile Include="Model\Midi.cs" />
+    <Compile Include="Model\Pitch\Current.cs" />
+    <Compile Include="Model\Pitch\ExpPoint.cs" />
+    <Compile Include="Model\Pitch\PitchBendExpression.cs" />
+    <Compile Include="Model\Pitch\PitchInfo.cs" />
+    <Compile Include="Model\Pitch\PitchPoint.cs" />
+    <Compile Include="Model\Pitch\UExpression.cs" />
+    <Compile Include="Model\Pitch\VibratoExpression.cs" />
+    <Compile Include="Model\Pitch\VibratoInfo.cs" />
     <Compile Include="Model\Render.cs" />
     <Compile Include="Model\Project.cs" />
     <Compile Include="Model\RenderPartBuilder.cs" />
@@ -163,7 +171,7 @@
       <DependentUpon>PartEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\Ini.cs" />
-    <Compile Include="Model\Pitch.cs" />
+    <Compile Include="Model\Pitch\PitchController.cs" />
     <Compile Include="Model\Note.cs" />
     <Compile Include="Model\Oto.cs" />
     <Compile Include="Model\Singer.cs" />
@@ -219,5 +227,6 @@
   <ItemGroup>
     <Resource Include="Image\avatar.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

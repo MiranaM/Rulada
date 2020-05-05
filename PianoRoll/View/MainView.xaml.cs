@@ -74,12 +74,13 @@ namespace PianoRoll.View
 
         private void ImportUst(string dir, bool IsNewProject = true)
         {
-            if (IsNewProject) Project.Current = new Project(SingerManager.DefaultSinger);
+            if (IsNewProject)
+                Project.Current = new Project(SingerManager.DefaultSinger);
             var part = Ust.Current.Import(dir, out var tempo, out var singerDir);
             Settings.Current.Tempo = tempo;
             var track = new Track(Project.Current.DefaultSinger);
-            part.RefreshPhonemes();
             track.AddPart(part);
+            PartEditor.Clear();
             PartEditor.Part = part;
             Settings.Current.LastFile = dir;
             ImportTrack(track);

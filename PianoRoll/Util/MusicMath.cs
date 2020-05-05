@@ -2,6 +2,7 @@
 using System.Linq;
 using PianoRoll.Control;
 using PianoRoll.Model;
+using PianoRoll.Model.Pitch;
 
 namespace PianoRoll.Util
 {
@@ -314,11 +315,33 @@ namespace PianoRoll.Util
         /// </summary>
         /// <param name="tick"></param>
         /// <returns></returns>
-        public long SnapTick(long tick)
+        public long SnapTickInt(int tick)
         {
-            tick = (long) (tick + Settings.Current.IntervalTick * 0.25) / Settings.Current.IntervalTick * Settings.Current.IntervalTick;
+            tick = (int) (tick + Settings.Current.IntervalTick * 0.25) / Settings.Current.IntervalTick * Settings.Current.IntervalTick;
             if (tick % Settings.Current.IntervalTick != 0) throw new Exception();
             return tick;
+        }
+
+        public long SnapTickInt(dynamic tick)
+        {
+            return SnapTickInt((int) tick);
+        }
+
+        /// <summary>
+        ///     Snap tick ON RENDER
+        /// </summary>
+        /// <param name="tick"></param>
+        /// <returns></returns>
+        public long SnapTick(long tick)
+        {
+            tick = (long)(tick + Settings.Current.IntervalTick * 0.25) / Settings.Current.IntervalTick * Settings.Current.IntervalTick;
+            if (tick % Settings.Current.IntervalTick != 0) throw new Exception();
+            return tick;
+        }
+
+        public long SnapTick(dynamic tick)
+        {
+            return SnapTick((int)tick);
         }
 
         /// <summary>

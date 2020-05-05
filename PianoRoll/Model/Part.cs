@@ -3,6 +3,7 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using PianoRoll.Control;
+using PianoRoll.Model.Pitch;
 using PianoRoll.Util;
 
 namespace PianoRoll.Model
@@ -58,20 +59,7 @@ namespace PianoRoll.Model
         public void BuildPitch()
         {
             foreach (var note in Notes)
-                Pitch.Current.BuildPitchData(note);
-            AveragePitch();
-            PitchTrimStart();
-            PitchTrimEnd();
-        }
-
-        public void BuildPartPitch()
-        {
-            //Pitch.Current.BuildPitchData(PitchBend);
-        }
-
-        public void RefreshPhonemes()
-        {
-            // foreach (Note note in Notes) note.Lyric = note.Lyric;
+                PitchController.Current.BuildPitchData(note);
         }
 
         public void AddNote(long startTime, int noteNum)
@@ -80,16 +68,6 @@ namespace PianoRoll.Model
             note.NoteNum = noteNum;
             note.AbsoluteTime = startTime;
             note.Part = this;
-            Notes.Add(note);
-        }
-
-        public void AddNote(long startTime, int noteNum, int length)
-        {
-            var note = new Note(this);
-            note.NoteNum = noteNum;
-            note.AbsoluteTime = startTime;
-            note.Part = this;
-            note.Length = length;
             Notes.Add(note);
         }
 
@@ -139,23 +117,6 @@ namespace PianoRoll.Model
 
         #region private
 
-        private void AddNote(Note note)
-        {
-            Notes.Add(note);
-            SortNotes();
-        }
-
-        private void AveragePitch()
-        {
-            for (var i = 0; i < Notes.Count - 1; i++)
-            {
-                var note = Notes[i];
-                var noteNext = Notes[i + 1];
-                if (note.PitchBend == null || noteNext.PitchBend == null) continue;
-                Pitch.Current.AveragePitch(note, noteNext);
-            }
-        }
-
         private void PitchTrimStart()
         {
             foreach (var note in Notes)
@@ -178,16 +139,18 @@ namespace PianoRoll.Model
             {
                 var note = Notes[i];
                 var noteNext = Notes[i + 1];
-                if (note.PitchBend == null || note.PitchBend.Array == null) continue;
-                if (noteNext.PitchBend == null || noteNext.PitchBend.Array == null) continue;
-                if (noteNext.Ovl >= noteNext.Pre) continue;
-                var lenms = noteNext.Pre - noteNext.Ovl;
-                var lentick = MusicMath.Current.MillisecondToTick(lenms);
-                var len = lentick / Settings.Current.IntervalTick;
-                if (note.PitchBend.Array.Length > len)
+                if (note.PitchBend == null || note.PitchBend.Array == null)
+                    continue;
+                if (noteNext.PitchBend == null || noteNext.PitchBend.Array == null)
+                    continue;
+                if (noteNext.Ovl >= noteNext.Pre)
+                    continue;
+                var cutoffMs = MusicMath.Current.MillisecondToTick(noteNext.Pre);
+                var cutoffTick = cutoffMs / Settings.Current.IntervalTick;
+                if (note.PitchBend.Array.Length > cutoffTick)
                 {
-                    var tokick = len;
-                    note.PitchBend.Array = note.PitchBend.Array.Skip(tokick).ToArray();
+                    var toKick = cutoffTick;
+                    note.PitchBend.Array = note.PitchBend.Array.Skip(toKick).ToArray();
                 }
             }
         }

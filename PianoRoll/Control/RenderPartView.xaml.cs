@@ -6,6 +6,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using PianoRoll.Model;
+using PianoRoll.Model.Pitch;
 using PianoRoll.Themes;
 using PianoRoll.Util;
 
@@ -81,7 +82,7 @@ namespace PianoRoll.Control
         public void DrawPartPitch()
         {
             PitchOff();
-            Part.BuildPartPitch();
+            //Part.BuildPartPitch();
             var i = 0;
             var x0 = MusicMath.Current.GetNoteXPosition(Part.Notes[i].AbsoluteTime);
             var y0 = MusicMath.Current.GetNoteYPosition(Part.Notes[i].NoteNum) + Settings.Current.yScale / 2;
@@ -152,7 +153,7 @@ namespace PianoRoll.Control
         {
             var c = yScale;
             var pitchData = note.PitchBend.Array;
-            Pitch.Current.BuildPitchInfo(note, out var pitchInfo);
+            PitchController.Current.BuildPitchInfo(note, out var pitchInfo);
             // double val = pitchInfo.Start;
             var val = -note.SafeOto.Preutter;
             var xP = MusicMath.Current.MillisecondToTick(val) * xScale;
