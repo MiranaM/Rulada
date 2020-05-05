@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml;
 using Microsoft.Win32;
@@ -19,6 +20,8 @@ namespace PianoRoll.View
         {
 
             InitializeComponent();
+            NoteLength.ItemsSource = Settings.Current.NotesLengths.Keys;
+            NoteLength.SelectedIndex = 2;
             SingerManager = new SingerManager();
             New();
             
@@ -310,6 +313,13 @@ namespace PianoRoll.View
                 PartEditor.Visibility = Visibility.Visible;
                 RenderPartView.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private void NoteLength_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            ComboBox tempBox = (ComboBox) sender;
+            //tempBox.SelectedItem.ToString();
+            Settings.Current.CurrentNoteLength = Settings.Current.NotesLengths[tempBox.SelectedItem.ToString()];
         }
     }
 }

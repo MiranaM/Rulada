@@ -84,7 +84,7 @@ namespace PianoRoll.Util
 
         public double TickToMillisecond(double tick)
         {
-            double BeatTicks = Settings.Current.Resolution;
+            double BeatTicks = Settings.RESOLUTION;
             var TempoCoeff = 60 / Settings.Current.Tempo;
             var size = tick / BeatTicks;
             return size * TempoCoeff * 1000;
@@ -92,7 +92,7 @@ namespace PianoRoll.Util
 
         public int MillisecondToTick(double ms)
         {
-            double BeatTicks = Settings.Current.Resolution;
+            double BeatTicks = Settings.RESOLUTION;
             var TempoCoeff = 60 / Settings.Current.Tempo;
             return (int) (ms / TempoCoeff / 1000 * BeatTicks);
         }

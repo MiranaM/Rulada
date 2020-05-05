@@ -101,7 +101,8 @@
                     Name="Piano"
                     Grid.Column="0"
                     Width="43"
-                    Background="#FFEEEEEE" />
+                    Background="#FFEEEEEE"
+                    />
                 <Canvas
                     x:Name="RootCanvas"
                     Grid.Column="1"
