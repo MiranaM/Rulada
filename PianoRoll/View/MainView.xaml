@@ -137,7 +137,7 @@
             Grid.Row="1"
             Width="120"
             Height="33"
-            Margin="320,0,0,0"
+            Margin="801,0,-29,0"
             HorizontalAlignment="Left"
             VerticalContentAlignment="Center"
             Content="[0.00 0.00]"
@@ -146,9 +146,9 @@
         <Label
             x:Name="Tempo"
             Grid.Row="1"
-            Width="60"
+            Width="65"
             Height="13"
-            Margin="230,-14,0,0"
+            Margin="225,3,0,17"
             Padding="0"
             HorizontalAlignment="Left"
             VerticalContentAlignment="Center"
@@ -159,9 +159,9 @@
         <Label
             x:Name="BeatInfo"
             Grid.Row="1"
-            Width="60"
+            Width="65"
             Height="13"
-            Margin="230,14,0,0"
+            Margin="225,17,0,3"
             Padding="0"
             HorizontalAlignment="Left"
             VerticalContentAlignment="Center"
@@ -261,5 +261,9 @@
                 <MenuItem Click="MenuItemExit_Click" Header="_Выход" />
             </MenuItem>
         </Menu>
+        <ComboBox x:Name="NoteLength" HorizontalAlignment="Left" Margin="382,7,0,0" Grid.Row="1"
+                  VerticalAlignment="Top" Width="75" SelectionChanged="NoteLength_SelectionChanged" />
+        <Label Content="Note length" Foreground="#FF90FFFF" HorizontalAlignment="Left" Margin="305,4,0,0" Grid.Row="1"
+                    VerticalAlignment="Top" Width="75" />
     </Grid>
 </Window>

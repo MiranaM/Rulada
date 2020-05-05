@@ -5,6 +5,7 @@ using System.Linq;
 using PianoRoll.Control;
 using PianoRoll.Model.Pitch;
 using PianoRoll.Util;
+using PianoRoll.View;
 
 namespace PianoRoll.Model
 {

@@ -105,7 +105,7 @@ namespace PianoRoll.Model
             Modulation = 0;
             Intensity = 100;
             Velocity = 100;
-            Length = Settings.Current.Resolution;
+            Length = Settings.Current.CurrentNoteLength;
             Lyric = Settings.Current.DefaultLyric;
             PitchBend = new PitchBendExpression();
         }

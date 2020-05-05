@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using NAudio.MediaFoundation;
 using PianoRoll.Util;
 
 namespace PianoRoll
@@ -52,9 +54,20 @@ namespace PianoRoll
         public double xScale = 1;
         public double yScale = 15;
 
-        public double MinNoteLengthTick => Resolution / BeatUnit * xScale;
+        public double MinNoteLengthTick => RESOLUTION / BeatUnit * xScale;
 
+        public Dictionary<string, int> NotesLengths = new Dictionary<string, int>
+        {
+            ["L1"] = RESOLUTION * 4,  // 1
+            ["L2"] = RESOLUTION * 2,  // 1/2
+            ["L4"] = RESOLUTION,      // 1/4
+            ["L8"] = RESOLUTION / 2,  // 1/8
+            ["L16"] = RESOLUTION / 4, // 1/16
+            ["L32"] = RESOLUTION / 8, // 1/32
+            ["L64"] = RESOLUTION / 16 // 1/64
+        };
 
+        public int CurrentNoteLength = RESOLUTION;
 
         // in local folder
         public string CacheFolder;
@@ -67,7 +80,8 @@ namespace PianoRoll
 
         public int SkipOnRender = 1;
 
-        public int Resolution = 480;
+        //RESOLUTION = 1/4
+        public const int RESOLUTION = 480;
         public int Octaves = 7;
 
         private void Read()

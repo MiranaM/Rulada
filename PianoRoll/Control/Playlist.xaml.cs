@@ -28,8 +28,8 @@ namespace PianoRoll.Control
 
         public Playlist()
         {
-            xScale = 80.0 / Settings.Current.Resolution;
-            minWidth = minBars * Settings.Current.BeatPerBar * Settings.Current.Resolution;
+            xScale = 80.0 / Settings.RESOLUTION;
+            minWidth = minBars * Settings.Current.BeatPerBar * Settings.RESOLUTION;
             InitializeComponent();
             ContentCanvas.Loaded += SetMinSizes;
             DrawGrid();
@@ -106,7 +106,7 @@ namespace PianoRoll.Control
             var width = lastPosition > minWidth ? lastPosition : minWidth;
             GridCanvas.Children.Clear();
             var beat = 0;
-            for (long n = 0; n < width; n += Settings.Current.Resolution)
+            for (long n = 0; n < width; n += Settings.RESOLUTION)
             {
                 var line = new Line();
                 line.X1 = n * xScale + 0.5;

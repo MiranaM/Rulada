@@ -18,7 +18,7 @@ namespace PianoRoll.Control
     /// </summary>
     public partial class RenderPartView : UserControl
     {
-        public double xScale = 480 / Settings.Current.Resolution;
+        public double xScale = 480 / Settings.RESOLUTION;
         public double yScale = 15;
 
         public Part Part;
@@ -30,7 +30,7 @@ namespace PianoRoll.Control
 
         public RenderPartView()
         {
-            minWidth = minBars * Settings.Current.BeatPerBar * Settings.Current.Resolution;
+            minWidth = minBars * Settings.Current.BeatPerBar * Settings.RESOLUTION;
             InitializeComponent();
             CreatePiano();
         }
@@ -38,7 +38,7 @@ namespace PianoRoll.Control
         public void SetPart(Part part)
         {
             Part = part;
-            lastPosition = Settings.Current.Resolution * Settings.Current.BeatPerBar * minBars;
+            lastPosition = Settings.RESOLUTION * Settings.Current.BeatPerBar * minBars;
             DrawPart();
             lastPosition = 0;
         }
@@ -222,7 +222,7 @@ namespace PianoRoll.Control
             var width = lastPosition > minWidth ? lastPosition : minWidth;
             GridCanvas.Children.Clear();
             var beat = 0;
-            for (long n = 0; n < width; n += Settings.Current.Resolution)
+            for (long n = 0; n < width; n += Settings.RESOLUTION)
             {
                 var line = new Line();
                 line.X1 = n * xScale;
@@ -250,7 +250,7 @@ namespace PianoRoll.Control
         {
             var width = lastPosition > minWidth ? lastPosition : minWidth;
             for (double n = 0; n < width; n += Settings.Current.MinNoteLengthTick)
-                if (n % Settings.Current.Resolution != 0)
+                if (n % Settings.RESOLUTION != 0)
                 {
                     var line = new Polyline();
                     line.StrokeDashArray.Add(yScale / 3);
