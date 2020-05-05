@@ -164,7 +164,7 @@ namespace PianoRoll.Control
             var i = 0;
             foreach (var note in Part.Notes)
             {
-                if (!note.HasPhoneme) continue;
+                if (!note.HasOto) continue;
                 var x0 = MusicMath.Current.GetNoteXPosition(note.AbsoluteTime);
                 var y0 = MusicMath.Current.GetNoteYPosition(note.NoteNum) + Settings.Current.yScale / 2;
                 var pitchSource = GetPitchSource(note, x0, y0);
@@ -253,7 +253,7 @@ namespace PianoRoll.Control
             var pitchData = note.PitchBend.Array;
             Pitch.Current.BuildPitchInfo(note, out var pitchInfo);
             // double val = pitchInfo.Start;
-            var val = -note.Phoneme.Preutter;
+            var val = -note.SafeOto.Preutter;
             var xP = MusicMath.Current.MillisecondToTick(val) * Settings.Current.xScale;
             var y1 = pitchData[0] / c;
             double x1 = 0;

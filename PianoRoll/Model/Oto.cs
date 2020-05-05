@@ -1,6 +1,6 @@
 ﻿namespace PianoRoll.Model
 {
-    public class Phoneme
+    public class Oto
     {
         public string File { set; get; }
         public string Alias { set; get; }

@@ -16,7 +16,7 @@ namespace PianoRoll.Model
         public string VoicebankType { get; private set; }
         public string Readme { get; private set; }
         public List<string> Subs { get; private set; }
-        public List<Phoneme> Phonemes { get; private set; }
+        public List<Oto> Otos { get; private set; }
         public bool IsEnabled { get; private set; }
         public SingerDictionary SingerDictionary;
 
@@ -112,7 +112,7 @@ namespace PianoRoll.Model
 
         public void Load()
         {
-            Phonemes = new List<Phoneme>();
+            Otos = new List<Oto>();
             foreach (var sub in Subs)
             {
                 var filename = Path.Combine(Dir, sub, "oto.ini");
@@ -125,7 +125,7 @@ namespace PianoRoll.Model
                         var arr = Regex.Split(line, pattern);
                         double temp;
                         if (arr.Length == 1) continue;
-                        var phoneme = new Phoneme
+                        var oto = new Oto
                         {
                             File = arr[1],
                             Alias = arr[2],
@@ -135,7 +135,7 @@ namespace PianoRoll.Model
                             Preutter = double.TryParse(arr[6], out temp) ? temp : 0,
                             Overlap = double.TryParse(arr[7], out temp) ? temp : 0
                         };
-                        Phonemes.Add(phoneme);
+                        Otos.Add(oto);
                     }
                 }
                 else
@@ -147,13 +147,13 @@ namespace PianoRoll.Model
             SingerDictionary = new SingerDictionary(this);
         }
 
-        public Phoneme FindPhoneme(string lyric)
+        public Oto FindOto(string lyric)
         {
             if (IsEnabled)
             {
-                foreach (var phoneme in Phonemes)
-                    if (phoneme.Alias == lyric)
-                        return phoneme;
+                foreach (var oto in Otos)
+                    if (oto.Alias == lyric)
+                        return oto;
 
                 return null;
             }

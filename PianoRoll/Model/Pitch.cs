@@ -319,7 +319,7 @@ namespace PianoRoll.Model
         {
             var prevNote = note.IsConnectedLeft() ? note.GetPrev() : null;
             var nextNote = note.IsConnectedRight() ? note.GetNext() : null;
-            var phoneme = note.HasPhoneme && note.Phoneme != null ? note.Phoneme : note.DefaultPhoneme;
+            var oto = note.SafeOto;
             var pps = new List<PitchPoint>();
             foreach (var pp in note.PitchBend.Points) pps.Add(pp);
             if (pps.Count == 0)
@@ -330,7 +330,7 @@ namespace PianoRoll.Model
             }
 
             // end and start ms
-            var startMs = pps.First().X < -phoneme.Preutter ? pps.First().X : -phoneme.Preutter;
+            var startMs = pps.First().X < -oto.Preutter ? pps.First().X : -oto.Preutter;
             double endMs = MusicMath.Current.TickToMillisecond(note.Length);
 
             // 1 halftone value

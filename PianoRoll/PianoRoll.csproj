@@ -164,7 +164,7 @@
     <Compile Include="Model\Ini.cs" />
     <Compile Include="Model\Pitch.cs" />
     <Compile Include="Model\Note.cs" />
-    <Compile Include="Model\Phoneme.cs" />
+    <Compile Include="Model\Oto.cs" />
     <Compile Include="Model\Singer.cs" />
     <Compile Include="Model\Part.cs" />
     <Compile Include="View\MainView.xaml.cs">

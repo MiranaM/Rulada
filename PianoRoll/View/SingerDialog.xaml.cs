@@ -32,7 +32,7 @@ namespace PianoRoll.View
         private void DrawOto()
         {
             OtoView.Items.Clear();
-            foreach (var phoneme in part.Track.Singer.Phonemes)
+            foreach (var phoneme in part.Track.Singer.Otos)
             {
                 var line = new[]
                 {

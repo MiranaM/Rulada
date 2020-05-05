@@ -39,8 +39,8 @@ namespace PianoRoll.Control
         public void SetNote(Note note)
         {
             Note = note;
-            if (note.HasPhoneme)
-                Phoneme.Content = note.Phoneme.Alias;
+            if (note.HasOto)
+                Phoneme.Content = note.SafeOto.Alias;
             var envelope = note.Envelope;
             var next = note.GetNext();
 

@@ -72,9 +72,9 @@ namespace PianoRoll.Model
             long renderPosition = 0;
             foreach (var note in Part.Notes)
             {
-                var phoneme = note.HasPhoneme ? note.Phoneme : note.DefaultPhoneme;
+                var oto = note.SafeOto;
                 var tempfilename = Path.Combine(Settings.Current.CacheFolder, $"{i}");
-                tempfilename += $"_{phoneme.Alias}_{note.NoteNum}_{note.Length}.wav";
+                tempfilename += $"_{oto.Alias}_{note.NoteNum}_{note.Length}.wav";
                 // Send Rest
                 if (note.AbsoluteTime > renderPosition)
                 {
@@ -176,19 +176,19 @@ namespace PianoRoll.Model
         public void SendToResampler(Note note, string tempFilename)
         {
             var pitchBase64 = Base64.Current.Base64EncodeInt12(TakeEach(note.PitchBend.Array, Settings.Current.SkipOnRender));
-            var phoneme = note.HasPhoneme? note.Phoneme : note.DefaultPhoneme;
+            var oto = note.SafeOto;
             string request = string.Format(
                 "\"{0}\" \"{1}\" \"{2}\" {3} {4:D} \"{5}\" {6} {7:D} {8} {9} {10:D} {11:D} !{12} {13}\r\n\r\n",
                 Settings.Current.Resampler, 
-                Path.Combine(Part.Track.Singer.Dir, phoneme.File), 
+                Path.Combine(Part.Track.Singer.Dir, oto.File), 
                 tempFilename,
                 MusicMath.Current.NoteNum2String(note.NoteNum - 12), 
                 note.Velocity, 
                 Part.Flags + note.Flags, 
-                phoneme.Offset,
+                oto.Offset,
                 (int) note.RequiredLength, 
-                phoneme.Consonant, 
-                phoneme.Cutoff, 
+                oto.Consonant, 
+                oto.Cutoff, 
                 note.Intensity, 
                 note.Modulation,
                 note.NoteNum, 
@@ -222,7 +222,7 @@ namespace PianoRoll.Model
                 envelope.v2,
                 envelope.v3,
                 envelope.v4, 
-                note.Ovl, //note.Phoneme.Overlap,
+                note.Ovl, //note.Oto.Overlap,
                 envelope.p4, 
                 envelope.p5, 
                 envelope.v5);

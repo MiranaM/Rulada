@@ -153,7 +153,7 @@ namespace PianoRoll.Model
                             note.Length = double.Parse(value, numberFormat);
                             break;
                         case "STP":
-                            note.STP = double.Parse(value, numberFormat);
+                            note.Stp = double.Parse(value, numberFormat);
                             break;
                         case "NoteNum":
                             note.NoteNum = int.Parse(value, numberFormat) - 12;

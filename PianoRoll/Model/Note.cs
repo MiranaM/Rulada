@@ -112,13 +112,12 @@ namespace PianoRoll.Model
             set => SetNoteControl(value);
         }
 
-        public Phoneme Phoneme { get; set; }
+        public Oto Oto { get; set; }
+        public Oto SafeOto => Oto != null ? Oto : DefaultOto;
 
-        public Phoneme DefaultPhoneme => GetDefaultPhoneme(Lyric);
+        public Oto DefaultOto => GetDefaultOto(Lyric);
 
         public string Phonemes { get; set; }
-
-        public double STP { get; set; }
 
         public double Pre { get; private set; }
         public double Ovl { get; private set; }
@@ -131,7 +130,7 @@ namespace PianoRoll.Model
             return hasEnvelope ? envelope : new Envelope(this);
         }
 
-        public bool HasPhoneme => Phoneme != null;
+        public bool HasOto => Oto != null;
         private NoteControl noteControl;
         private bool hasEnvelope;
 
@@ -162,7 +161,7 @@ namespace PianoRoll.Model
 
         public override string ToString()
         {
-            return $"{Lyric} [{Phonemes}] {{{Phoneme?.Alias}}}";
+            return $"{Lyric} [{Phonemes}] {{{SafeOto.Alias}}}";
         }
 
         public Note(Part part)
@@ -218,19 +217,19 @@ namespace PianoRoll.Model
         public void RecalculatePreOvl()
         {
             var notePrev = Part.GetPrevNote(this);
-            var phoneme = HasPhoneme ? Phoneme : DefaultPhoneme;
-            Pre = HasPhoneme ? Phoneme.Preutter : 30;
-            Ovl = HasPhoneme ? Phoneme.Overlap : 30;
+            var oto = SafeOto;
+            Pre = oto.Preutter;
+            Ovl = oto.Overlap;
             Stp = 0;
             double length = MusicMath.Current.TickToMillisecond(Length);
             if (notePrev != null && MusicMath.Current.TickToMillisecond(Length) / 2 < Pre - Ovl)
             {
-                Pre = phoneme.Preutter / (phoneme.Preutter - phoneme.Overlap) * (length / 2);
-                Ovl = phoneme.Overlap / (phoneme.Preutter - phoneme.Overlap) * (length / 2);
+                Pre = oto.Preutter / (oto.Preutter - oto.Overlap) * (length / 2);
+                Ovl = oto.Overlap / (oto.Preutter - oto.Overlap) * (length / 2);
                 if (Pre < 0 || Ovl < 0)
                     throw new Exception();
                 Stp = 0;// phoneme.Preutter - Pre;
-                if (Pre > phoneme.Preutter || Ovl > phoneme.Overlap)
+                if (Pre > oto.Preutter || Ovl > oto.Overlap)
                     throw new Exception("Да еб вашу мать");
             }
         }
@@ -241,10 +240,10 @@ namespace PianoRoll.Model
             var prev = Part.GetPrevNote(this);
             var len = MusicMath.Current.TickToMillisecond(Length);
             double requiredLength = len + Pre;
-            if (next != null && next.HasPhoneme)
+            if (next != null)
             {
-                requiredLength -= next.Phoneme.Preutter;
-                requiredLength += next.Phoneme.Overlap;
+                requiredLength -= next.SafeOto.Preutter;
+                requiredLength += next.SafeOto.Overlap;
             }
 
             requiredLength = Math.Ceiling((requiredLength + Stp + 25) / 50) * 50;
@@ -364,7 +363,7 @@ namespace PianoRoll.Model
                 Phonemes = Part.Track.Singer.SingerDictionary.Process(lyric);
             if (PartEditor.UseTrans)
                 temp = TransitionTool.Current.Process(this);
-            Phoneme = Part.Track.Singer.FindPhoneme(temp);
+            Oto = Part.Track.Singer.FindOto(temp);
         }
 
         private void SetNoteControl(NoteControl noteControl)
@@ -374,9 +373,9 @@ namespace PianoRoll.Model
             NewLyric(Lyric);
         }
 
-        private Phoneme GetDefaultPhoneme(string alias = "")
+        private Oto GetDefaultOto(string alias = "")
         {
-            var phoneme = new Phoneme
+            var phoneme = new Oto
             {
                 Alias = alias,
                 Offset = 0,

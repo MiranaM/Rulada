@@ -219,10 +219,10 @@ namespace PianoRoll.Model
             foreach (var note in notes)
             {
                 var transitioned = TransitionTool.Current.Process(note);
-                var phoneme = Track.Singer.FindPhoneme(transitioned);
-                if (phoneme.Overlap <= 0 || phoneme.Preutter <= 0)
+                var oto = Track.Singer.FindOto(transitioned);
+                if (oto.Overlap <= 0 || oto.Preutter <= 0)
                     throw new Exception();
-                note.Phoneme = phoneme;
+                note.Oto = oto;
                 note.RecalculatePreOvl();
 
             }
